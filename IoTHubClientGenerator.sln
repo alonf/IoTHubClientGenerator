@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTHubClientGenerator", "IoTHubClientGenerator\IoTHubClientGenerator.csproj", "{189846AE-AC31-47CB-8563-6AAA3ADF0C7F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{189846AE-AC31-47CB-8563-6AAA3ADF0C7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{189846AE-AC31-47CB-8563-6AAA3ADF0C7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{189846AE-AC31-47CB-8563-6AAA3ADF0C7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{189846AE-AC31-47CB-8563-6AAA3ADF0C7F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A624F362-FCD8-4046-860E-1A9FE977F836}
+	EndGlobalSection
+EndGlobal
