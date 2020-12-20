@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using IoTHubClientGeneratorSDK;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Client.Exceptions;
 using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+using Microsoft.Azure.Devices.Shared;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -24,7 +26,7 @@ namespace IoTHubClientGeneratorDemo
         }
     }
 
-    [IoTHub]
+    [IoTHub(GeneratedSendMethodName = "SendTelemetry")]
     public partial class IoTHubClientAuto
     {
         [Device(ConnectionString = "%connectionString%")]
@@ -36,7 +38,7 @@ namespace IoTHubClientGeneratorDemo
         private string ReportedProper { get; set; }
         
         [C2DMessage(AutoComplete = true)]
-        private void OnC2dMessageReceived(Message receivedMessage, object context)
+        private void OnC2dMessageReceived(Message receivedMessage)
         {
             Console.WriteLine(
                 $"{DateTime.Now}> C2D message callback - message received with Id={receivedMessage.MessageId}.");
@@ -46,7 +48,7 @@ namespace IoTHubClientGeneratorDemo
         }
     }
 
-    [IoTHub]
+    [IoTHub(GeneratedSendMethodName = "SendTelemetryAsync")]
     public partial class IoTHubClient
     {
         private static readonly Random RandomGenerator = new Random();
@@ -114,17 +116,34 @@ namespace IoTHubClientGeneratorDemo
         [ConnectionStatus] 
         private (ConnectionStatus Status, ConnectionStatusChangeReason Reason) DeviceConnectionStatus { get; set; }
         
-        [C2DMessage(AutoComplete = true)]
-        private void OnC2dMessageReceived(Message receivedMessage, object context)
+        [C2DMessage(AutoComplete = false)]
+        private void OnC2dMessageReceived(Message receivedMessage)
         {
             Console.WriteLine(
                 $"{DateTime.Now}> C2D message callback - message received with Id={receivedMessage.MessageId}.");
 
             //do something with the message
-
-
         }
 
+       
+
+        [IoTHubErrorHandler]
+        void IoTHubErrorHandler(string errorMessage, Exception exception)
+        {
+           if(exception is IotHubException iotHubException && iotHubException.IsTransient)
+           {
+                Console.WriteLine($"An IotHubException was caught, but will try to recover and retry: {exception}");
+           }
+
+           if (ExceptionHelper.IsNetworkExceptionChain(exception))
+           {
+               Console.WriteLine(
+                   $"A network related exception was caught, but will try to recover and retry: {exception}");
+           }
+           
+           Console.WriteLine($"{errorMessage}, Exception: {exception.Message}");
+        }
+        
         //[C2DMessage(AutoComplete = false)]
         private async Task OnC2dMessageReceived2(Message receivedMessage, object userContext)
         {
@@ -149,67 +168,37 @@ namespace IoTHubClientGeneratorDemo
             return Task.FromResult(new MethodResponse(new byte[0], 200));
         }
 
+        
         private async Task SendMessagesAsync(CancellationToken cancellationToken)
         {
             int messageCount = 0;
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (DeviceConnectionStatus.Status == ConnectionStatus.Connected)
+                ++messageCount;
+                var temperature = RandomGenerator.Next(20, 35);
+                var humidity = RandomGenerator.Next(60, 80);
+                string messagePayload = $"{{\"temperature\":{temperature},\"humidity\":{humidity}}}";
+                var properties = new Dictionary<string, string>()
                 {
-                    Console.WriteLine($"Device sending message {++messageCount} to IoT Hub...");
-
-                    (Message message, string payload) = PrepareMessage(messageCount);
-                    while (true)
                     {
-                        try
-                        {
-                            await DeviceClient.SendEventAsync(message, cancellationToken);
-                            Console.WriteLine($"Sent message {messageCount} of {payload}");
-                            message.Dispose();
-                            break;
-                        }
-                        catch (IotHubException ex) when (ex.IsTransient)
-                        {
-                            // Inspect the exception to figure out if operation should be retried, or if user-input is required.
-                            Console.WriteLine(
-                                $"An IotHubException was caught, but will try to recover and retry: {ex}");
-                        }
-                        catch (Exception ex) when (ExceptionHelper.IsNetworkExceptionChain(ex))
-                        {
-                            Console.WriteLine(
-                                $"A network related exception was caught, but will try to recover and retry: {ex}");
-                        }
-                        catch (Exception ex)
-                        {
-                            Console.WriteLine($"Unexpected error {ex}");
-                        }
-
-                        // wait and retry
-                        await Task.Delay(SleepDuration, cancellationToken);
+                        "temperatureAlert", (temperature > TemperatureThreshold) ? "true" : "false"
                     }
-                }
+                };
 
+                while (true)
+                {
+                    var succeeded = await SendTelemetryAsync(messagePayload, messageCount.ToString(), cancellationToken, properties);
+                    if (succeeded)
+                        break;
+                    // wait and retry
+                    await Task.Delay(SleepDuration, cancellationToken);
+                }
                 await Task.Delay(SleepDuration, cancellationToken);
             }
         }
 
-        private (Message, string) PrepareMessage(int messageId)
-        {
-            var temperature = RandomGenerator.Next(20, 35);
-            var humidity = RandomGenerator.Next(60, 80);
-            string messagePayload = $"{{\"temperature\":{temperature},\"humidity\":{humidity}}}";
-
-            var eventMessage = new Message(Encoding.UTF8.GetBytes(messagePayload))
-            {
-                MessageId = messageId.ToString(),
-                ContentEncoding = Encoding.UTF8.ToString(),
-                ContentType = "application/json",
-            };
-            eventMessage.Properties.Add("temperatureAlert", (temperature > TemperatureThreshold) ? "true" : "false");
-
-            return (eventMessage, messagePayload);
-        }
+        
 
         public async Task RunSampleAsync(TimeSpan sampleRunningTime)
         {
@@ -234,13 +223,12 @@ namespace IoTHubClientGeneratorDemo
         }
 
 
-        [StatusChangesHandler]
-        private async Task StatusChangesHandler()
+        [IoTHubDeviceStatusChangesHandler]
+        private void StatusChangesHandler(ConnectionStatus status, ConnectionStatusChangeReason reason)
         {
-            Console.WriteLine($"Connection status changed: status={DeviceConnectionStatus.Status}, reason={DeviceConnectionStatus.Reason}");
-
-
-            switch (DeviceConnectionStatus.Status)
+            Console.WriteLine($"Connection status changed: status={status}, reason={reason}");
+            
+            switch (status)
             {
                 case ConnectionStatus.Connected:
                     Console.WriteLine(
@@ -258,13 +246,12 @@ namespace IoTHubClientGeneratorDemo
                     break;
 
                 case ConnectionStatus.Disconnected:
-                    switch (DeviceConnectionStatus.Reason)
+                    switch (reason)
                     {
                         case ConnectionStatusChangeReason.Bad_Credential:
                             // When getting this reason, the current connection string being used is not valid.
                             // If we had a backup, we can try using that.
                             Console.WriteLine("The current connection string is invalid. Trying another.");
-                            await IoTHubClientManager.ReconnectAsync();
                             break;
 
                         case ConnectionStatusChangeReason.Device_Disabled:
@@ -278,7 +265,6 @@ namespace IoTHubClientGeneratorDemo
                                 "### The DeviceClient has been disconnected because the retry policy expired." +
                                 "\nIf you want to perform more operations on the device client, you should dispose (DisposeAsync()) and then open (OpenAsync()) the client.");
 
-                            await IoTHubClientManager.ReconnectAsync();
                             break;
 
                         case ConnectionStatusChangeReason.Communication_Error:
@@ -286,7 +272,6 @@ namespace IoTHubClientGeneratorDemo
                                 "### The DeviceClient has been disconnected due to a non-retry-able exception. Inspect the exception for details." +
                                 "\nIf you want to perform more operations on the device client, you should dispose (DisposeAsync()) and then open (OpenAsync()) the client.");
 
-                            await IoTHubClientManager.ReconnectAsync();
                             break;
 
                         default:

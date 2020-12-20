@@ -114,6 +114,9 @@ namespace IoTHubClientGenerator
             if (ValidateAttributeCount(nameof(C2DMessageAttribute), 0, 1, "method") == false)
                 isValid = false;
             
+            if (ValidateAttributeCount(nameof(IoTHubErrorHandlerAttribute), 0, 1, "method") == false)
+                isValid = false;
+            
             return isValid;
         }
 
@@ -147,11 +150,12 @@ namespace IoTHubClientGenerator
             nameof(DesiredAttribute).AttName(),
             nameof(ReportedAttribute).AttName(),
             nameof(DeviceAttribute).AttName(),
-            nameof(StatusChangesHandlerAttribute).AttName(),
+            nameof(IoTHubDeviceStatusChangesHandlerAttribute).AttName(),
             nameof(ClientOptionsAttribute).AttName(),
             nameof(AuthenticationMethodAttribute).AttName(),
             nameof(DpsDeviceAttribute).AttName(),
-            nameof(TransportSettingAttribute).AttName()
+            nameof(TransportSettingAttribute).AttName(),
+            nameof(IoTHubErrorHandlerAttribute).AttName(),
         };
 
         public Dictionary<SyntaxNode, AttributeSyntax[]> CandidateMembers { get; } =

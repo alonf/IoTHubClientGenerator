@@ -15,19 +15,10 @@ namespace IoTHubClientGeneratorSDK
         {
             await Task.Delay(1);
         }
-        public static DeviceClient CreateAuthenticationWithRegistrySymmetricKey(DeviceAttribute deviceAttribute)
-        {
-            return null;
-        }
-
-        public static DeviceClient CreateAuthenticationWithSharedAccessPolicyKey(DeviceAttribute deviceAttribute)
-        {
-            return null;
-        }
-
-        public static DeviceClient CreateAuthenticationWithToken(DeviceAttribute deviceAttribute)
-        {
-            return null;
-        }
+        
+        public static DeviceClient DeviceClient { get; set; } 
+        
+        
+        public static ConnectionStatus ConnectionStatus { get; private set; }
     }
 }
