@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using IoTHubClientGeneratorSDK;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Client.Exceptions;
+using Microsoft.Azure.Devices.Client.Transport.Mqtt;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace IoTHubClientGeneratorDemo
 {
@@ -17,43 +18,104 @@ namespace IoTHubClientGeneratorDemo
             Console.WriteLine("Hello World!");
             await IoTHubClientManager.RunAsync();
             IoTHubClient iotHubClient = new IoTHubClient();
+            IoTHubClientAuto iotHubClientAuto = new IoTHubClientAuto();
+           // iotHubClient.InitIoTHubClient();
             await iotHubClient.RunSampleAsync(TimeSpan.FromMinutes(5));
         }
     }
 
+    [IoTHub]
+    public partial class IoTHubClientAuto
+    {
+        [Device(ConnectionString = "%connectionString%")]
+        public DeviceClient DeviceClient { get; set; }
+       
+        [Desired] private string _desiredProperty;
+
+        [Reported()] 
+        private string ReportedProper { get; set; }
+        
+        [C2DMessage(AutoComplete = true)]
+        private void OnC2dMessageReceived(Message receivedMessage, object context)
+        {
+            Console.WriteLine(
+                $"{DateTime.Now}> C2D message callback - message received with Id={receivedMessage.MessageId}.");
+
+            //do something with the message
+
+        }
+    }
 
     [IoTHub]
-    public class IoTHubClient
+    public partial class IoTHubClient
     {
         private static readonly Random RandomGenerator = new Random();
         private const int TemperatureThreshold = 30;
         private static readonly TimeSpan SleepDuration = TimeSpan.FromSeconds(5);
 
-        [Device(Hostname = "%hostname%", GatewayHostname = "%GatewayHostname%", AutoReconnect = true)]
+        //[Device(Hostname = "%hostname%", GatewayHostname = "%GatewayHostname%", DeviceId = "123", AutoReconnect = true)]
+        [Device(ConnectionString = "%alon%", TransportType = TransportType.Http1)]
         public DeviceClient DeviceClient { get; set; }
+        
+        /*
+         todo: handle DPS
+        [DpsDevice( DPSEnrollmentType = DPSEnrollmentType.Group, DPSIdScope = "scope")]
+        public DeviceClient DeviceClientFull { get; set; }
+        */
 
-        private readonly ClientProperties _clientProperties = new ClientProperties();
+        private readonly ITransportSettings _amqpTransportSettings =
+            new AmqpTransportSettings(TransportType.Amqp)
+            {
+                AmqpConnectionPoolSettings = new AmqpConnectionPoolSettings {MaxPoolSize = 5},
+                IdleTimeout = TimeSpan.FromMinutes(1)
+            };
 
-        [ClientProperties]
-        public ClientProperties ClientProperties => _clientProperties;
+        private readonly ITransportSettings _mqttTransportSettings =
+            new MqttTransportSettings(TransportType.Mqtt)
+            {
+                DefaultReceiveTimeout = TimeSpan.FromMinutes(2)
+            };
 
-        [Desired("valueFromTheCloud")] 
-        public string DesiredPropertyDemo { get; set; }
+        //[TransportSetting]
+        public ITransportSettings AmqpTransportSettings => _amqpTransportSettings;
+        
+        //[TransportSetting]
+        public ITransportSettings MqttTransportSetting => _mqttTransportSettings;
 
-        [Desired] 
-        public string DesiredPropertyNameDemo { get; set; }
+
+        //If exist, overrides DeviceAttribute properties
+        private IAuthenticationMethod _deviceAuthenticationWithRegistrySymmetricKey =
+            new DeviceAuthenticationWithRegistrySymmetricKey("deviceId", "key");
+        
+        //[AuthenticationMethod]
+        public IAuthenticationMethod DeviceAuthenticationWithRegistrySymmetricKey => _deviceAuthenticationWithRegistrySymmetricKey;
+
+        private ClientOptions _clientOptions = new ClientOptions();
+
+        [ClientOptions]
+        public ClientOptions ClientOptions => _clientOptions;
+        
+
+        //if exist, provide a second means for device creation in case of a failure
+        [AlternateConnectionString("%alternateConnectionString%")]
+        private string AlternateConnectionString { get; set; }
+        
+        //desired property are created and managed by the source generator
+        [Desired("valueFromTheCloud")] private string _desiredPropertyDemo;
+
+        [Desired] private string _desiredPropertyAutoNameDemo;
 
         [Reported("valueFromTheDevice")] 
-        public string ReportedPropertyDemo { get; set; }
+        private string ReportedPropertyDemo { get; set; }
 
         [Reported] 
-        public string ReportedPropertyNameDemo { get; set; }
+        private string ReportedPropertyAutoNameDemo { get; set; }
 
         [ConnectionStatus] 
-        public (ConnectionStatus Status, ConnectionStatusChangeReason Reason) DeviceConnectionStatus { get; set; }
-
+        private (ConnectionStatus Status, ConnectionStatusChangeReason Reason) DeviceConnectionStatus { get; set; }
+        
         [C2DMessage(AutoComplete = true)]
-        public void OnC2dMessageReceived(Message receivedMessage, object context)
+        private void OnC2dMessageReceived(Message receivedMessage, object context)
         {
             Console.WriteLine(
                 $"{DateTime.Now}> C2D message callback - message received with Id={receivedMessage.MessageId}.");
@@ -64,7 +126,7 @@ namespace IoTHubClientGeneratorDemo
         }
 
         //[C2DMessage(AutoComplete = false)]
-        public async Task OnC2dMessageReceived2(Message receivedMessage, object userContext)
+        private async Task OnC2dMessageReceived2(Message receivedMessage, object userContext)
         {
             Console.WriteLine(
                 $"{DateTime.Now}> C2D message callback - message received with Id={receivedMessage.MessageId}.");
@@ -79,7 +141,7 @@ namespace IoTHubClientGeneratorDemo
         }
 
         [C2DeviceCallback]
-        public Task<MethodResponse> WriteToConsoleAsync(MethodRequest methodRequest)
+        private Task<MethodResponse> WriteToConsoleAsync(MethodRequest methodRequest)
         {
             Console.WriteLine($"\t *** {methodRequest.Name} was called.");
             Console.WriteLine($"\t{methodRequest.DataAsJson}\n");
@@ -173,7 +235,7 @@ namespace IoTHubClientGeneratorDemo
 
 
         [StatusChangesHandler]
-        public async Task StatusChangesHandler()
+        private async Task StatusChangesHandler()
         {
             Console.WriteLine($"Connection status changed: status={DeviceConnectionStatus.Status}, reason={DeviceConnectionStatus.Reason}");
 
@@ -202,7 +264,6 @@ namespace IoTHubClientGeneratorDemo
                             // When getting this reason, the current connection string being used is not valid.
                             // If we had a backup, we can try using that.
                             Console.WriteLine("The current connection string is invalid. Trying another.");
-                            _clientProperties.AlternateConnectionString = "..."; //set alternate connection string
                             await IoTHubClientManager.ReconnectAsync();
                             break;
 
