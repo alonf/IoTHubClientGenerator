@@ -2,13 +2,15 @@
 
 namespace IoTHubClientGeneratorSDK
 {
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class ReportedAttribute : Attribute
     {
+        public string LocalPropertyName { get; }
         public string TwinPropertyName { get; set; }
 
-        public ReportedAttribute(string twinPropertyName = "")
+        public ReportedAttribute(string localPropertyName, string twinPropertyName = "")
         {
+            LocalPropertyName = localPropertyName;
             TwinPropertyName = twinPropertyName;
         }
     }

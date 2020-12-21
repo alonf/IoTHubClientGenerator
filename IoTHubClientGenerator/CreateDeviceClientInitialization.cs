@@ -34,7 +34,7 @@ namespace IoTHubClientGenerator
             
             string createDeviceClientMethodName; 
             AttributeSyntax createDeviceClientMethodAttributeSyntax;
-            AppendLine("private async Task InitIoTHubClientAsync()");
+            AppendLine("public async Task InitIoTHubClientAsync()");
             AppendLine("{");
             using (Indent(this))
             {
@@ -123,8 +123,6 @@ namespace IoTHubClientGenerator
                     }
                 }
                 CreateDirectMethodCallback();
-
-                
                
                 //register for direct method cloud callback if needed: DeviceClient.SetMethodHandlerAsync() (per method), and DeviceClient.SetMethodDefaultHandlerAsync() for default
                

@@ -103,6 +103,10 @@ namespace IoTHubClientGenerator
         private IEnumerable<KeyValuePair<AttributeSyntax, SyntaxNode>> GetAttributes(string attributeName) =>
             _receiverCandidateAttributes.Where(a =>
                 a.Key.Name.ToString() == attributeName.AttName());
+        
+        private IEnumerable<KeyValuePair<SyntaxNode, AttributeSyntax[]>> GetAttributedMembers(string attributeName) =>
+            _receiverCandidateMembers.Where(a =>
+                a.Value.Any(a=>a.Name.ToString() == attributeName.AttName()));
 
         private void BuildPartialClass(string namespaceName, string className)
         {
@@ -132,8 +136,8 @@ namespace IoTHubClientGenerator
             using (Indent(this))
             {
                 CreateDeviceClientInitialization();
-                CreateSendMethod();
                 CreateReportedProperties();
+                CreateSendMethod();
                 CreateDesiredProperties();
                 CreateReportedCloudUpdateMethod();
                 CreateDesiredUpdateMethod();

@@ -21,31 +21,34 @@ namespace IoTHubClientGeneratorDemo
             await IoTHubClientManager.RunAsync();
             IoTHubClient iotHubClient = new IoTHubClient();
             IoTHubClientAuto iotHubClientAuto = new IoTHubClientAuto();
-           // iotHubClient.InitIoTHubClient();
+            await iotHubClient.InitIoTHubClientAsync();
             await iotHubClient.RunSampleAsync(TimeSpan.FromMinutes(5));
         }
     }
 
+   
+    
     [IoTHub(GeneratedSendMethodName = "SendTelemetry")]
     public partial class IoTHubClientAuto
     {
         [Device(ConnectionString = "%connectionString%")]
         public DeviceClient DeviceClient { get; set; }
        
-        [Desired] private string _desiredProperty;
+        [Desired] public string DesiredProperty { get; private set; }
 
-        [Reported()] 
-        private string ReportedProper { get; set; }
+        [Reported("ReportedProperty","reported")] private string _reportedProperty;
         
         [C2DMessage(AutoComplete = true)]
         private void OnC2dMessageReceived(Message receivedMessage)
         {
             Console.WriteLine(
                 $"{DateTime.Now}> C2D message callback - message received with Id={receivedMessage.MessageId}.");
-
+        
             //do something with the message
 
         }
+
+        
     }
 
     [IoTHub(GeneratedSendMethodName = "SendTelemetryAsync")]
@@ -103,15 +106,13 @@ namespace IoTHubClientGeneratorDemo
         private string AlternateConnectionString { get; set; }
         
         //desired property are created and managed by the source generator
-        [Desired("valueFromTheCloud")] private string _desiredPropertyDemo;
+        [Desired("valueFromTheCloud")] private string DesiredPropertyDemo { get; set; }
 
-        [Desired] private string _desiredPropertyAutoNameDemo;
+        [Desired] private string DesiredPropertyAutoNameDemo { get; set; }
 
-        [Reported("valueFromTheDevice")] 
-        private string ReportedPropertyDemo { get; set; }
+        [Reported("valueFromTheDevice")] private string _reportedPropertyDemo;
 
-        [Reported] 
-        private string ReportedPropertyAutoNameDemo { get; set; }
+        [Reported("ReportedPropertyAutoNameDemo", "reportedPropertyAutoNameDemo")] private string _reportedPropertyAutoNameDemo;
 
         [ConnectionStatus] 
         private (ConnectionStatus Status, ConnectionStatusChangeReason Reason) DeviceConnectionStatus { get; set; }

@@ -2,7 +2,7 @@
 
 namespace IoTHubClientGeneratorSDK
 {
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class DesiredAttribute : Attribute
     {
         public string TwinPropertyName { get; set; }
