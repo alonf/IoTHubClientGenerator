@@ -17,8 +17,7 @@ namespace IoTHubClientGeneratorDemo
                     continue;
                 }
 
-                if (exception is AggregateException aggEx
-                    && aggEx.InnerExceptions != null)
+                if (exception is AggregateException {InnerExceptions: { }} aggEx)
                 {
                     foreach (Exception ex in aggEx.InnerExceptions)
                     {

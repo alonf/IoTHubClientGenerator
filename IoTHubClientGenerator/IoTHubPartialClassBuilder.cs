@@ -9,11 +9,11 @@ namespace IoTHubClientGenerator
 {
     partial class IoTHubPartialClassBuilder
     {
-        private readonly StringBuilder _sb = new StringBuilder();
+        private readonly StringBuilder _sb = new();
         private int _nestingLevel;
-        private bool _isErrorHandlerExist = false;
+        private bool _isErrorHandlerExist;
         private string _callErrorHandlerPattern; //ErrorHandler(errorMessage, exception);
-        private bool _isConnectionStatusExist = false;
+        private bool _isConnectionStatusExist;
         private string _connectionStatusAccessText;
         private string _deviceClientPropertyName;
         
@@ -110,7 +110,7 @@ namespace IoTHubClientGenerator
 
         private void BuildPartialClass(string namespaceName, string className)
         {
-            CreateErrorHandlerMethoCallPattern(); 
+            CreateErrorHandlerMethodCallPattern(); 
             
             AppendLine("using System;");
             AppendLine("using System.Diagnostics;");

@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using IoTHubClientGeneratorSDK;
-using Microsoft.Azure.Devices.Shared;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace IoTHubClientGenerator
@@ -12,13 +11,28 @@ namespace IoTHubClientGenerator
             //todo: Add error handling if exist
             AppendLine("private void ReportProperty(string propertyName, string data)");
             AppendLine("{");
-            using (Indent(this))
+            using (Indent(this, _isErrorHandlerExist))
             {
-                AppendLine("var reportedProperties = new Microsoft.Azure.Devices.Shared.TwinCollection();");
-                AppendLine("reportedProperties[propertyName] = data;");
-                AppendLine($"{_deviceClientPropertyName}.UpdateReportedPropertiesAsync(reportedProperties).Wait();");
+                AppendLine("try", _isErrorHandlerExist);
+                AppendLine("{", _isErrorHandlerExist);
+                using (Indent(this))
+                {
+                    AppendLine("var reportedProperties = new Microsoft.Azure.Devices.Shared.TwinCollection();");
+                    AppendLine("reportedProperties[propertyName] = data;");
+                    AppendLine(
+                        $"{_deviceClientPropertyName}.UpdateReportedPropertiesAsync(reportedProperties).Wait();");
+                }
+            }
+            AppendLine("}", _isErrorHandlerExist);
+            AppendLine("catch(System.Exception exception)", _isErrorHandlerExist);
+            AppendLine("{", _isErrorHandlerExist);
+            using (Indent(this, _isErrorHandlerExist))
+            {
+                AppendLine("string errorMessage =\"Error updating desired properties\";", _isErrorHandlerExist);
+                AppendLine(_callErrorHandlerPattern, _isErrorHandlerExist);
             }
 
+            AppendLine("}", _isErrorHandlerExist);
             AppendLine("}");
             AppendLine();
 
@@ -32,9 +46,12 @@ namespace IoTHubClientGenerator
                     reportedProperty.Value.First(v => v.Name.ToString() == nameof(ReportedAttribute).AttName());
                 var localPropertyName = twinPropertyAttribute.ArgumentList?.Arguments[0].Expression.ToString()
                     .TrimStart('\"').TrimEnd('\"');
-                
-                var twinPropertyName = twinPropertyAttribute.ArgumentList != null && twinPropertyAttribute.ArgumentList.Arguments.Count > 1 
-                    ? twinPropertyAttribute.ArgumentList?.Arguments[1].Expression.ToString().TrimStart('\"').TrimEnd('\"') : localPropertyName;
+
+                var twinPropertyName = twinPropertyAttribute.ArgumentList != null &&
+                                       twinPropertyAttribute.ArgumentList.Arguments.Count > 1
+                    ? twinPropertyAttribute.ArgumentList?.Arguments[1].Expression.ToString().TrimStart('\"')
+                        .TrimEnd('\"')
+                    : localPropertyName;
 
                 AppendLine($"public string {localPropertyName}");
                 AppendLine("{");
@@ -43,6 +60,7 @@ namespace IoTHubClientGenerator
                     AppendLine($"get {{ return {fieldName}; }}");
                     AppendLine($"set {{ {fieldName} = value; ReportProperty(\"{twinPropertyName}\",value);}}");
                 }
+
                 AppendLine("}");
                 AppendLine();
             }

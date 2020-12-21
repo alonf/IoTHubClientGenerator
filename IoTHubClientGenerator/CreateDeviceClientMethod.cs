@@ -119,14 +119,19 @@ namespace IoTHubClientGenerator
                     creationFunctionEntry.Append("co_");
                 }
 
-                if (creationFunctionEntry.Length == 0) //no paramters
+                if (creationFunctionEntry.Length == 0) //no parameters
                 {
+                    Location location = null;
+                    if (attributeSyntax != null)
+                    {
+                        location = Location.Create(attributeSyntax.SyntaxTree, attributeSyntax.Span);
+                    }
+
                     _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(new
                             DiagnosticDescriptor("IoTGen004", "IoT Hub Generator Error",
-                                $"Can't generate DeviceClient creation code, check the supplied [Device] parameters",
+                                "Can't generate DeviceClient creation code, check the supplied [Device] parameters",
                                 "Error",
-                                DiagnosticSeverity.Error, true),
-                        Location.Create(attributeSyntax.SyntaxTree, attributeSyntax.Span)));
+                                DiagnosticSeverity.Error, true), location));
                     return;
                 }
 
@@ -255,20 +260,23 @@ namespace IoTHubClientGenerator
                         break;
 
                     default:
+                        Location location = null;
+                        if (attributeSyntax != null)
+                            location = Location.Create(attributeSyntax.SyntaxTree, attributeSyntax.Span);
+
                         _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(new
                                 DiagnosticDescriptor("IoTGen005", "IoT Hub Generator Error",
                                     $"Can't generate DeviceClient creation code, no DeviceClient Create method takes the combination of {createDeviceError} parameters. check [Device] parameters and other attributes ([TransportSetting], [AuthenticationMethod], [ClientOptions]) ",
                                     "Error",
-                                    DiagnosticSeverity.Error, true),
-                            Location.Create(attributeSyntax.SyntaxTree, attributeSyntax.Span)));
+                                    DiagnosticSeverity.Error, true), location));
                         AppendLine(" null;");
                         break;
                 }
 
-                _sb.AppendLine("return deviceClient;");
+                AppendLine("return deviceClient;");
             }
 
-            _sb.AppendLine("}");
+            AppendLine("}");
         }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using IoTHubClientGeneratorSDK;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -50,7 +49,7 @@ namespace IoTHubClientGenerator
                     {
                         _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(new
                                 DiagnosticDescriptor("IoTGen006", "IoT Hub Generator Warning",
-                                    $"No DeviceClient property decorated with [Device] attribute exist, A DeviceClient property with default ConnectionString environment variable has been created!", "Warning", DiagnosticSeverity.Warning, true),
+                                    "No DeviceClient property decorated with [Device] attribute exist, A DeviceClient property with default ConnectionString environment variable has been created!", "Warning", DiagnosticSeverity.Warning, true),
                             Location.None));
 
                         shouldGenerateDeviceClientProperty = true;
@@ -101,7 +100,7 @@ namespace IoTHubClientGenerator
                         ((MethodDeclarationSyntax) c2dMessageAttribute.Value).Modifiers.Any(a=>a.ToString() == "async");
 
                     var autoComplete = c2dMessageAttribute.Key.ArgumentList?.Arguments
-                        .Where(a => a.NameEquals.ToString().StartsWith(nameof(C2DMessageAttribute.AutoComplete)))
+                        .Where(a => a.NameEquals != null && a.NameEquals.ToString().StartsWith(nameof(C2DMessageAttribute.AutoComplete)))
                         .Select(a => a.Expression.ToString()).FirstOrDefault();
 
                     if (autoComplete != null && autoComplete.ToLower() == "true")
@@ -162,8 +161,8 @@ namespace IoTHubClientGenerator
 
             if (shouldGenerateDeviceClientProperty)
             {
-                AppendLine($"[Device(ConnectionString=\"%ConnectionString%\")]");
-                AppendLine($"private DeviceClient DeviceClient {{get; set;}}");
+                AppendLine("[Device(ConnectionString=\"%ConnectionString%\")]");
+                AppendLine("private DeviceClient DeviceClient {{get; set;}}");
                 AppendLine();
             }
             CreateDeviceClientMethod(createDeviceClientMethodName, createDeviceClientMethodAttributeSyntax);

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Linq;
+﻿using System.Linq;
 using IoTHubClientGeneratorSDK;
 
 namespace IoTHubClientGenerator
@@ -16,7 +14,7 @@ namespace IoTHubClientGenerator
             var iotHubAttribute = iotHubAttributes[0];
 
             var sendMethodName = iotHubAttribute.Key.ArgumentList?.Arguments.Where(p =>
-                    p.NameEquals.ToString().StartsWith(nameof(IoTHubAttribute.GeneratedSendMethodName)))
+                    p.NameEquals != null && p.NameEquals.ToString().StartsWith(nameof(IoTHubAttribute.GeneratedSendMethodName)))
                 .Select(a => a.Expression.ToString()).FirstOrDefault();
             
             if (string.IsNullOrWhiteSpace(sendMethodName))

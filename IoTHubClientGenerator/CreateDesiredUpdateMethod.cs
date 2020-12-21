@@ -1,8 +1,5 @@
 ﻿using System.Linq;
-using System.Threading.Tasks;
 using IoTHubClientGeneratorSDK;
-using Microsoft.Azure.Devices.Client;
-using Microsoft.Azure.Devices.Shared;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace IoTHubClientGenerator

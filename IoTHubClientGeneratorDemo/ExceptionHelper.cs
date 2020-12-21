@@ -14,7 +14,7 @@ namespace IoTHubClientGeneratorDemo
 {
     internal class ExceptionHelper
     {
-        private static readonly HashSet<Type> NetworkExceptions = new HashSet<Type>
+        private static readonly HashSet<Type> NetworkExceptions = new()
         {
             typeof(IOException),
             typeof(SocketException),

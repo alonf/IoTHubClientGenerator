@@ -1,10 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Collections.Immutable;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using IoTHubClientGeneratorSDK;
-using Microsoft.Azure.Devices.Client;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -100,7 +97,7 @@ namespace IoTHubClientGenerator
             {
                  Debugger.Launch();
             }*/
-            bool isValid = ValidateAttributeCount(nameof(DeviceAttribute), 0, 1) != false;
+            bool isValid = ValidateAttributeCount(nameof(DeviceAttribute), 0, 1);
 
             if (ValidateAttributeCount(nameof(ClientOptionsAttribute), 0, 1) == false)
                 isValid = false;
@@ -158,13 +155,9 @@ namespace IoTHubClientGenerator
             nameof(IoTHubErrorHandlerAttribute).AttName(),
         };
 
-        public Dictionary<SyntaxNode, AttributeSyntax[]> CandidateMembers { get; } =
-            new Dictionary<SyntaxNode, AttributeSyntax[]>();
+        public Dictionary<SyntaxNode, AttributeSyntax[]> CandidateMembers { get; } = new();
 
-        public Dictionary<AttributeSyntax, SyntaxNode> CandidateAttributes { get; } =
-            new Dictionary<AttributeSyntax, SyntaxNode>();
-            
-
+        public Dictionary<AttributeSyntax, SyntaxNode> CandidateAttributes { get; } = new();
 
         public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
         {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security;
 using Microsoft.Azure.Devices.Client;
 
 namespace IoTHubClientGeneratorSDK
