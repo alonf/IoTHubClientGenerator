@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using IoTHubClientGeneratorSDK;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace IoTHubClientGenerator
@@ -33,9 +34,10 @@ namespace IoTHubClientGenerator
             }
             
             string createDeviceClientMethodName; 
-            AttributeSyntax createDeviceClientMethodAttributeSyntax;
+            AttributeSyntax createDeviceClientMethodAttributeSyntax = null;
             AppendLine("public async Task InitIoTHubClientAsync()");
             AppendLine("{");
+            bool shouldGenerateDeviceClientProperty = false;
             using (Indent(this))
             {
                 AppendLine("try", _isErrorHandlerExist);
@@ -44,12 +46,26 @@ namespace IoTHubClientGenerator
                 {
                     //get the Device attribute
                     var deviceAttributes = GetAttributes(nameof(DeviceAttribute)).ToArray();
-                    var deviceAttribute = deviceAttributes[0];
-                    
-                    _deviceClientPropertyName = ((PropertyDeclarationSyntax) (deviceAttribute.Value)).Identifier.ToString();
+                    if (deviceAttributes.Length == 0) //no device attribute
+                    {
+                        _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(new
+                                DiagnosticDescriptor("IoTGen006", "IoT Hub Generator Warning",
+                                    $"No DeviceClient property decorated with [Device] attribute exist, A DeviceClient property with default ConnectionString environment variable has been created!", "Warning", DiagnosticSeverity.Warning, true),
+                            Location.None));
+
+                        shouldGenerateDeviceClientProperty = true;
+                        _deviceClientPropertyName = "DeviceClient";
+                    }
+                    else
+                    {
+                        var deviceAttribute = deviceAttributes[0];
+                        _deviceClientPropertyName =
+                            ((PropertyDeclarationSyntax) (deviceAttribute.Value)).Identifier.ToString();
+                        
+                        createDeviceClientMethodAttributeSyntax = deviceAttribute.Key;
+                    }
                     createDeviceClientMethodName = $"Create{_deviceClientPropertyName}";
                     AppendLine($"{_deviceClientPropertyName} =  {createDeviceClientMethodName}();");
-                    createDeviceClientMethodAttributeSyntax = deviceAttribute.Key;
                 }
 
                 if (connectionStatusMethodName != null && _isConnectionStatusExist == false)
@@ -105,12 +121,13 @@ namespace IoTHubClientGenerator
                                 AppendLine($"await {_deviceClientPropertyName}.CompleteAsync(message);");
                             }
                             AppendLine("}");
-                            AppendLine("catch(System.Exception exception)");
+                            AppendLine("catch(System.Exception)", !_isErrorHandlerExist);
+                            AppendLine("catch(System.Exception exception)", _isErrorHandlerExist);
                             AppendLine("{");
                             using (Indent(this))
                             {
                                 AppendLine($"await {_deviceClientPropertyName}.RejectAsync(message);");
-                                AppendLine("string errorMessage =\"Error handling cloud to device message. The message has been rejected\";");
+                                AppendLine("string errorMessage =\"Error handling cloud to device message. The message has been rejected\";", _isErrorHandlerExist);
                                 AppendLine(_callErrorHandlerPattern, _isErrorHandlerExist);
                             }
                             AppendLine("}");
@@ -143,7 +160,13 @@ namespace IoTHubClientGenerator
             AppendLine("}");
             AppendLine();
 
-           CreateDeviceClientMethod(createDeviceClientMethodName, createDeviceClientMethodAttributeSyntax);
+            if (shouldGenerateDeviceClientProperty)
+            {
+                AppendLine($"[Device(ConnectionString=\"%ConnectionString%\")]");
+                AppendLine($"private DeviceClient DeviceClient {{get; set;}}");
+                AppendLine();
+            }
+            CreateDeviceClientMethod(createDeviceClientMethodName, createDeviceClientMethodAttributeSyntax);
         }
     }
 }

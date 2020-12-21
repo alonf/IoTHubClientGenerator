@@ -11,36 +11,57 @@ namespace IoTHubClientGenerator
     {
         private void CreateDesiredUpdateMethod()
         {
-            AppendLine("private async Task HandleDesiredPropertyUpdateAsync(Microsoft.Azure.Devices.Shared.TwinCollection desiredProperties, object context)");
+            AppendLine(
+                "private async Task HandleDesiredPropertyUpdateAsync(Microsoft.Azure.Devices.Shared.TwinCollection desiredProperties, object context)");
             AppendLine("{");
-            using (Indent(this))
+            using (Indent(this, _isErrorHandlerExist))
             {
-                var programDesiredProperties = GetAttributedMembers(nameof(DesiredAttribute)).ToArray();
-                
-                foreach (var desiredProperty in programDesiredProperties)
+                AppendLine("try", _isErrorHandlerExist);
+                AppendLine("{", _isErrorHandlerExist);
+
+                using (Indent(this))
                 {
-                    string propertyName = ((PropertyDeclarationSyntax) desiredProperty.Key).Identifier.ToString();
-                    string desiredPropertyName = propertyName;
+                    var programDesiredProperties = GetAttributedMembers(nameof(DesiredAttribute)).ToArray();
 
-                    var twinPropertyAttribute = desiredProperty.Value.First(v => v.Name.ToString() == nameof(DesiredAttribute).AttName());
-
-                    var twinPropertyNameProperty = twinPropertyAttribute.ArgumentList?.Arguments.FirstOrDefault();
-                    
-                    if (twinPropertyNameProperty != null)
-                        desiredPropertyName = twinPropertyNameProperty.Expression.ToString().TrimStart('\"').TrimEnd('\"');
-                    
-                    AppendLine($"if (desiredProperties.Contains(\"{desiredPropertyName}\"))");
-                    AppendLine("{");
-                    using (Indent(this))
+                    foreach (var desiredProperty in programDesiredProperties)
                     {
-                        AppendLine($"{propertyName} = desiredProperties[\"{desiredPropertyName}\"];");
+                        string propertyName = ((PropertyDeclarationSyntax) desiredProperty.Key).Identifier.ToString();
+                        string desiredPropertyName = propertyName;
+
+                        var twinPropertyAttribute = desiredProperty.Value.First(v =>
+                            v.Name.ToString() == nameof(DesiredAttribute).AttName());
+
+                        var twinPropertyNameProperty = twinPropertyAttribute.ArgumentList?.Arguments.FirstOrDefault();
+
+                        if (twinPropertyNameProperty != null)
+                            desiredPropertyName = twinPropertyNameProperty.Expression.ToString().TrimStart('\"')
+                                .TrimEnd('\"');
+
+                        AppendLine($"if (desiredProperties.Contains(\"{desiredPropertyName}\"))");
+                        AppendLine("{");
+                        using (Indent(this))
+                        {
+                            AppendLine($"{propertyName} = desiredProperties[\"{desiredPropertyName}\"];");
+                        }
+
+                        AppendLine("}");
                     }
-                    AppendLine("}");
                 }
+
+                AppendLine("}", _isErrorHandlerExist);
+                AppendLine("catch(System.Exception exception)", _isErrorHandlerExist);
+                AppendLine("{", _isErrorHandlerExist);
+                using (Indent(this, _isErrorHandlerExist))
+                {
+                    AppendLine("string errorMessage =\"Error updating desired properties\";", _isErrorHandlerExist);
+                    AppendLine(_callErrorHandlerPattern, _isErrorHandlerExist);
+                }
+
+                AppendLine("}", _isErrorHandlerExist);
             }
+
             AppendLine("await Task.CompletedTask;");
             AppendLine("}");
-            
         }
     }
 }

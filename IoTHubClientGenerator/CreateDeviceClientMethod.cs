@@ -11,12 +11,12 @@ namespace IoTHubClientGenerator
     {
         private void CreateDeviceClientMethod(string methodName, AttributeSyntax attributeSyntax)
         {
-            _sb.AppendLine($"private Microsoft.Azure.Devices.Client.DeviceClient {methodName}()");
-            _sb.AppendLine("{");
+            AppendLine($"private Microsoft.Azure.Devices.Client.DeviceClient {methodName}()");
+            AppendLine("{");
             using (Indent(this))
             {
                 var parameterNameList = new List<string>();
-                if (attributeSyntax.ArgumentList != null)
+                if (attributeSyntax?.ArgumentList != null)
                 {
                     foreach (var argument in attributeSyntax.ArgumentList.Arguments)
                     {
@@ -29,8 +29,13 @@ namespace IoTHubClientGenerator
                                 $"System.Environment.GetEnvironmentVariable(\"{attExpression.TrimStart('%', '"').TrimEnd('%', '"')}\")";
                         }
 
-                        _sb.AppendLine($"var {attAssignment}{attExpression};");
+                        AppendLine($"var {attAssignment}{attExpression};");
                     }
+                }
+                else
+                {
+                    parameterNameList.Add(nameof(DeviceAttribute.ConnectionString));
+                    AppendLine("var theConnectionString=System.Environment.GetEnvironmentVariable(\"ConnectionString\");");
                 }
 
                 var createDeviceError = new StringBuilder();

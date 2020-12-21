@@ -1,6 +1,6 @@
 ﻿namespace IoTHubClientGenerator
 {
-    partial class IoTHubPartialClassBuilder
+    partial class oTHubPartialClassBuilder
     {
         private void CreateReportedCloudUpdateMethod()
         {

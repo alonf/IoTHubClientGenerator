@@ -31,8 +31,8 @@ namespace IoTHubClientGeneratorDemo
     [IoTHub(GeneratedSendMethodName = "SendTelemetry")]
     public partial class IoTHubClientAuto
     {
-        [Device(ConnectionString = "%connectionString%")]
-        public DeviceClient DeviceClient { get; set; }
+       [Device(ConnectionString = "%connectionString%")]
+       public DeviceClient DeviceClient { get; set; }
        
         [Desired] public string DesiredProperty { get; private set; }
 
@@ -48,7 +48,14 @@ namespace IoTHubClientGeneratorDemo
 
         }
 
-        
+        [IoTHubErrorHandler]
+        void IoTHubErrorHandler(string errorMessage, Exception exception)
+        {
+            if (exception is IotHubException iotHubException && iotHubException.IsTransient)
+            {
+                Console.WriteLine($"An IotHubException was caught, but will try to recover and retry: {exception}");
+            }
+        }
     }
 
     [IoTHub(GeneratedSendMethodName = "SendTelemetryAsync")]

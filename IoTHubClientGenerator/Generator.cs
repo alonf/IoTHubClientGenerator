@@ -100,7 +100,7 @@ namespace IoTHubClientGenerator
             {
                  Debugger.Launch();
             }*/
-            bool isValid = ValidateAttributeCount(nameof(DeviceAttribute), 1, 1) != false;
+            bool isValid = ValidateAttributeCount(nameof(DeviceAttribute), 0, 1) != false;
 
             if (ValidateAttributeCount(nameof(ClientOptionsAttribute), 0, 1) == false)
                 isValid = false;

@@ -138,11 +138,8 @@ namespace IoTHubClientGenerator
                 CreateDeviceClientInitialization();
                 CreateReportedProperties();
                 CreateSendMethod();
-                CreateDesiredProperties();
-                CreateReportedCloudUpdateMethod();
                 CreateDesiredUpdateMethod();
                 CreateDirectMethodCallback();
-                CreateMessageHandling();
             }
 
             AppendLine("}");
