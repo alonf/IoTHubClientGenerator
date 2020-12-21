@@ -118,6 +118,8 @@ namespace IoTHubClientGenerator
                                 AppendLine($"{c2dMessageHandlerMethodName}(message);");
                                
                                 AppendLine($"await {_deviceClientPropertyName}.CompleteAsync(message);");
+                                AppendLine("message.Dispose();");
+                                AppendLine("message = null;");
                             }
                             AppendLine("}");
                             AppendLine("catch(System.Exception)", !_isErrorHandlerExist);
@@ -126,6 +128,8 @@ namespace IoTHubClientGenerator
                             using (Indent(this))
                             {
                                 AppendLine($"await {_deviceClientPropertyName}.RejectAsync(message);");
+                                AppendLine("if (message != null)");
+                                Append("message.Dispose();", true);
                                 AppendLine("string errorMessage =\"Error handling cloud to device message. The message has been rejected\";", _isErrorHandlerExist);
                                 AppendLine(_callErrorHandlerPattern, _isErrorHandlerExist);
                             }
@@ -135,7 +139,7 @@ namespace IoTHubClientGenerator
                     }
                     else
                     {
-                        AppendLine($"await {_deviceClientPropertyName}.SetReceiveMessageHandlerAsync(async (message, userContext) => {c2dMessageHandlerMethodName}(message), null);");
+                        AppendLine($"await {_deviceClientPropertyName}.SetReceiveMessageHandlerAsync(async (message, userContext) => await {c2dMessageHandlerMethodName}(message), null);");
                     }
                 }
                 CreateDirectMethodCallback();

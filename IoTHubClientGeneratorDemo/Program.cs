@@ -124,12 +124,12 @@ namespace IoTHubClientGeneratorDemo
         [ConnectionStatus] 
         private (ConnectionStatus Status, ConnectionStatusChangeReason Reason) DeviceConnectionStatus { get; set; }
         
-        [C2DMessage(AutoComplete = false)]
-        private void OnC2dMessageReceived(Message receivedMessage)
+        [C2DMessage(AutoComplete = true)]
+        private async Task OnC2dMessageReceivedAsync(Message receivedMessage)
         {
             Console.WriteLine(
                 $"{DateTime.Now}> C2D message callback - message received with Id={receivedMessage.MessageId}.");
-
+            await Task.CompletedTask;
             //do something with the message
         }
 

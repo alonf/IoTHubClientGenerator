@@ -2,6 +2,9 @@
 
 namespace IoTHubClientGeneratorSDK
 {
+    /// <summary>
+    /// Decorate a method with a prototype: private async Task OnC2dMessageReceivedAsync(Message receivedMessage)
+    /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class C2DMessageAttribute : Attribute
     {
@@ -9,11 +12,6 @@ namespace IoTHubClientGeneratorSDK
         /// If set to true, the message is auto completed if there is no exception thrown
         /// </summary>
         public bool AutoComplete { get; set; } = true;
-        /*
-          await DeviceClient.CompleteAsync(receivedMessage);
-            Console.WriteLine($"{DateTime.Now}> Completed C2D message with Id={receivedMessage.MessageId}.");
-
-            receivedMessage.Dispose();
-         */
+       
     }
 }
