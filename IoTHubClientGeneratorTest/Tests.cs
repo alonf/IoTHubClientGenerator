@@ -22,6 +22,23 @@ namespace IoTHubClientGeneratorTest
         {
             _output = output;
         }
+        
+        [Fact]
+        public void TestSimplestCase()
+        {
+            string source = @"
+namespace Foo
+{
+    [IoTHub]
+    class MyIoTHubClient
+    {
+        
+    }
+}";
+            string output = GetGeneratedOutput(source);
+            ApprovalTests.Approvals.Verify(output);
+        }
+        
 
         [Theory]
         [MemberData(nameof(GetTests), parameters: 2)]
@@ -45,7 +62,8 @@ namespace IoTHubClientGeneratorTest
 
             return result;
         }
-        
+
+#pragma warning disable 414
         [TestCase("TestC2DeviceMessage")]
         private static string testC2DeviceMessage = @"
 namespace Foo
@@ -70,23 +88,8 @@ namespace Foo
     }
 }";
     
-        
-        [Fact]
-        public void TestSimplestCase()
-        {
-            string source = @"
-namespace Foo
-{
-    [IoTHub]
-    class MyIoTHubClient
-    {
-        
-    }
-}";
-            string output = GetGeneratedOutput(source);
-            ApprovalTests.Approvals.Verify(output);
-
-        }
+#pragma warning restore 414       
+       
 
         private string GetGeneratedOutput(string source)
         {
