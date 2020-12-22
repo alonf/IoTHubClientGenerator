@@ -2,6 +2,11 @@
 
 namespace IoTHubClientGeneratorSDK
 {
+    /// <summary>
+    /// Decorate a class to serves as an IoTHub management class
+    /// At least one class must be decorated as IoTHub to activate the source code generation.
+    /// There can be more then one IoTHub class in case we need to be connected with more than one Device Client
+    /// </summary>
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class IoTHubAttribute : Attribute
     {

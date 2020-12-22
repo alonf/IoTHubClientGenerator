@@ -2,6 +2,10 @@
 
 namespace IoTHubClientGeneratorSDK
 {
+    /// <summary>
+    /// Decorate a device client property with DPS settings.
+    /// It will be set when the device client is initiated in: await iotHubInstance.InitIoTHubClientAsync();
+    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class DpsDeviceAttribute : Attribute
     {

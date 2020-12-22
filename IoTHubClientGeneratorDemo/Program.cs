@@ -18,7 +18,6 @@ namespace IoTHubClientGeneratorDemo
         static async Task Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            await IoTHubClientManager.RunAsync();
             IoTHubClient iotHubClient = new IoTHubClient();
             IoTHubClientAuto iotHubClientAuto = new IoTHubClientAuto();
             await iotHubClient.InitIoTHubClientAsync();
