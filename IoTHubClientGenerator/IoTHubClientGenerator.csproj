@@ -2,11 +2,15 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <OutputType>Library</OutputType>
     <LangVersion>9.0</LangVersion>
     <Authors>Alon Fliess</Authors>
     <Description>Azure IoT Hub Client made easy with auto C# code generator</Description>
     <PackageTags>Azure;IoT;C# Source Generator;Device;Client</PackageTags>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeBuildOutput>false</IncludeBuildOutput> 
+    <Version>1.3.0</Version>
+    <AssemblyVersion>1.3.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,8 +24,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IoTHubClientGeneratorSDK\IoTHubClientGeneratorSDK.csproj">
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <IncludeAssets>IoTHubClientGeneratorSDK.dll</IncludeAssets>
+      <!--<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <IncludeAssets>IoTHubClientGeneratorSDK.dll</IncludeAssets>-->
     </ProjectReference>
   </ItemGroup>
 
@@ -29,7 +33,7 @@
     <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
   </ItemGroup>
 
-  <Target DependsOnTargets="ResolveReferences" Name="CopyProjectReferencesToPackage">
+  <Target DependsOnTargets="ResolveProjectReferences" Name="CopyProjectReferencesToPackage">
     <ItemGroup>
       <BuildOutputInPackage Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference'))" />
     </ItemGroup>

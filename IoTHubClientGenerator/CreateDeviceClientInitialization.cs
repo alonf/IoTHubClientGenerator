@@ -31,11 +31,12 @@ namespace IoTHubClientGenerator
                 connectionStatusMethodName =
                     ((MethodDeclarationSyntax) iotHubDeviceStatusChangesHandlerAttribute.Value).Identifier.ToString();
             }
-            
+
             string createDeviceClientMethodName; 
             AttributeSyntax createDeviceClientMethodAttributeSyntax = null;
             AppendLine("public async Task InitIoTHubClientAsync()");
             AppendLine("{");
+            AppendLine("await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call");
             bool shouldGenerateDeviceClientProperty = false;
             using (Indent(this))
             {
@@ -166,7 +167,7 @@ namespace IoTHubClientGenerator
             if (shouldGenerateDeviceClientProperty)
             {
                 AppendLine("[Device(ConnectionString=\"%ConnectionString%\")]");
-                AppendLine("private DeviceClient DeviceClient {{get; set;}}");
+                AppendLine("private DeviceClient DeviceClient {get; set;}");
                 AppendLine();
             }
             CreateDeviceClientMethod(createDeviceClientMethodName, createDeviceClientMethodAttributeSyntax);

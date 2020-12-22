@@ -28,17 +28,17 @@ namespace IoTHubClientGeneratorDemo
 
    
     
-    [IoTHub(GeneratedSendMethodName = "SendTelemetry")]
+    [IoTHub(/*GeneratedSendMethodName = "SendTelemetry"*/)]
     public partial class IoTHubClientAuto
     {
-       [Device(ConnectionString = "%connectionString%")]
+       [Device]
        public DeviceClient DeviceClient { get; set; }
        
-        [Desired] public string DesiredProperty { get; private set; }
+       // [Desired] public string DesiredProperty { get; private set; }
 
-        [Reported("ReportedProperty","reported")] private string _reportedProperty;
+       // [Reported("ReportedProperty","reported")] private string _reportedProperty;
         
-        [C2DMessage(AutoComplete = true)]
+      //  [C2DMessage(AutoComplete = true)]
         private void OnC2dMessageReceived(Message receivedMessage)
         {
             Console.WriteLine(
