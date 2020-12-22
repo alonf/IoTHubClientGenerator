@@ -1,31 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using IoTHubClientGeneratorSDK;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Client.Exceptions;
 using Microsoft.Azure.Devices.Client.Transport.Mqtt;
-using Microsoft.Azure.Devices.Shared;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace IoTHubClientGeneratorDemo
 {
     class Program
     {
-        static async Task Main(string[] args)
+        static async Task Main()
         {
             Console.WriteLine("Hello World!");
             IoTHubClient iotHubClient = new IoTHubClient();
             IoTHubClientAuto iotHubClientAuto = new IoTHubClientAuto();
+            await iotHubClientAuto.InitIoTHubClientAsync();
             await iotHubClient.InitIoTHubClientAsync();
             await iotHubClient.RunSampleAsync(TimeSpan.FromMinutes(5));
         }
     }
-
-   
     
     [IoTHub(/*GeneratedSendMethodName = "SendTelemetry"*/)]
     public partial class IoTHubClientAuto
@@ -33,25 +28,25 @@ namespace IoTHubClientGeneratorDemo
        [Device]
        public DeviceClient DeviceClient { get; set; }
        
-       // [Desired] public string DesiredProperty { get; private set; }
+        [Desired] public string DesiredProperty { get; private set; }
 
-       // [Reported("ReportedProperty","reported")] private string _reportedProperty;
+        [Reported("ReportedProperty","reported")] private string _reportedProperty;
         
-      //  [C2DMessage(AutoComplete = true)]
+        [C2DMessage(AutoComplete = true)]
         private void OnC2dMessageReceived(Message receivedMessage)
         {
             Console.WriteLine(
                 $"{DateTime.Now}> C2D message callback - message received with Id={receivedMessage.MessageId}.");
         
             //do something with the message
-
         }
 
         [IoTHubErrorHandler]
         void IoTHubErrorHandler(string errorMessage, Exception exception)
         {
-            if (exception is IotHubException iotHubException && iotHubException.IsTransient)
+            if (exception is IotHubException {IsTransient: true})
             {
+                Console.WriteLine($"Error: {errorMessage}");
                 Console.WriteLine($"An IotHubException was caught, but will try to recover and retry: {exception}");
             }
         }
@@ -60,12 +55,11 @@ namespace IoTHubClientGeneratorDemo
     [IoTHub(GeneratedSendMethodName = "SendTelemetryAsync")]
     public partial class IoTHubClient
     {
-        private static readonly Random RandomGenerator = new Random();
+        private static readonly Random RandomGenerator = new();
         private const int TemperatureThreshold = 30;
         private static readonly TimeSpan SleepDuration = TimeSpan.FromSeconds(5);
 
-        //[Device(Hostname = "%hostname%", GatewayHostname = "%GatewayHostname%", DeviceId = "123", AutoReconnect = true)]
-        [Device(ConnectionString = "%alon%", TransportType = TransportType.Http1)]
+        [Device(ConnectionString = "%conString%")]
         public DeviceClient DeviceClient { get; set; }
         
         /*
@@ -74,46 +68,38 @@ namespace IoTHubClientGeneratorDemo
         public DeviceClient DeviceClientFull { get; set; }
         */
 
-        private readonly ITransportSettings _amqpTransportSettings =
-            new AmqpTransportSettings(TransportType.Amqp)
-            {
-                AmqpConnectionPoolSettings = new AmqpConnectionPoolSettings {MaxPoolSize = 5},
-                IdleTimeout = TimeSpan.FromMinutes(1)
-            };
+        [TransportSetting]
+        public ITransportSettings AmqpTransportSettings { get; } = new AmqpTransportSettings(TransportType.Amqp)
+        {
+            AmqpConnectionPoolSettings = new AmqpConnectionPoolSettings {MaxPoolSize = 5},
+            IdleTimeout = TimeSpan.FromMinutes(1)
+        };
 
-        private readonly ITransportSettings _mqttTransportSettings =
-            new MqttTransportSettings(TransportType.Mqtt)
-            {
-                DefaultReceiveTimeout = TimeSpan.FromMinutes(2)
-            };
-
-        //[TransportSetting]
-        public ITransportSettings AmqpTransportSettings => _amqpTransportSettings;
-        
-        //[TransportSetting]
-        public ITransportSettings MqttTransportSetting => _mqttTransportSettings;
+        [TransportSetting]
+        public ITransportSettings MqttTransportSetting { get; } = new MqttTransportSettings(TransportType.Mqtt)
+        {
+            DefaultReceiveTimeout = TimeSpan.FromMinutes(2)
+        };
 
 
         //If exist, overrides DeviceAttribute properties
-        private IAuthenticationMethod _deviceAuthenticationWithRegistrySymmetricKey =
-            new DeviceAuthenticationWithRegistrySymmetricKey("deviceId", "key");
-        
-        //[AuthenticationMethod]
-        public IAuthenticationMethod DeviceAuthenticationWithRegistrySymmetricKey => _deviceAuthenticationWithRegistrySymmetricKey;
 
-        private ClientOptions _clientOptions = new ClientOptions();
+        //[AuthenticationMethod]
+        //public IAuthenticationMethod DeviceAuthenticationWithRegistrySymmetricKey { get; } = new DeviceAuthenticationWithRegistrySymmetricKey("deviceId", "key");
 
         [ClientOptions]
-        public ClientOptions ClientOptions => _clientOptions;
-        
+        public ClientOptions ClientOptions { get; } = new();
+
 
         //if exist, provide a second means for device creation in case of a failure
         [AlternateConnectionString("%alternateConnectionString%")]
-        private string AlternateConnectionString { get; set; }
-        
+        //private string AlternateConnectionString { get; set; }
+
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         //desired property are created and managed by the source generator
         [Desired("valueFromTheCloud")] private string DesiredPropertyDemo { get; set; }
 
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         [Desired] private string DesiredPropertyAutoNameDemo { get; set; }
 
         [Reported("valueFromTheDevice")] private string _reportedPropertyDemo;
@@ -123,21 +109,10 @@ namespace IoTHubClientGeneratorDemo
         [ConnectionStatus] 
         private (ConnectionStatus Status, ConnectionStatusChangeReason Reason) DeviceConnectionStatus { get; set; }
         
-        [C2DMessage(AutoComplete = true)]
-        private async Task OnC2dMessageReceivedAsync(Message receivedMessage)
-        {
-            Console.WriteLine(
-                $"{DateTime.Now}> C2D message callback - message received with Id={receivedMessage.MessageId}.");
-            await Task.CompletedTask;
-            //do something with the message
-        }
-
-       
-
         [IoTHubErrorHandler]
         void IoTHubErrorHandler(string errorMessage, Exception exception)
         {
-           if(exception is IotHubException iotHubException && iotHubException.IsTransient)
+           if(exception is IotHubException {IsTransient: true})
            {
                 Console.WriteLine($"An IotHubException was caught, but will try to recover and retry: {exception}");
            }
@@ -151,8 +126,8 @@ namespace IoTHubClientGeneratorDemo
            Console.WriteLine($"{errorMessage}, Exception: {exception.Message}");
         }
         
-        //[C2DMessage(AutoComplete = false)]
-        private async Task OnC2dMessageReceived2(Message receivedMessage, object userContext)
+        [C2DMessage(AutoComplete = false)]
+        private async Task OnC2dMessageReceived2(Message receivedMessage)
         {
             Console.WriteLine(
                 $"{DateTime.Now}> C2D message callback - message received with Id={receivedMessage.MessageId}.");
@@ -166,6 +141,7 @@ namespace IoTHubClientGeneratorDemo
 
         }
 
+        // ReSharper disable once UnusedMember.Local
         [C2DeviceCallback]
         private Task<MethodResponse> WriteToConsoleAsync(MethodRequest methodRequest)
         {
@@ -210,7 +186,7 @@ namespace IoTHubClientGeneratorDemo
         public async Task RunSampleAsync(TimeSpan sampleRunningTime)
         {
             var cts = new CancellationTokenSource(sampleRunningTime);
-            Console.CancelKeyPress += (sender, eventArgs) =>
+            Console.CancelKeyPress += (_, eventArgs) =>
             {
                 eventArgs.Cancel = true;
                 cts.Cancel();
