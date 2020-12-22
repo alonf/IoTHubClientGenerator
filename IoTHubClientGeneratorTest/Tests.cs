@@ -104,7 +104,7 @@ namespace Foo
                 }
             }
 
-            var compilation = CSharpCompilation.Create("foo", new[] {syntaxTree}, references,
+            var compilation = CSharpCompilation.Create("testAssembly", new[] {syntaxTree}, references,
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
             // TODO: Uncomment this line if you want to fail tests when the injected program isn't valid _before_ running generators
