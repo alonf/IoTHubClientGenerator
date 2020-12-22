@@ -8,7 +8,10 @@ namespace IoTHubClientGenerator
     {
         private void CreateReportedProperties()
         {
-            //todo: Add error handling if exist
+            var programReportedProperties = GetAttributedMembers(nameof(ReportedAttribute)).ToArray();
+            if (programReportedProperties.Length == 0)
+                return;
+            
             AppendLine("private void ReportProperty(string propertyName, string data)");
             AppendLine("{");
             using (Indent(this, _isErrorHandlerExist))
@@ -35,8 +38,6 @@ namespace IoTHubClientGenerator
             AppendLine("}", _isErrorHandlerExist);
             AppendLine("}");
             AppendLine();
-
-            var programReportedProperties = GetAttributedMembers(nameof(ReportedAttribute)).ToArray();
 
             foreach (var reportedProperty in programReportedProperties)
             {

@@ -1,0 +1,72 @@
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using IoTHubClientGeneratorSDK;
+
+namespace Foo
+{
+    public partial class MyIoTHubClient
+    {
+        public async Task InitIoTHubClientAsync()
+        {
+            await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+            DeviceClient = CreateDeviceClient();
+        }
+
+        [Device(ConnectionString = "%ConnectionString%")]
+        private DeviceClient DeviceClient
+        {
+            get;
+            set;
+        }
+
+        private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
+        {
+            var theConnectionString = System.Environment.GetEnvironmentVariable("ConnectionString");
+            var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString);
+            return deviceClient;
+        }
+
+        private void ReportProperty(string propertyName, string data)
+        {
+            var reportedProperties = new Microsoft.Azure.Devices.Shared.TwinCollection();
+            reportedProperties[propertyName] = data;
+            DeviceClient.UpdateReportedPropertiesAsync(reportedProperties).Wait();
+        }
+
+        public string valueFromTheDevice
+        {
+            get
+            {
+                return _reportedPropertyDemo;
+            }
+
+            set
+            {
+                _reportedPropertyDemo = value;
+                ReportProperty("valueFromTheDevice", value);
+            }
+        }
+
+        public string ReportedPropertyAutoNameDemo
+        {
+            get
+            {
+                return _reportedPropertyAutoNameDemo;
+            }
+
+            set
+            {
+                _reportedPropertyAutoNameDemo = value;
+                ReportProperty("reportedPropertyAutoNameDemo", value);
+            }
+        }
+
+        private async Task HandleDesiredPropertyUpdateAsync(Microsoft.Azure.Devices.Shared.TwinCollection desiredProperties, object context)
+        {
+            await Task.CompletedTask;
+        }
+    }
+}

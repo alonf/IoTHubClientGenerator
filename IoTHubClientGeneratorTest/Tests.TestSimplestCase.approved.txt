@@ -1,0 +1,37 @@
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using IoTHubClientGeneratorSDK;
+
+namespace Foo
+{
+    public partial class MyIoTHubClient
+    {
+        public async Task InitIoTHubClientAsync()
+        {
+            await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+            DeviceClient = CreateDeviceClient();
+        }
+
+        [Device(ConnectionString = "%ConnectionString%")]
+        private DeviceClient DeviceClient
+        {
+            get;
+            set;
+        }
+
+        private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
+        {
+            var theConnectionString = System.Environment.GetEnvironmentVariable("ConnectionString");
+            var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString);
+            return deviceClient;
+        }
+
+        private async Task HandleDesiredPropertyUpdateAsync(Microsoft.Azure.Devices.Shared.TwinCollection desiredProperties, object context)
+        {
+            await Task.CompletedTask;
+        }
+    }
+}
