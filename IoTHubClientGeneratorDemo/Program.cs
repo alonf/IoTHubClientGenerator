@@ -142,8 +142,17 @@ namespace IoTHubClientGeneratorDemo
         }
 
         // ReSharper disable once UnusedMember.Local
-        [C2DeviceCallback]
+        [DirectMethod]
         private Task<MethodResponse> WriteToConsoleAsync(MethodRequest methodRequest)
+        {
+            Console.WriteLine($"\t *** {methodRequest.Name} was called.");
+            Console.WriteLine($"\t{methodRequest.DataAsJson}\n");
+
+            return Task.FromResult(new MethodResponse(new byte[0], 200));
+        }
+        
+        [DirectMethod(CloudMethodName = "TestMethod")]
+        private Task<MethodResponse> WriteToConsole2Async(MethodRequest methodRequest)
         {
             Console.WriteLine($"\t *** {methodRequest.Name} was called.");
             Console.WriteLine($"\t{methodRequest.DataAsJson}\n");

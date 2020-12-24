@@ -44,6 +44,10 @@ namespace IoTHubClientGenerator
                 AppendLine("{", _isErrorHandlerExist);
                 using (Indent(this, _isErrorHandlerExist))
                 {
+                    /*
+                     * Create Device using the Device attribute info
+                     */
+                    
                     //get the Device attribute
                     var deviceAttributes = GetAttributes(nameof(DeviceAttribute)).ToArray();
                     if (deviceAttributes.Length == 0) //no device attribute
@@ -68,6 +72,10 @@ namespace IoTHubClientGenerator
                     AppendLine($"{_deviceClientPropertyName} =  {createDeviceClientMethodName}();");
                 }
 
+                /*
+                 * Set connection status change handler
+                 */
+                
                 if (connectionStatusMethodName != null && _isConnectionStatusExist == false)
                 {
                     AppendLine($"{_deviceClientPropertyName}.SetConnectionStatusChangesHandler({connectionStatusMethodName});");
@@ -85,12 +93,19 @@ namespace IoTHubClientGenerator
                     }
                     AppendLine("});");
                 }
+                AppendLine();
 
+                /*
+                 * Handle desired properties
+                 */
                 if (GetAttributes(nameof(DesiredAttribute)).Any())
                 {
                     AppendLine($"await {_deviceClientPropertyName}.SetDesiredPropertyUpdateCallbackAsync(HandleDesiredPropertyUpdateAsync, null);");
                 }
-
+                AppendLine();
+                /*
+                 * Handle cloud to device messages handling
+                 */
                 var c2dMessageAttributes = GetAttributes(nameof(C2DMessageAttribute)).ToArray();
                 if (c2dMessageAttributes.Length != 0)
                 {
@@ -143,11 +158,9 @@ namespace IoTHubClientGenerator
                         AppendLine($"await {_deviceClientPropertyName}.SetReceiveMessageHandlerAsync(async (message, userContext) => await {c2dMessageHandlerMethodName}(message), null);");
                     }
                 }
+
+                AppendLine();
                 CreateDirectMethodCallback();
-               
-                //register for direct method cloud callback if needed: DeviceClient.SetMethodHandlerAsync() (per method), and DeviceClient.SetMethodDefaultHandlerAsync() for default
-               
-                
                 
                 AppendLine("}", _isErrorHandlerExist);
                 AppendLine("catch (System.Exception exception)", _isErrorHandlerExist);

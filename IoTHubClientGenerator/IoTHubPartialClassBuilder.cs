@@ -139,7 +139,6 @@ namespace IoTHubClientGenerator
                 CreateReportedProperties();
                 CreateSendMethod();
                 CreateDesiredUpdateMethod();
-                CreateDirectMethodCallback();
             }
 
             AppendLine("}");

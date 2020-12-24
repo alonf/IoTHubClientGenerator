@@ -137,7 +137,7 @@ namespace IoTHubClientGenerator
         {
             nameof(IoTHubAttribute).AttName(),
             nameof(C2DMessageAttribute).AttName(),
-            nameof(C2DeviceCallbackAttribute).AttName(),
+            nameof(DirectMethodAttribute).AttName(),
             nameof(AlternateConnectionStringAttribute).AttName(),
             nameof(ConnectionStatusAttribute).AttName(),
             nameof(DesiredAttribute).AttName(),
