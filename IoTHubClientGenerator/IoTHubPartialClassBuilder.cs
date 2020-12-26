@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using IoTHubClientGeneratorSDK;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
@@ -104,19 +105,43 @@ namespace IoTHubClientGenerator
             _receiverCandidateAttributes.Where(att =>
                 att.Key.Name.ToString() == attributeName.AttName());
         
+        private bool IsAttributeExist(params string [] attributeNames) =>
+            _receiverCandidateAttributes.Any(att =>
+                attributeNames.Any(n=>n.AttName() == att.Key.Name.ToString()));
+
         private IEnumerable<KeyValuePair<SyntaxNode, AttributeSyntax[]>> GetAttributedMembers(string attributeName) =>
             _receiverCandidateMembers.Where(att =>
                 att.Value.Any(a=>a.Name.ToString() == attributeName.AttName()));
+        
+        private string GetAttributePropertyValue(AttributeSyntax attributeSyntax, string propertyName) =>
+            attributeSyntax.ArgumentList!.Arguments.Where(a =>
+                    a.NameEquals.ToString().TrimEnd('=').Trim() == propertyName)
+                .Select(a => a.Expression.ToString()).FirstOrDefault();
 
         private void BuildPartialClass(string namespaceName, string className)
         {
-            CreateErrorHandlerMethodCallPattern(); 
-            
+            CreateErrorHandlerMethodCallPattern();
+
             AppendLine("using System;");
             AppendLine("using System.Diagnostics;");
             AppendLine("using System.Threading.Tasks;");
             AppendLine("using System.Threading;");
             AppendLine("using Microsoft.Azure.Devices.Client;");
+            AppendLine("using Microsoft.Azure.Devices.Shared;");
+            if (IsAttributeExist(nameof(DpsX509CertificateDeviceAttribute)) ||
+                IsAttributeExist(nameof(DpsSymmetricKeyDeviceAttribute)) ||
+                IsAttributeExist(nameof(DpsTpmDeviceAttribute)))
+            {
+                AppendLine("using Microsoft.Azure.Devices.Provisioning.Client.Transport;");
+                AppendLine("using Microsoft.Azure.Devices.Provisioning.Security;");
+                AppendLine("using System.Security.Cryptography;");
+            }
+
+            if (IsAttributeExist(nameof(DpsX509CertificateDeviceAttribute)))
+            {
+                AppendLine("using System.Security.Cryptography.X509Certificates;");
+            }
+
             AppendLine("using IoTHubClientGeneratorSDK;");
             AppendLine();
             AppendLine($"namespace {namespaceName}");
@@ -138,7 +163,8 @@ namespace IoTHubClientGenerator
                 CreateDeviceClientInitialization();
                 CreateReportedProperties();
                 CreateSendMethod();
-                CreateDesiredUpdateMethod();
+                if (IsAttributeExist(nameof(DesiredAttribute)))
+                    CreateDesiredUpdateMethod();
             }
 
             AppendLine("}");

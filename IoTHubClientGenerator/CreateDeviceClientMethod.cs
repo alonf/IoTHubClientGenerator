@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using IoTHubClientGeneratorSDK;
 using Microsoft.CodeAnalysis;
@@ -40,35 +39,11 @@ namespace IoTHubClientGenerator
 
                 var createDeviceError = new StringBuilder();
 
-                string clientOptionsPropertyName = null;
-                var clientOptionAttribute = GetAttributes(nameof(ClientOptionsAttribute)).ToArray();
-                if (clientOptionAttribute.Length > 0)
-                {
-                    clientOptionsPropertyName =
-                        ((PropertyDeclarationSyntax) clientOptionAttribute[0].Value).Identifier.ToString();
-                }
+                string clientOptionsPropertyName = GetClientOptionsPropertyName();
 
-                var transportSettingsAttributes = GetAttributes(nameof(TransportSettingAttribute)).ToArray();
-                if (transportSettingsAttributes.Length > 0)
-                {
-                    AppendLine("ITransportSettings [] transportSettings = new [] {");
-                    foreach (var transportSettingsAttribute in transportSettingsAttributes)
-                    {
-                        Append(((PropertyDeclarationSyntax) transportSettingsAttribute.Value).Identifier.ToString());
-                        Append(", ");
-                    }
+                var hasTransportSettingsAttributes = HandleTransportSettingsAttributes();
 
-                    TrimEnd(2);
-                    AppendLine("};");
-                }
-
-                string authenticationMethodPropertyName = null;
-                var authenticationMethodAttributes = GetAttributes(nameof(AuthenticationMethodAttribute)).ToArray();
-                if (authenticationMethodAttributes.Length > 0)
-                {
-                    authenticationMethodPropertyName =
-                        ((PropertyDeclarationSyntax) authenticationMethodAttributes[0].Value).Identifier.ToString();
-                }
+                string authenticationMethodPropertyName = GetAuthenticationMethodPropertyName();
 
                 var creationFunctionEntry = new StringBuilder();
                 if (parameterNameList.Contains(nameof(DeviceAttribute.ConnectionString)))
@@ -101,19 +76,19 @@ namespace IoTHubClientGenerator
                     creationFunctionEntry.Append("did_");
                 }
 
-                if (transportSettingsAttributes.Length > 0)
+                if (hasTransportSettingsAttributes)
                 {
                     createDeviceError.Append("ITransportSettings[] ");
                     creationFunctionEntry.Append("ts_");
                 }
 
-                if (authenticationMethodAttributes.Length > 0) //0 or 1
+                if (authenticationMethodPropertyName is not null) 
                 {
                     createDeviceError.Append("AuthenticationMethod ");
                     creationFunctionEntry.Append("am_");
                 }
 
-                if (clientOptionAttribute.Length > 0) //0 or 1
+                if (clientOptionsPropertyName is not null) 
                 {
                     createDeviceError.Append("ClientOptions ");
                     creationFunctionEntry.Append("co_");

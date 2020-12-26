@@ -1,27 +1,52 @@
 ﻿using System;
+using Microsoft.Azure.Devices.Client;
 
 namespace IoTHubClientGeneratorSDK
 {
     /// <summary>
-    /// Decorate a device client property with DPS settings.
+    /// Base class for DPS based device creation
     /// It will be set when the device client is initiated in: await iotHubInstance.InitIoTHubClientAsync();
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
-    public class DpsDeviceAttribute : Attribute
+    public abstract class DpsDeviceAttribute : Attribute
     {
         /// <summary>
-        /// The DPS scope if when using DPS
+        /// The Id Scope of the DPS instance
         /// </summary>
         public string DPSIdScope { get; set; }
 
         /// <summary>
-        /// The DPS service host url when using DPS
+        /// TThe registration Id when using individual enrollment, or the desired device Id when using group enrollment
         /// </summary>
-        public string DPSHost { get; set; }
+        public string Id { get; set; }
 
         /// <summary>
-        /// The key or token belong to a group and not individual device when using DPS
+        /// An optional device identifier
         /// </summary>
-        public DPSEnrollmentType DPSEnrollmentType { get; set; }
+        public string OptionalDeviceId { get; set; }
+        
+        /// <summary>
+        /// The enrollment group identifier
+        /// </summary>
+        public string EnrollmentGroupId { get; set; }
+        
+        /// <summary>
+        /// The type of enrollment: Individual or Group
+        /// </summary>
+        public DPSEnrollmentType EnrollmentType { get; set; }
+
+        /// <summary>
+        /// The global endpoint for devices to connect to
+        /// </summary>
+        public string GlobalDeviceEndpoint { get; set; } = "global.azure-devices-provisioning.net";
+
+        /// <summary>
+        /// The transport to use to communicate with the device provisioning instance. Possible values include Mqtt, Mqtt_WebSocket_Only, Mqtt_Tcp_Only, Amqp, Amqp_WebSocket_Only, Amqp_Tcp_only, and Http1
+        /// </summary>
+        public TransportType DPSTransportType { get; set; }
+        
+        /// <summary>
+        /// The transport to use to communicate with the IoTHub. Possible values include Mqtt, Mqtt_WebSocket_Only, Mqtt_Tcp_Only, Amqp, Amqp_WebSocket_Only, Amqp_Tcp_only, and Http1
+        /// </summary>
+        public TransportType TransportType { get; set; }
     }
 }

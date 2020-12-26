@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using ApprovalTests.Namers;
 using ApprovalTests.Reporters;
 using IoTHubClientGenerator;
@@ -13,31 +14,14 @@ using Xunit.Abstractions;
 namespace IoTHubClientGeneratorTest
 {
     [UseReporter(typeof(DiffReporter))]
-    public class Tests
+    public class TestRunner
     {
         private readonly ITestOutputHelper _output;
 
-        public Tests(ITestOutputHelper output)
+        public TestRunner(ITestOutputHelper output)
         {
             _output = output;
         }
-        
-        [Fact]
-        public void TestSimplestCase()
-        {
-            string source = @"
-namespace Foo
-{
-    [IoTHub]
-    class MyIoTHubClient
-    {
-        
-    }
-}";
-            string output = GetGeneratedOutput(source);
-            ApprovalTests.Approvals.Verify(output);
-        }
-        
 
         [Theory]
         [MemberData(nameof(GetTests), parameters: 2)]
@@ -49,46 +33,18 @@ namespace Foo
                 ApprovalTests.Approvals.Verify(output);
             }
         }
-        
+
         public static IEnumerable<object[]> GetTests(int numTests)
         {
-            var result =
-                from field in typeof(Tests).GetFields(
+            var result = 
+                from type in Assembly.GetAssembly(typeof(TestRunner))!.GetTypes()
+                from property in type.GetProperties(
                     BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic)
-                let testCaseAttribute = field.GetCustomAttribute<TestCase>()
+                let testCaseAttribute = property.GetCustomAttribute<TestCase>()
                 where testCaseAttribute != null
-                select new[] {testCaseAttribute.TestName, field.GetValue(null)}.Take(numTests).ToArray();
-
+                select new[] {testCaseAttribute.TestName, property.GetValue(null)}.Take(numTests).ToArray();
             return result;
         }
-
-#pragma warning disable 414
-        [TestCase("TestC2DeviceMessage")]
-        private static string _testC2DeviceMessage = @"
-namespace Foo
-{
-    [IoTHub(GeneratedSendMethodName = ""SendTelemetryAsync\"")]
-    class MyIoTHubClient
-    {
-        
-    }
-}";
-        
-        [TestCase("TestReportedProperties")]
-        private static string _testReportedProperties = @"
-namespace Foo
-{
-    [IoTHub()]
-    class MyIoTHubClient
-    {
-        [Reported(""valueFromTheDevice"")] private string _reportedPropertyDemo;
-
-        [Reported(""ReportedPropertyAutoNameDemo"", ""reportedPropertyAutoNameDemo"")] private string _reportedPropertyAutoNameDemo;
-    }
-}";
-    
-#pragma warning restore 414       
-       
 
         private string GetGeneratedOutput(string source)
         {
@@ -119,8 +75,17 @@ namespace Foo
             Assert.False(generateDiagnostics.Any(d => d.Severity == DiagnosticSeverity.Error),
                 "Failed: " + generateDiagnostics.FirstOrDefault()?.GetMessage());
 
-            string output = outputCompilation.SyntaxTrees.Last().ToString();
-
+            string output = outputCompilation.SyntaxTrees
+                .Aggregate(new StringBuilder(), 
+                    (sb,st)=>
+                    {
+                        sb.AppendLine(new string('*', 80));
+                        sb.AppendLine(st.ToString());
+                        sb.AppendLine();
+                        sb.AppendLine();
+                        return sb;
+                    }, sb=>sb.ToString());
+            
             _output.WriteLine(output);
 
             return output;

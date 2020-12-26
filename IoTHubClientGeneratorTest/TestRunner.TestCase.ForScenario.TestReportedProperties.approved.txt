@@ -1,11 +1,26 @@
+********************************************************************************
+namespace TestReportedProperties
+{
+    [IoTHub()]
+    class MyIoTHubClient
+    {
+        [Reported("valueFromTheDevice")] private string _reportedPropertyDemo;
+
+        [Reported("ReportedPropertyAutoNameDemo", "reportedPropertyAutoNameDemo")] private string _reportedPropertyAutoNameDemo;
+    }
+}
+
+
+********************************************************************************
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
 using IoTHubClientGeneratorSDK;
 
-namespace Foo
+namespace TestReportedProperties
 {
     public partial class MyIoTHubClient
     {
@@ -63,10 +78,7 @@ namespace Foo
                 ReportProperty("reportedPropertyAutoNameDemo", value);
             }
         }
-
-        private async Task HandleDesiredPropertyUpdateAsync(Microsoft.Azure.Devices.Shared.TwinCollection desiredProperties, object context)
-        {
-            await Task.CompletedTask;
-        }
     }
 }
+
+

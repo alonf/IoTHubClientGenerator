@@ -2,6 +2,7 @@
 
 namespace IoTHubClientGeneratorTest
 {
+    [AttributeUsage(AttributeTargets.Property)]
     public class TestCase : Attribute
     {
         public string TestName { get; }

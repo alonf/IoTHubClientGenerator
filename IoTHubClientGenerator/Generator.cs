@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using IoTHubClientGeneratorSDK;
@@ -92,8 +93,85 @@ namespace IoTHubClientGenerator
                 }
                 return true;
             }
+            
+            //validate the existence of attribute's properties 
+            bool ValidateAttributeProperties(string attributeName, params string[] properties)
+            {
+                bool result = true;
+                var attributesNodes = receiverCandidateAttributes
+                    .Where(a => a.Key.Name.ToString() == attributeName.AttName()).Select(e => e.Key)
+                    .Cast<AttributeSyntax>().ToArray();
 
-            bool isValid = ValidateAttributeCount(nameof(DeviceAttribute), 0, 1);
+                foreach (var attributesNode in attributesNodes)
+                {
+                    var missingProperties = properties.Where(p =>
+                            attributesNode.ArgumentList != null &&
+                            attributesNode.ArgumentList.Arguments.All(a => a.NameEquals?.ToString().TrimEnd('=') != p))
+                        .ToArray();
+
+                    if (missingProperties.Length != 0)
+                    {
+                        var missingParamsText = String.Join(" ", missingProperties);
+                        context.ReportDiagnostic(Diagnostic.Create(new
+                                DiagnosticDescriptor("IoTGen008", "IoT Hub Generator Error",
+                                    $@"[{attributeName.AttName()}] must define these missing properties: {missingParamsText}",
+                                    "Error",
+                                    DiagnosticSeverity.Error, true),
+                            Location.Create(attributesNode.SyntaxTree, attributesNode.Span)));
+                        result = false;
+                    }
+                }
+                return result;
+            }
+
+            //check if the device client is decorated with [Device] or one of the [DPS*] attributes
+            var deviceAttributesNodes = receiverCandidateAttributes
+                .Where(a => a.Key.Name.ToString().StartsWith("Dps") ||  a.Key.Name.ToString() == nameof(DeviceAttribute).AttName())
+                .Select(e => e.Key)
+                .ToArray();
+
+            bool isValid = true;
+
+            if (deviceAttributesNodes.Length > 1)
+            {
+                foreach (var syntaxNode in deviceAttributesNodes)
+                {
+                    context.ReportDiagnostic(Diagnostic.Create(new
+                            DiagnosticDescriptor("IoTGen009", "IoT Hub Generator Error",
+                                "No more then one [Device] or [Dps*] attributes are allowed per [IoTHub] class, however, you may have more than one [IoTHub] decorated class",
+                                "Error",
+                                DiagnosticSeverity.Error, true),
+                        Location.Create(syntaxNode.SyntaxTree, syntaxNode.Span)));
+                }
+                isValid = false;
+            }
+            else if (deviceAttributesNodes.Length > 0 &&  deviceAttributesNodes.First().Name.ToString().StartsWith("Dps")) //[Dps*] attribute
+            {
+                var properties = new List<string>
+                {
+                    nameof(DpsDeviceAttribute.DPSIdScope),
+                    nameof(DpsDeviceAttribute.Id),
+                    nameof(DpsDeviceAttribute.EnrollmentGroupId),
+                    nameof(DpsDeviceAttribute.EnrollmentType),
+                    nameof(DpsDeviceAttribute.DPSTransportType),
+                };
+                var attributeName = deviceAttributesNodes.First().Name.ToString();
+                switch (attributeName)
+                {
+                    case { } attName when attName == nameof(DpsSymmetricKeyDeviceAttribute).AttName():
+                        properties.Add(nameof(DpsSymmetricKeyDeviceAttribute.PrimarySymmetricKey));
+                        break;
+                    case { } attName when attName == nameof(DpsX509CertificateDeviceAttribute).AttName():
+                        properties.Add(nameof(DpsX509CertificateDeviceAttribute.CertificatePath));
+                        properties.Add(nameof(DpsX509CertificateDeviceAttribute.CertificatePassword));
+                        break;
+                }
+                if (receiverCandidateAttributes.Any(att=>att.Key.Name.ToString() == nameof(TransportSettingAttribute).AttName()) == false) //o TransportSettingAttribute
+                    properties.Add(nameof(DpsX509CertificateDeviceAttribute.TransportType));
+                
+                if (ValidateAttributeProperties(deviceAttributesNodes.First().Name + "Attribute", properties.ToArray()) == false)
+                    isValid = false;
+            }
 
             if (ValidateAttributeCount(nameof(ClientOptionsAttribute), 0, 1) == false)
                 isValid = false;
@@ -110,6 +188,7 @@ namespace IoTHubClientGenerator
             if (ValidateAttributeCount(nameof(IoTHubErrorHandlerAttribute), 0, 1, "method") == false)
                 isValid = false;
             
+            //todo: add validation for DPS attributes, only one of the DPS or Device should be define
             return isValid;
         }
 
@@ -146,9 +225,11 @@ namespace IoTHubClientGenerator
             nameof(IoTHubDeviceStatusChangesHandlerAttribute).AttName(),
             nameof(ClientOptionsAttribute).AttName(),
             nameof(AuthenticationMethodAttribute).AttName(),
-            nameof(DpsDeviceAttribute).AttName(),
             nameof(TransportSettingAttribute).AttName(),
             nameof(IoTHubErrorHandlerAttribute).AttName(),
+            nameof(DpsX509CertificateDeviceAttribute).AttName(),
+            nameof(DpsSymmetricKeyDeviceAttribute).AttName(),
+            nameof(DpsTpmDeviceAttribute).AttName()
         };
 
         public Dictionary<SyntaxNode, AttributeSyntax[]> CandidateMembers { get; } = new();

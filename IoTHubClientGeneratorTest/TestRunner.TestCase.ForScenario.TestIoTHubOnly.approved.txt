@@ -1,11 +1,25 @@
+********************************************************************************
+
+namespace TestIoTHubOnly
+{
+    [IoTHub]
+    class MyIoTHubClient
+    {
+        
+    }
+}
+
+
+********************************************************************************
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Threading;
 using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
 using IoTHubClientGeneratorSDK;
 
-namespace Foo
+namespace TestIoTHubOnly
 {
     public partial class MyIoTHubClient
     {
@@ -28,10 +42,7 @@ namespace Foo
             var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString);
             return deviceClient;
         }
-
-        private async Task HandleDesiredPropertyUpdateAsync(Microsoft.Azure.Devices.Shared.TwinCollection desiredProperties, object context)
-        {
-            await Task.CompletedTask;
-        }
     }
 }
+
+

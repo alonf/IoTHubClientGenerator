@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using IoTHubClientGeneratorSDK;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,6 +10,7 @@ namespace IoTHubClientGenerator
     {
         private void CreateDeviceClientInitialization()
         {
+            Action createCreateDeviceMethod;
             string connectionStatusPropertyName = null;
             var connectionStatusAttributes = GetAttributes(nameof(ConnectionStatusAttribute)).ToArray();
             if (connectionStatusAttributes.Length != 0)
@@ -32,44 +34,28 @@ namespace IoTHubClientGenerator
                     ((MethodDeclarationSyntax) iotHubDeviceStatusChangesHandlerAttribute.Value).Identifier.ToString();
             }
 
-            string createDeviceClientMethodName; 
-            AttributeSyntax createDeviceClientMethodAttributeSyntax = null;
             AppendLine("public async Task InitIoTHubClientAsync()");
             AppendLine("{");
             AppendLine("await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call");
-            bool shouldGenerateDeviceClientProperty = false;
+          
             using (Indent(this))
             {
                 AppendLine("try", _isErrorHandlerExist);
                 AppendLine("{", _isErrorHandlerExist);
                 using (Indent(this, _isErrorHandlerExist))
                 {
+                    //get DpsAttribute
+                    var isDpsAttributeSet = IsAttributeExist(nameof(DpsX509CertificateDeviceAttribute),
+                        nameof(DpsSymmetricKeyDeviceAttribute), nameof(DpsTpmDeviceAttribute));
+                    if (isDpsAttributeSet)
+                        createCreateDeviceMethod = CreateDeviceUsingDps();
+                    else
+                    {
+                        createCreateDeviceMethod = CreateDevice();
+                    }
                     /*
                      * Create Device using the Device attribute info
                      */
-                    
-                    //get the Device attribute
-                    var deviceAttributes = GetAttributes(nameof(DeviceAttribute)).ToArray();
-                    if (deviceAttributes.Length == 0) //no device attribute
-                    {
-                        _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(new
-                                DiagnosticDescriptor("IoTGen006", "IoT Hub Generator Warning",
-                                    "No DeviceClient property decorated with [Device] attribute exist, A DeviceClient property with default ConnectionString environment variable has been created!", "Warning", DiagnosticSeverity.Warning, true),
-                            Location.None));
-
-                        shouldGenerateDeviceClientProperty = true;
-                        _deviceClientPropertyName = "DeviceClient";
-                    }
-                    else
-                    {
-                        var deviceAttribute = deviceAttributes[0];
-                        _deviceClientPropertyName =
-                            ((PropertyDeclarationSyntax) (deviceAttribute.Value)).Identifier.ToString();
-                        
-                        createDeviceClientMethodAttributeSyntax = deviceAttribute.Key;
-                    }
-                    createDeviceClientMethodName = $"Create{_deviceClientPropertyName}";
-                    AppendLine($"{_deviceClientPropertyName} =  {createDeviceClientMethodName}();");
                 }
 
                 /*
@@ -177,13 +163,77 @@ namespace IoTHubClientGenerator
             AppendLine("}");
             AppendLine();
 
-            if (shouldGenerateDeviceClientProperty)
+            createCreateDeviceMethod();
+        }
+
+        private Action CreateDevice()
+        {
+            bool shouldGenerateDeviceClientProperty = false;
+            AttributeSyntax createDeviceClientMethodAttributeSyntax = null;
+            //get the Device attribute
+            var deviceAttributes = GetAttributes(nameof(DeviceAttribute)).ToArray();
+
+
+            if (deviceAttributes.Length == 0) //no device attribute
             {
-                AppendLine("[Device(ConnectionString=\"%ConnectionString%\")]");
-                AppendLine("private DeviceClient DeviceClient {get; set;}");
-                AppendLine();
+                _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(new
+                        DiagnosticDescriptor("IoTGen006", "IoT Hub Generator Warning",
+                            "No DeviceClient property decorated with [Device] attribute exist, A DeviceClient property with default ConnectionString environment variable has been created!",
+                            "Warning", DiagnosticSeverity.Warning, true),
+                    Location.None));
+
+                shouldGenerateDeviceClientProperty = true;
+                _deviceClientPropertyName = "DeviceClient";
             }
-            CreateDeviceClientMethod(createDeviceClientMethodName, createDeviceClientMethodAttributeSyntax);
+            else
+            {
+                var deviceAttribute = deviceAttributes[0];
+                _deviceClientPropertyName =
+                    ((PropertyDeclarationSyntax) (deviceAttribute.Value)).Identifier.ToString();
+
+                createDeviceClientMethodAttributeSyntax = deviceAttribute.Key;
+            }
+
+            var createDeviceClientMethodName = $"Create{_deviceClientPropertyName}";
+            AppendLine($"{_deviceClientPropertyName} =  {createDeviceClientMethodName}();");
+            return () =>
+            {
+                if (shouldGenerateDeviceClientProperty)
+                    CreateDeviceClientProperty();
+                CreateDeviceClientMethod(createDeviceClientMethodName, createDeviceClientMethodAttributeSyntax);
+            };
+        }
+        
+        private Action CreateDeviceUsingDps()
+        {
+            AttributeSyntax createDeviceClientMethodAttributeSyntax = null;
+            //get the Device attribute
+            var dpsAttribute = (from name in new[]
+                {
+                    nameof(DpsX509CertificateDeviceAttribute),
+                    nameof(DpsSymmetricKeyDeviceAttribute), nameof(DpsTpmDeviceAttribute)
+                }
+                let attributes = GetAttributes(name)
+                where attributes.Any()
+                select attributes).First().First();
+            
+                        
+            _deviceClientPropertyName =
+                    ((PropertyDeclarationSyntax) (dpsAttribute.Value)).Identifier.ToString();
+
+                createDeviceClientMethodAttributeSyntax = dpsAttribute.Key;
+            
+
+            var createDeviceClientMethodName = $"Create{_deviceClientPropertyName}";
+            AppendLine($"{_deviceClientPropertyName} =  {createDeviceClientMethodName}();");
+            return CreateDeviceClientMethodUsingDps(createDeviceClientMethodName, createDeviceClientMethodAttributeSyntax);
+        }
+
+        private void CreateDeviceClientProperty()
+        {
+            AppendLine("[Device(ConnectionString=\"%ConnectionString%\")]");
+            AppendLine("private DeviceClient DeviceClient {get; set;}");
+            AppendLine();
         }
     }
 }
