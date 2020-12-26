@@ -1,4 +1,11 @@
 ********************************************************************************
+
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Client.Exceptions;
+using System;
+using System.Threading.Tasks;
+
 namespace TestDirectMethodWithErrorHandling
 {
     [IoTHub()]

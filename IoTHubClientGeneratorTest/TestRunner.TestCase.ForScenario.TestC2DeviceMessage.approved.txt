@@ -1,4 +1,7 @@
 ********************************************************************************
+
+using IoTHubClientGeneratorSDK;
+
 namespace TestC2DeviceMessage
 {
     [IoTHub(GeneratedSendMethodName = "SendTelemetryAsync")]

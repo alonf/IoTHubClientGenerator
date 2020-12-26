@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using IoTHubClientGeneratorSDK;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 

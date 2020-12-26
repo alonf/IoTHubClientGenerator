@@ -4,7 +4,10 @@
     {
         [TestCase("TestDpsTpmAttributes")]
         public static string TestDpsTpm =>
-            @"
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
 namespace TestDpsTpm
 {
     [IoTHub]
@@ -18,7 +21,12 @@ namespace TestDpsTpm
 }";
         [TestCase("TestDpsTpmWithTransportSettings")]
         public static string TestDpsTpmWithTransportSettings =>
-            @"
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+using System;
+
 namespace TestDpsTpm
 {
     [IoTHub]
@@ -44,7 +52,12 @@ namespace TestDpsTpm
 }";
         [TestCase("TestDpsTpmWithTransportSettingsAndClientOptions")]
         public static string TestDpsTpmWithTransportSettingsAndClientOptions =>
-            @"
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+using System;
+
 namespace TestDpsTpm
 {
     [IoTHub]
@@ -74,7 +87,10 @@ namespace TestDpsTpm
         
         [TestCase("TestDpsTpmWithClientOptions")]
         public static string TestDpsTpmWithClientOptions =>
-            @"
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
 namespace TestDpsTpm
 {
     [IoTHub]

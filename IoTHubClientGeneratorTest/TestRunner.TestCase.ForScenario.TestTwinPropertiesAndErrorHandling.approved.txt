@@ -1,4 +1,9 @@
 ********************************************************************************
+
+using IoTHubClientGeneratorSDK;
+using System;
+using Microsoft.Azure.Devices.Client.Exceptions;
+
 namespace TestTwinPropertiesAndErrorHandling
 {
     [IoTHub()]

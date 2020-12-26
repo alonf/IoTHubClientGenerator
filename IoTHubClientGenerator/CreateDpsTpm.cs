@@ -1,5 +1,4 @@
 ﻿using System;
-using IoTHubClientGeneratorSDK;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace IoTHubClientGenerator

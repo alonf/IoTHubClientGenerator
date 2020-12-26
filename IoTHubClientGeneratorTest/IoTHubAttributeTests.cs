@@ -5,6 +5,9 @@
         [TestCase("TestIoTHubOnly")]
         public static string TestIoTHubOnly => 
 @"
+using IoTHubClientGeneratorSDK;
+using System;
+
 namespace TestIoTHubOnly
 {
     [IoTHub]
@@ -17,6 +20,9 @@ namespace TestIoTHubOnly
         [TestCase("TestIoTHubGenerateSendTelemetry")]
         public static string TestIoTHubGenerateSendTelemetry => 
 @"
+using IoTHubClientGeneratorSDK;
+using System;
+
 namespace TestIoTHubGenerateSendTelemetry
 {
     [IoTHub(GeneratedSendMethodName = ""SendTelemetry"")]
@@ -29,6 +35,9 @@ namespace TestIoTHubGenerateSendTelemetry
         [TestCase("TestTwoIoTHubsGeneration")]
         public static string TestTwoIoTHubsGeneration => 
 @"
+using IoTHubClientGeneratorSDK;
+using System;
+
 namespace TestTwoIoTHubsGeneration
 {
     [IoTHub(GeneratedSendMethodName = ""SendTelemetry"")]

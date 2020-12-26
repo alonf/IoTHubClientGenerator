@@ -4,7 +4,10 @@
     {
         [TestCase("TestDPSSymmetricKey")]
         public static string TestDPSSymmetricKey =>
-            @"
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
 namespace TestDPSSymmetricKey
 {
     [IoTHub]
@@ -18,7 +21,12 @@ namespace TestDPSSymmetricKey
 }";
         [TestCase("TestDPSSymmetricKeyWithTransportSettings")]
         public static string TestDPSSymmetricKeyWithTransportSettings =>
-            @"
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+using System;
+
 namespace TestDPSSymmetricKey
 {
     [IoTHub]
@@ -45,7 +53,12 @@ namespace TestDPSSymmetricKey
 }";
         [TestCase("TestDPSSymmetricKeyWithTransportSettingsAndClientOptions")]
         public static string TestDPSSymmetricKeyWithTransportSettingsAndClientOptions =>
-            @"
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+using System;
+
 namespace TestDPSSymmetricKey
 {
     [IoTHub]
@@ -76,7 +89,10 @@ namespace TestDPSSymmetricKey
         
         [TestCase("TestDPSSymmetricKeyWithClientOptions")]
         public static string TestDPSSymmetricKeyWithClientOptions =>
-            @"
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
 namespace TestDPSSymmetricKey
 {
     [IoTHub]
@@ -93,7 +109,13 @@ namespace TestDPSSymmetricKey
 }";
         [TestCase("TestDPSSymmetricKeyWithTransportSettingsAndClientOptionsAndErrorHandling")]
         public static string TestDPSSymmetricKeyWithTransportSettingsAndClientOptionsAndErrorHandling =>
-            @"
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+using Microsoft.Azure.Devices.Client.Exceptions;
+using System;
+
 namespace TestDPSSymmetricKey
 {
     [IoTHub]

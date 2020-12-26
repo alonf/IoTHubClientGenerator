@@ -1,5 +1,10 @@
 ********************************************************************************
 
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+using System;
+
 namespace TestDPSSymmetricKey
 {
     [IoTHub]

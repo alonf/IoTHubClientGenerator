@@ -1,4 +1,10 @@
 ********************************************************************************
+
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using System;
+using System.Threading.Tasks;
+
 namespace TestDirectMethod
 {
     [IoTHub()]

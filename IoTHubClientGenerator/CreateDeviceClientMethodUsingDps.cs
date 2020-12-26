@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using IoTHubClientGeneratorSDK;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -17,13 +14,11 @@ namespace IoTHubClientGenerator
             AppendLine("{");
             using (Indent(this))
             {
-                var parameterNameList = new List<string>();
                 if (attributeSyntax?.ArgumentList != null)
                 {
                     foreach (var argument in attributeSyntax.ArgumentList.Arguments)
                     {
                         var attAssignment = $"the{argument.NameEquals}";
-                        parameterNameList.Add(argument.NameEquals?.ToString().TrimEnd('=').Trim());
                         var attExpression = argument.Expression.ToString();
                         if (attExpression.StartsWith("\"%") && attExpression.EndsWith("%\""))
                         {
@@ -43,8 +38,6 @@ namespace IoTHubClientGenerator
                         Location.Create(attributeSyntax!.SyntaxTree, attributeSyntax.Span)));
                     return () => { };
                 }
-
-                var createDeviceError = new StringBuilder();
 
                 string clientOptionsPropertyName = GetClientOptionsPropertyName();
 
@@ -67,24 +60,10 @@ namespace IoTHubClientGenerator
 
 
                 Append("var deviceClient = DeviceClient.Create(result.AssignedHub, auth, ");
-                if (hasTransportSettingsAttributes)
-                {
-                    Append($"transportSettings");
-                }
-                else
-                {
-                    Append($"theTransportType");
-                }
+                Append(hasTransportSettingsAttributes ? "transportSettings" : "theTransportType");
 
-                if (clientOptionsPropertyName != null)
-                {
-                    AppendLine($", {clientOptionsPropertyName});");
-                }
-                else
-                {
-                    AppendLine(");");
-                }
-            
+                AppendLine(clientOptionsPropertyName != null ? $", {clientOptionsPropertyName});" : ");");
+
                 AppendLine("return deviceClient;");
             }
 

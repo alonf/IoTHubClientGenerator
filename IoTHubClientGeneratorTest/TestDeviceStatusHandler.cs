@@ -4,7 +4,11 @@
     {
         [TestCase("TestDeviceStatus")]
         public static string TestDeviceStatus =>
-            @"namespace TestDeviceStatus
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
+namespace TestDeviceStatus
 {
     [IoTHub()]
     class MyIoTHubClient
@@ -18,7 +22,11 @@
         
         [TestCase("TestConnectionStatusProperty")]
         public static string TestConnectionStatusProperty =>
-            @"namespace TestConnectionStatusProperty
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
+namespace TestConnectionStatusProperty
 {
     [IoTHub()]
     class MyIoTHubClient
@@ -30,7 +38,11 @@
         
         [TestCase("TestConnectionStatusPropertyAndMethod")]
         public static string TestConnectionStatusPropertyAndMethod =>
-            @"namespace TestConnectionStatusPropertyAndMethod
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
+namespace TestConnectionStatusPropertyAndMethod
 {
     [IoTHub()]
     class MyIoTHubClient

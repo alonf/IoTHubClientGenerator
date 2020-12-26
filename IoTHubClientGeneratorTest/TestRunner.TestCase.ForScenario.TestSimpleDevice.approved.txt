@@ -1,5 +1,8 @@
 ********************************************************************************
 
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
 namespace TestSimpleDevice
 {
     [IoTHub()]

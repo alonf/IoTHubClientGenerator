@@ -1,5 +1,8 @@
 ********************************************************************************
 
+using IoTHubClientGeneratorSDK;
+using System;
+
 namespace TestTwoIoTHubsGeneration
 {
     [IoTHub(GeneratedSendMethodName = "SendTelemetry")]

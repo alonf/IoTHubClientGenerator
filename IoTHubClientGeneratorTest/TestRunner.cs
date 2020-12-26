@@ -6,6 +6,10 @@ using System.Text;
 using ApprovalTests.Namers;
 using ApprovalTests.Reporters;
 using IoTHubClientGenerator;
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Provisioning.Client;
+using Microsoft.Azure.Devices.Shared;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Xunit;
@@ -27,7 +31,16 @@ namespace IoTHubClientGeneratorTest
         [MemberData(nameof(GetTests), parameters: 2)]
         public void TestCase(string testName, string source)
         {
-            string output = GetGeneratedOutput(source);
+            string output;
+            try
+            {
+                output = GetGeneratedOutput(source);
+            }
+            catch (Exception e)
+            {
+                output = e.ToString();
+            }
+            
             using (ApprovalResults.ForScenario(testName))
             {
                 ApprovalTests.Approvals.Verify(output);
@@ -45,9 +58,29 @@ namespace IoTHubClientGeneratorTest
                 select new[] {testCaseAttribute.TestName, property.GetValue(null)}.Take(numTests).ToArray();
             return result;
         }
+        
+        //make sure the needed types are referenced
+        [IoTHub]
+        // ReSharper disable once UnusedType.Local
+        private class Dummy
+        {
+#pragma warning disable 169
+            private DeviceClient _dc;
+#pragma warning restore 169
+
+            public static void Foo()
+            {
+                // ReSharper disable once CA1806
+                // ReSharper disable once ObjectCreationAsStatement
+                new SecurityProviderX509Certificate(null);
+                ProvisioningDeviceClient.Create(null, null, null, null);
+            }
+        }
 
         private string GetGeneratedOutput(string source)
         {
+            
+            
             var syntaxTree = CSharpSyntaxTree.ParseText(source);
 
             var references = new List<MetadataReference>();
@@ -59,13 +92,17 @@ namespace IoTHubClientGeneratorTest
                     references.Add(MetadataReference.CreateFromFile(assembly.Location));
                 }
             }
+            references.Add(MetadataReference.CreateFromFile(typeof(IoTHubAttribute).Assembly.Location));
+            references.Add(MetadataReference.CreateFromFile(typeof(DeviceClient).Assembly.Location));
+            references.Add(MetadataReference.CreateFromFile(typeof(ProvisioningDeviceClient).Assembly.Location));
+            references.Add(MetadataReference.CreateFromFile(typeof(SecurityProviderX509Certificate).Assembly.Location));
 
             var compilation = CSharpCompilation.Create("testAssembly", new[] {syntaxTree}, references,
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-            // TODO: Uncomment this line if you want to fail tests when the injected program isn't valid _before_ running generators
-            // var compileDiagnostics = compilation.GetDiagnostics();
-            // Assert.False(compileDiagnostics.Any(d => d.Severity == DiagnosticSeverity.Error), "Failed: " + compileDiagnostics.FirstOrDefault()?.GetMessage());
+            
+            var compileDiagnostics = compilation.GetDiagnostics();
+            Assert.False(compileDiagnostics.Any(d => d.Severity == DiagnosticSeverity.Error), "Failed: " + compileDiagnostics.FirstOrDefault()?.GetMessage());
 
             ISourceGenerator generator = new Generator();
 

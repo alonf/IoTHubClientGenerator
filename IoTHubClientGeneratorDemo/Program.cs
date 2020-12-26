@@ -37,7 +37,7 @@ namespace IoTHubClientGeneratorDemo
         {
             Console.WriteLine(
                 $"{DateTime.Now}> C2D message callback - message received with Id={receivedMessage.MessageId}.");
-        
+            
             //do something with the message
         }
 

@@ -5,6 +5,9 @@
         [TestCase("TestSimpleDevice")] 
         public static string TestSimpleDevice => 
 @"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
 namespace TestSimpleDevice
 {
     [IoTHub()]
@@ -14,36 +17,47 @@ namespace TestSimpleDevice
         private DeviceClient MyClient {get;set;}
     }
 }";
-        [TestCase("TesConnectionString")] 
-        public static string TesConnectionString => 
+        [TestCase("TestConnectionString")] 
+        public static string TestConnectionString => 
 @"
-namespace TesConnectionString
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
+namespace TestConnectionString
 {
     [IoTHub()]
     class MyIoTHubClient
     {
-        [Device(ConnectionString=""HostName=HomeAutomationHub.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=ROQYwme5GAWZxKdI5rIjLsimSMTfltIdLm/Cki3qfBq=""]
+        [Device(ConnectionString=""HostName=HomeAutomationHub.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=ROQYwme5GAWZxKdI5rIjLsimSMTfltIdLm/Cki3qfBq="")]
         private DeviceClient MyClient {get;set;}
     }
 }";
         
-        [TestCase("TesConnectionStringEnv")] 
-        public static string TesConnectionStringEnv => 
-            @"
-namespace TesConnectionStringEnv
+        [TestCase("TestConnectionStringEnv")] 
+        public static string TestConnectionStringEnv => 
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
+namespace TestConnectionStringEnv
 {
     [IoTHub()]
     class MyIoTHubClient
     {
-        [Device(ConnectionString=""%ConStr%""]
+        [Device(ConnectionString=""%ConStr%"")]
         private DeviceClient MyClient {get;set;}
     }
 }";
         
-        [TestCase("TesTransportSettings")] 
-        public static string TesTransportSettings => 
-            @"
-namespace TesTransportSettings
+        [TestCase("TestTransportSettings")] 
+        public static string TestTransportSettings => 
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using System;
+using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+
+namespace TestTransportSettings
 {
     [IoTHub()]
     class MyIoTHubClient
@@ -60,15 +74,20 @@ namespace TesTransportSettings
         {
             DefaultReceiveTimeout = TimeSpan.FromMinutes(2)
         };
-        [Device(ConnectionString=""%ConStr%""]
+        [Device(ConnectionString=""%ConStr%"")]
         private DeviceClient MyClient {get;set;}
     }
 }";
         
-        [TestCase("TesTransportSettingsAndClientOptions")] 
-        public static string TesTransportSettingsAndClientOptions => 
-            @"
-namespace TesTransportSettingsAndClientOptions
+        [TestCase("TestTransportSettingsAndClientOptions")] 
+        public static string TestTransportSettingsAndClientOptions => 
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using System;
+using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+
+namespace TestTransportSettingsAndClientOptions
 {
     [IoTHub()]
     class MyIoTHubClient
@@ -88,7 +107,7 @@ namespace TesTransportSettingsAndClientOptions
         {
             DefaultReceiveTimeout = TimeSpan.FromMinutes(2)
         };
-        [Device(ConnectionString=""%ConStr%""]
+        [Device(ConnectionString=""%ConStr%"")]
         private DeviceClient MyClient {get;set;}
     }
 }";

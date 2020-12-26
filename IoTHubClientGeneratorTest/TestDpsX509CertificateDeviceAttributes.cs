@@ -4,7 +4,10 @@
     {
         [TestCase("TestDpsX509Certificate")]
         public static string TestDpsX509Certificate =>
-            @"
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
 namespace TestDpsX509Certificate
 {
     [IoTHub]
@@ -18,7 +21,12 @@ namespace TestDpsX509Certificate
 }";
         [TestCase("TestDpsX509CertificateWithTransportSettings")]
         public static string TestDpsX509CertificateWithTransportSettings =>
-            @"
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+using System;
+
 namespace TestDpsX509Certificate
 {
     [IoTHub]
@@ -45,7 +53,12 @@ namespace TestDpsX509Certificate
 }";
         [TestCase("TestDpsX509CertificateWithTransportSettingsAndClientOptions")]
         public static string TestDpsX509CertificateWithTransportSettingsAndClientOptions =>
-            @"
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+using System;
+
 namespace TestDpsX509Certificate
 {
     [IoTHub]
@@ -76,7 +89,10 @@ namespace TestDpsX509Certificate
         
         [TestCase("TestDpsX509CertificateWithClientOptions")]
         public static string TestDpsX509CertificateWithClientOptions =>
-            @"
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
 namespace TestDpsX509Certificate
 {
     [IoTHub]

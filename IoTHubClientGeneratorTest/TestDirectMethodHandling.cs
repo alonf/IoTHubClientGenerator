@@ -4,7 +4,13 @@
     {
         [TestCase("TestDirectMethod")]
         public static string TestDirectMethod =>
-@"namespace TestDirectMethod
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using System;
+using System.Threading.Tasks;
+
+namespace TestDirectMethod
 {
     [IoTHub()]
     class MyIoTHubClient
@@ -29,7 +35,14 @@
         
         [TestCase("TestDirectMethodWithErrorHandling")]
         public static string TestDirectMethodWithErrorHandling =>
-@"namespace TestDirectMethodWithErrorHandling
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Client.Exceptions;
+using System;
+using System.Threading.Tasks;
+
+namespace TestDirectMethodWithErrorHandling
 {
     [IoTHub()]
     class MyIoTHubClient

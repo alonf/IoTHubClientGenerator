@@ -4,7 +4,11 @@
     {
         [TestCase("TestReportedProperties")] 
         public static string TestReportedProperties => 
-@"namespace TestReportedProperties
+@"
+using IoTHubClientGeneratorSDK;
+using System;
+
+namespace TestReportedProperties
 {
     [IoTHub()]
     class MyIoTHubClient
@@ -17,19 +21,28 @@
         
         [TestCase("TestDesiredProperties")] 
         public static string TestDesiredProperties => 
-@"namespace TestDesiredProperties
+@"
+using IoTHubClientGeneratorSDK;
+using System;
+
+namespace TestDesiredProperties
 {
     [IoTHub()]
     class MyIoTHubClient
     {
-         [Desired] public string DesiredProperty { get; private set; }
+        [Desired] public string DesiredProperty { get; private set; }
         [Desired(""valueFromTheCloud"")] private string DesiredPropertyDemo { get; set; }
     }
 }";
         
         [TestCase("TestTwinPropertiesAndErrorHandling")] 
         public static string TestTwinPropertiesAndErrorHandling => 
-@"namespace TestTwinPropertiesAndErrorHandling
+@"
+using IoTHubClientGeneratorSDK;
+using System;
+using Microsoft.Azure.Devices.Client.Exceptions;
+
+namespace TestTwinPropertiesAndErrorHandling
 {
     [IoTHub()]
     class MyIoTHubClient

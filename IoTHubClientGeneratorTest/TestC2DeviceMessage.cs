@@ -4,7 +4,10 @@
     {
         [TestCase("TestC2DeviceMessage")] 
         public static string TestC2DeviceMessage =>
-@"namespace TestC2DeviceMessage
+@"
+using IoTHubClientGeneratorSDK;
+
+namespace TestC2DeviceMessage
 {
     [IoTHub(GeneratedSendMethodName = ""SendTelemetryAsync"")]
     class MyIoTHubClient
@@ -15,7 +18,12 @@
         
         [TestCase("TestC2DeviceMessageWithErrorHandling")] 
         public static string TestC2DeviceMessageWithErrorHandling =>
-@"namespace TestC2DeviceMessageWithErrorHandling
+@"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client.Exceptions;
+using System;
+
+namespace TestC2DeviceMessageWithErrorHandling
 {
     [IoTHub(GeneratedSendMethodName = ""SendTelemetryAsync"")]
     class MyIoTHubClient

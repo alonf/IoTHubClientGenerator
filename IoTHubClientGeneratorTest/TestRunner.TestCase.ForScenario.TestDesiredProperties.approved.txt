@@ -1,10 +1,14 @@
 ********************************************************************************
+
+using IoTHubClientGeneratorSDK;
+using System;
+
 namespace TestDesiredProperties
 {
     [IoTHub()]
     class MyIoTHubClient
     {
-         [Desired] public string DesiredProperty { get; private set; }
+        [Desired] public string DesiredProperty { get; private set; }
         [Desired("valueFromTheCloud")] private string DesiredPropertyDemo { get; set; }
     }
 }
