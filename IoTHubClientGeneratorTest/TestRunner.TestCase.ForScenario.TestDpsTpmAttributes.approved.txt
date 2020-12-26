@@ -1,0 +1,62 @@
+********************************************************************************
+
+namespace TestDpsTpm
+{
+    [IoTHub]
+    class MyIoTHubClient
+    {
+        [DpsTpmDevice(DPSIdScope="%DpsScopeId%", Id="1", EnrollmentGroupId="GroupId", 
+            EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Http1,
+            TransportType=TransportType.Amqp)]
+        private DeviceClient MyClient {get;set;}
+    }
+}
+
+
+********************************************************************************
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
+using Microsoft.Azure.Devices.Provisioning.Client.Transport;
+using Microsoft.Azure.Devices.Provisioning.Security;
+using System.Security.Cryptography;
+using IoTHubClientGeneratorSDK;
+
+namespace TestDpsTpm
+{
+    public partial class MyIoTHubClient
+    {
+        public async Task InitIoTHubClientAsync()
+        {
+            await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+            MyClient = CreateMyClient();
+            private Microsoft.Azure.Devices.Client.DeviceClient CreateMyClient()
+            {
+                var theDPSIdScope = System.Environment.GetEnvironmentVariable("DpsScopeId");
+                var theId = "1";
+                var theEnrollmentGroupId = "GroupId";
+                var theEnrollmentType = DPSEnrollmentType.Individual;
+                var theDPSTransportType = TransportType.Http1;
+                var theTransportType = TransportType.Amqp;
+                using var security = new SecurityProviderTpmHsm(theId);
+                using var transport = new ProvisioningTransportHandlerHttp();
+                var theGlobalEndpoint = "global.azure-devices-provisioning.net";
+                ProvisioningDeviceClient provClient = ProvisioningDeviceClient.Create(theGlobalDeviceEndpoint, theDPSIdScope, security, transport);
+                DeviceRegistrationResult result = await provClient.RegisterAsync();
+                if (result.Status != ProvisioningRegistrationStatusType.Assigned)
+                {
+                    throw new Exception($"Registration status did not assign a hub, status: {result.Status}");
+                }
+
+                IAuthenticationMethod auth = new DeviceAuthenticationWithTpm(result.DeviceId, security);
+                var deviceClient = DeviceClient.Create(result.AssignedHub, auth, theTransportType);
+                return deviceClient;
+            }
+        }
+    }
+}
+
+

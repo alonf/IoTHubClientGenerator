@@ -1,0 +1,51 @@
+********************************************************************************
+namespace TestDeviceStatus
+{
+    [IoTHub()]
+    class MyIoTHubClient
+    {
+         [IoTHubDeviceStatusChangesHandler]
+         private void StatusChangesHandler(ConnectionStatus status, ConnectionStatusChangeReason reason)
+         {
+         }
+    }
+}
+
+
+********************************************************************************
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
+using IoTHubClientGeneratorSDK;
+
+namespace TestDeviceStatus
+{
+    public partial class MyIoTHubClient
+    {
+        public async Task InitIoTHubClientAsync()
+        {
+            await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+            DeviceClient = CreateDeviceClient();
+            DeviceClient.SetConnectionStatusChangesHandler(StatusChangesHandler);
+        }
+
+        [Device(ConnectionString = "%ConnectionString%")]
+        private DeviceClient DeviceClient
+        {
+            get;
+            set;
+        }
+
+        private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
+        {
+            var theConnectionString = System.Environment.GetEnvironmentVariable("ConnectionString");
+            var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString);
+            return deviceClient;
+        }
+    }
+}
+
+

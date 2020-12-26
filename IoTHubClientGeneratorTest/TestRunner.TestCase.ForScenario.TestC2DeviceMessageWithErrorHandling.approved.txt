@@ -1,0 +1,82 @@
+********************************************************************************
+namespace TestC2DeviceMessageWithErrorHandling
+{
+    [IoTHub(GeneratedSendMethodName = "SendTelemetryAsync")]
+    class MyIoTHubClient
+    {
+        [IoTHubErrorHandler]
+        void IoTHubErrorHandler(string errorMessage, Exception exception)
+        {
+            if (exception is IotHubException {IsTransient: true})
+            {
+                Console.WriteLine($"Error: {errorMessage}");
+                Console.WriteLine($"An IotHubException was caught, but will try to recover and retry: {exception}");
+            }
+        }
+    }
+}
+
+
+********************************************************************************
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
+using IoTHubClientGeneratorSDK;
+
+namespace TestC2DeviceMessageWithErrorHandling
+{
+    public partial class MyIoTHubClient
+    {
+        public async Task InitIoTHubClientAsync()
+        {
+            await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+            try
+            {
+                DeviceClient = CreateDeviceClient();
+            }
+            catch (System.Exception exception)
+            {
+                string errorMessage = "Error initiating device client";
+                IoTHubErrorHandler(errorMessage, exception);
+            }
+        }
+
+        [Device(ConnectionString = "%ConnectionString%")]
+        private DeviceClient DeviceClient
+        {
+            get;
+            set;
+        }
+
+        private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
+        {
+            var theConnectionString = System.Environment.GetEnvironmentVariable("ConnectionString");
+            var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString);
+            return deviceClient;
+        }
+
+        private async Task<bool> SendTelemetryAsync(string jsonPayload, string messageId, System.Threading.CancellationToken cancellationToken, System.Collections.Generic.IDictionary<string, string> messageProperties = null)
+        {
+            try
+            {
+                var iotMessage = new Microsoft.Azure.Devices.Client.Message(System.Text.Encoding.UTF8.GetBytes(jsonPayload))
+                {MessageId = messageId, ContentEncoding = System.Text.Encoding.UTF8.ToString(), ContentType = "application/json"};
+                await DeviceClient.SendEventAsync(iotMessage, cancellationToken);
+                iotMessage.Dispose();
+            }
+            catch (System.Exception exception)
+            {
+                string errorMessage = "Error sending message to the IoT Hub";
+                IoTHubErrorHandler(errorMessage, exception);
+                return false;
+            }
+
+            return true;
+        }
+    }
+}
+
+

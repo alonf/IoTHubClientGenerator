@@ -1,0 +1,69 @@
+********************************************************************************
+namespace TestDirectMethod
+{
+    [IoTHub()]
+    class MyIoTHubClient
+    {
+        [DirectMethod]
+        private Task<MethodResponse> WriteToConsoleAsync(MethodRequest methodRequest)
+        {
+            Console.WriteLine($"\t *** {methodRequest.Name} was called.");
+            Console.WriteLine($"\t{methodRequest.DataAsJson}\n");
+            return Task.FromResult(new MethodResponse(new byte[0], 200));
+        }
+        
+        [DirectMethod(CloudMethodName = "TestMethod")]
+        private Task<MethodResponse> WriteToConsole2Async(MethodRequest methodRequest)
+        {
+            Console.WriteLine($"\t *** {methodRequest.Name} was called.");
+            Console.WriteLine($"\t{methodRequest.DataAsJson}\n");
+            return Task.FromResult(new MethodResponse(new byte[0], 200));
+        }
+    }
+}
+
+
+********************************************************************************
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
+using IoTHubClientGeneratorSDK;
+
+namespace TestDirectMethod
+{
+    public partial class MyIoTHubClient
+    {
+        public async Task InitIoTHubClientAsync()
+        {
+            await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+            DeviceClient = CreateDeviceClient();
+            await DeviceClient.SetMethodHandlerAsync("WriteToConsoleAsync", async (message, _) =>
+            {
+                return await WriteToConsoleAsync(message);
+            }, null);
+            await DeviceClient.SetMethodHandlerAsync("TestMethod", async (message, _) =>
+            {
+                return await WriteToConsole2Async(message);
+            }, null);
+        }
+
+        [Device(ConnectionString = "%ConnectionString%")]
+        private DeviceClient DeviceClient
+        {
+            get;
+            set;
+        }
+
+        private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
+        {
+            var theConnectionString = System.Environment.GetEnvironmentVariable("ConnectionString");
+            var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString);
+            return deviceClient;
+        }
+    }
+}
+
+

@@ -1,0 +1,64 @@
+********************************************************************************
+namespace TestDesiredProperties
+{
+    [IoTHub()]
+    class MyIoTHubClient
+    {
+         [Desired] public string DesiredProperty { get; private set; }
+        [Desired("valueFromTheCloud")] private string DesiredPropertyDemo { get; set; }
+    }
+}
+
+
+********************************************************************************
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
+using IoTHubClientGeneratorSDK;
+
+namespace TestDesiredProperties
+{
+    public partial class MyIoTHubClient
+    {
+        public async Task InitIoTHubClientAsync()
+        {
+            await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+            DeviceClient = CreateDeviceClient();
+            await DeviceClient.SetDesiredPropertyUpdateCallbackAsync(HandleDesiredPropertyUpdateAsync, null);
+        }
+
+        [Device(ConnectionString = "%ConnectionString%")]
+        private DeviceClient DeviceClient
+        {
+            get;
+            set;
+        }
+
+        private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
+        {
+            var theConnectionString = System.Environment.GetEnvironmentVariable("ConnectionString");
+            var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString);
+            return deviceClient;
+        }
+
+        private async Task HandleDesiredPropertyUpdateAsync(Microsoft.Azure.Devices.Shared.TwinCollection desiredProperties, object context)
+        {
+            if (desiredProperties.Contains("DesiredProperty"))
+            {
+                DesiredProperty = desiredProperties["DesiredProperty"];
+            }
+
+            if (desiredProperties.Contains("valueFromTheCloud"))
+            {
+                DesiredPropertyDemo = desiredProperties["valueFromTheCloud"];
+            }
+
+            await Task.CompletedTask;
+        }
+    }
+}
+
+

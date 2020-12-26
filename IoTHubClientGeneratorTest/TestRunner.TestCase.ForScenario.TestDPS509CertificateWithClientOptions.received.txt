@@ -1,0 +1,54 @@
+﻿********************************************************************************
+
+namespace TestDPS509Certificate
+{
+    [IoTHub]
+    class MyIoTHubClient
+    {
+        [DPS509CertificateDevice(DPSIdScope="%DpsScopeId%", Id="1", EnrollmentGroupId="GroupId", 
+            EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Amqp,TransportType=TransportType.Amqp,
+            CertificatePath="%certificateFilePath%", CertificatePassword="%CertPassword%")]
+        private DeviceClient MyClient {get;set;}
+
+        [ClientOptions]
+        public ClientOptions ClientOptions { get; } = new();
+    }
+}
+
+
+********************************************************************************
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
+using IoTHubClientGeneratorSDK;
+
+namespace TestDPS509Certificate
+{
+    public partial class MyIoTHubClient
+    {
+        public async Task InitIoTHubClientAsync()
+        {
+            await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+            DeviceClient = CreateDeviceClient();
+        }
+
+        [Device(ConnectionString = "%ConnectionString%")]
+        private DeviceClient DeviceClient
+        {
+            get;
+            set;
+        }
+
+        private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
+        {
+            var theConnectionString = System.Environment.GetEnvironmentVariable("ConnectionString");
+            var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString, ClientOptions);
+            return deviceClient;
+        }
+    }
+}
+
+

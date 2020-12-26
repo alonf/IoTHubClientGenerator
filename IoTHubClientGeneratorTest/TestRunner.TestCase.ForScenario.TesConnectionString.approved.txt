@@ -1,0 +1,42 @@
+********************************************************************************
+
+namespace TesConnectionString
+{
+    [IoTHub()]
+    class MyIoTHubClient
+    {
+        [Device(ConnectionString="HostName=HomeAutomationHub.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=ROQYwme5GAWZxKdI5rIjLsimSMTfltIdLm/Cki3qfBq="]
+        private DeviceClient MyClient {get;set;}
+    }
+}
+
+
+********************************************************************************
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
+using IoTHubClientGeneratorSDK;
+
+namespace TesConnectionString
+{
+    public partial class MyIoTHubClient
+    {
+        public async Task InitIoTHubClientAsync()
+        {
+            await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+            MyClient = CreateMyClient();
+        }
+
+        private Microsoft.Azure.Devices.Client.DeviceClient CreateMyClient()
+        {
+            var theConnectionString = "HostName=HomeAutomationHub.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=ROQYwme5GAWZxKdI5rIjLsimSMTfltIdLm/Cki3qfBq=";
+            var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString);
+            return deviceClient;
+        }
+    }
+}
+
+

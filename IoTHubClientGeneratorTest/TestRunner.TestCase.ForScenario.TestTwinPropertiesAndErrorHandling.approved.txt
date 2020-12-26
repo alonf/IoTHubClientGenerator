@@ -1,0 +1,135 @@
+********************************************************************************
+namespace TestTwinPropertiesAndErrorHandling
+{
+    [IoTHub()]
+    class MyIoTHubClient
+    {
+        [Desired] public string DesiredProperty { get; private set; }
+        [Desired("valueFromTheCloud")] private string DesiredPropertyDemo { get; set; }
+        [Reported("valueFromTheDevice")] private string _reportedPropertyDemo;
+        [Reported("ReportedPropertyAutoNameDemo", "reportedPropertyAutoNameDemo")] private string _reportedPropertyAutoNameDemo;
+
+        [IoTHubErrorHandler]
+        void IoTHubErrorHandler(string errorMessage, Exception exception)
+        {
+            if (exception is IotHubException {IsTransient: true})
+            {
+                Console.WriteLine($"Error: {errorMessage}");
+                Console.WriteLine($"An IotHubException was caught, but will try to recover and retry: {exception}");
+            }
+        }
+    }
+}
+
+
+********************************************************************************
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
+using IoTHubClientGeneratorSDK;
+
+namespace TestTwinPropertiesAndErrorHandling
+{
+    public partial class MyIoTHubClient
+    {
+        public async Task InitIoTHubClientAsync()
+        {
+            await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+            try
+            {
+                DeviceClient = CreateDeviceClient();
+                await DeviceClient.SetDesiredPropertyUpdateCallbackAsync(HandleDesiredPropertyUpdateAsync, null);
+            }
+            catch (System.Exception exception)
+            {
+                string errorMessage = "Error initiating device client";
+                IoTHubErrorHandler(errorMessage, exception);
+            }
+        }
+
+        [Device(ConnectionString = "%ConnectionString%")]
+        private DeviceClient DeviceClient
+        {
+            get;
+            set;
+        }
+
+        private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
+        {
+            var theConnectionString = System.Environment.GetEnvironmentVariable("ConnectionString");
+            var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString);
+            return deviceClient;
+        }
+
+        private void ReportProperty(string propertyName, string data)
+        {
+            try
+            {
+                var reportedProperties = new Microsoft.Azure.Devices.Shared.TwinCollection();
+                reportedProperties[propertyName] = data;
+                DeviceClient.UpdateReportedPropertiesAsync(reportedProperties).Wait();
+            }
+            catch (System.Exception exception)
+            {
+                string errorMessage = "Error updating desired properties";
+                IoTHubErrorHandler(errorMessage, exception);
+            }
+        }
+
+        public string valueFromTheDevice
+        {
+            get
+            {
+                return _reportedPropertyDemo;
+            }
+
+            set
+            {
+                _reportedPropertyDemo = value;
+                ReportProperty("valueFromTheDevice", value);
+            }
+        }
+
+        public string ReportedPropertyAutoNameDemo
+        {
+            get
+            {
+                return _reportedPropertyAutoNameDemo;
+            }
+
+            set
+            {
+                _reportedPropertyAutoNameDemo = value;
+                ReportProperty("reportedPropertyAutoNameDemo", value);
+            }
+        }
+
+        private async Task HandleDesiredPropertyUpdateAsync(Microsoft.Azure.Devices.Shared.TwinCollection desiredProperties, object context)
+        {
+            try
+            {
+                if (desiredProperties.Contains("DesiredProperty"))
+                {
+                    DesiredProperty = desiredProperties["DesiredProperty"];
+                }
+
+                if (desiredProperties.Contains("valueFromTheCloud"))
+                {
+                    DesiredPropertyDemo = desiredProperties["valueFromTheCloud"];
+                }
+            }
+            catch (System.Exception exception)
+            {
+                string errorMessage = "Error updating desired properties";
+                IoTHubErrorHandler(errorMessage, exception);
+            }
+
+            await Task.CompletedTask;
+        }
+    }
+}
+
+

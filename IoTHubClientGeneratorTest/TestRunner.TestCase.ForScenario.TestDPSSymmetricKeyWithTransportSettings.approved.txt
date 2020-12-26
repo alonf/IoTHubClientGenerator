@@ -1,0 +1,87 @@
+********************************************************************************
+
+namespace TestDPSSymmetricKey
+{
+    [IoTHub]
+    class MyIoTHubClient
+    {
+        [DpsSymmetricKeyDevice(DPSIdScope="%DpsScopeId%", Id="1", EnrollmentGroupId="GroupId", 
+            EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt,
+            PrimarySymmetricKey="%PrimaryDPSKey%")]
+        private DeviceClient MyClient {get;set;}
+
+        [TransportSetting]
+        public ITransportSettings AmqpTransportSettings { get; } = new AmqpTransportSettings(TransportType.Amqp)
+        {
+            AmqpConnectionPoolSettings = new AmqpConnectionPoolSettings {MaxPoolSize = 5},
+            IdleTimeout = TimeSpan.FromMinutes(1)
+        };
+
+        [TransportSetting]
+        public ITransportSettings MqttTransportSetting { get; } = new MqttTransportSettings(TransportType.Mqtt)
+        {
+            DefaultReceiveTimeout = TimeSpan.FromMinutes(2)
+        };
+    }
+}
+
+
+********************************************************************************
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
+using Microsoft.Azure.Devices.Provisioning.Client.Transport;
+using Microsoft.Azure.Devices.Provisioning.Security;
+using System.Security.Cryptography;
+using IoTHubClientGeneratorSDK;
+
+namespace TestDPSSymmetricKey
+{
+    public partial class MyIoTHubClient
+    {
+        public async Task InitIoTHubClientAsync()
+        {
+            await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+            MyClient = CreateMyClient();
+            private Microsoft.Azure.Devices.Client.DeviceClient CreateMyClient()
+            {
+                var theDPSIdScope = System.Environment.GetEnvironmentVariable("DpsScopeId");
+                var theId = "1";
+                var theEnrollmentGroupId = "GroupId";
+                var theEnrollmentType = DPSEnrollmentType.Individual;
+                var theDPSTransportType = TransportType.Mqtt;
+                var thePrimarySymmetricKey = System.Environment.GetEnvironmentVariable("PrimaryDPSKey");
+                ITransportSettings[] transportSettings = new[]{AmqpTransportSettings, MqttTransportSetting};
+                using var security = new SecurityProviderSymmetricKey(theId, thePrimarySymmetricKey, null);
+                using var transport = new ProvisioningTransportHandlerMqtt();
+                var theGlobalEndpoint = "global.azure-devices-provisioning.net";
+                ProvisioningDeviceClient provClient = ProvisioningDeviceClient.Create(theGlobalDeviceEndpoint, theDPSIdScope, security, transport);
+                DeviceRegistrationResult result = await provClient.RegisterAsync();
+                if (result.Status != ProvisioningRegistrationStatusType.Assigned)
+                {
+                    throw new Exception($"Registration status did not assign a hub, status: {result.Status}");
+                }
+
+                IAuthenticationMethod auth = new DeviceAuthenticationWithRegistrySymmetricKey(result.DeviceId, security.GetPrimaryKey());
+                var deviceClient = DeviceClient.Create(result.AssignedHub, auth, transportSettings);
+                return deviceClient;
+            }
+        }
+
+        private static string ComputeDerivedSymmetricKey(string enrollmentKey, string deviceId)
+        {
+            if (string.IsNullOrWhiteSpace(theEnrollmentKey))
+            {
+                return enrollmentKey;
+            }
+
+            using var hmac = new HMACSHA256(Convert.FromBase64String(theEenrollmentKey));
+            return Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(deviceId)));
+        }
+    }
+}
+
+
