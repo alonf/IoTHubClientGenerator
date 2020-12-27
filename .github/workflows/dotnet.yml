@@ -19,6 +19,7 @@ jobs:
         dotnet-version: 5.0.101
     - name: Restore dependencies
       run: dotnet restore
+      working-directory: ./Alonf.IoTHubClientGenerator
     - name: Build
       run: dotnet build --no-restore
       working-directory: ./Alonf.IoTHubClientGenerator
