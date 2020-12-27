@@ -6,7 +6,7 @@ using System;
 namespace TestDesiredProperties
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [Desired] public string DesiredProperty { get; private set; }
         [Desired("valueFromTheCloud")] private string DesiredPropertyDemo { get; set; }

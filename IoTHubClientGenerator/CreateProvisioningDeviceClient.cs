@@ -18,7 +18,7 @@ namespace IoTHubClientGenerator
                 a.NameEquals?.ToString().TrimEnd('=').Trim() == nameof(DpsTpmDeviceAttribute.GlobalDeviceEndpoint) == false))
             
             {
-                AppendLine("var theGlobalEndpoint = \"global.azure-devices-provisioning.net\";");
+                AppendLine($"var the{nameof(DpsDeviceAttribute.GlobalDeviceEndpoint)} = \"global.azure-devices-provisioning.net\";");
             }
             AppendLine();
             AppendLine("ProvisioningDeviceClient provClient = ProvisioningDeviceClient.Create(theGlobalDeviceEndpoint, theDPSIdScope, security, transport);");

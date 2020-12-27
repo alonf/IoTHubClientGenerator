@@ -7,9 +7,9 @@ namespace IoTHubClientGenerator
     {
         private Action CreateDpsTpm(AttributeSyntax attributeSyntax)
         {
-            AppendLine("using var security = new SecurityProviderTpmHsm(theId);");
+            AppendLine("using var security = new Microsoft.Azure.Devices.Provisioning.Security.SecurityProviderTpmHsm(theId);");
             CreateProvisioningDeviceClient(attributeSyntax);
-            AppendLine("IAuthenticationMethod auth = new DeviceAuthenticationWithTpm(result.DeviceId,security);");
+            AppendLine("IAuthenticationMethod auth = new Microsoft.Azure.Devices.Client.DeviceAuthenticationWithTpm(result.DeviceId,security);");
             return () => { };
         }
     }

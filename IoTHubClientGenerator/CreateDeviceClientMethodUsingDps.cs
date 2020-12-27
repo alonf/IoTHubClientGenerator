@@ -9,66 +9,69 @@ namespace IoTHubClientGenerator
     {
         private Action CreateDeviceClientMethodUsingDps(string methodName, AttributeSyntax attributeSyntax)
         {
-            Action additionalCode = () => { };
-            AppendLine($"private Microsoft.Azure.Devices.Client.DeviceClient {methodName}()");
-            AppendLine("{");
-            using (Indent(this))
+            return () =>
             {
-                if (attributeSyntax?.ArgumentList != null)
+                Action additionalCode = () => { };
+                AppendLine($"private async Task<Microsoft.Azure.Devices.Client.DeviceClient> {methodName}()");
+                AppendLine("{");
+                using (Indent(this))
                 {
-                    foreach (var argument in attributeSyntax.ArgumentList.Arguments)
+                    if (attributeSyntax?.ArgumentList != null)
                     {
-                        var attAssignment = $"the{argument.NameEquals}";
-                        var attExpression = argument.Expression.ToString();
-                        if (attExpression.StartsWith("\"%") && attExpression.EndsWith("%\""))
+                        foreach (var argument in attributeSyntax.ArgumentList.Arguments)
                         {
-                            attExpression =
-                                $"System.Environment.GetEnvironmentVariable(\"{attExpression.TrimStart('%', '"').TrimEnd('%', '"')}\")";
+                            var attAssignment = $"the{argument.NameEquals}";
+                            var attExpression = argument.Expression.ToString();
+                            if (attExpression.StartsWith("\"%") && attExpression.EndsWith("%\""))
+                            {
+                                attExpression =
+                                    $"System.Environment.GetEnvironmentVariable(\"{attExpression.TrimStart('%', '"').TrimEnd('%', '"')}\")";
+                            }
+
+                            AppendLine($"var {attAssignment}{attExpression};");
                         }
-
-                        AppendLine($"var {attAssignment}{attExpression};");
                     }
+                    else
+                    {
+                        _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(new
+                                DiagnosticDescriptor("IoTGen007", "IoT Hub Generator Error",
+                                    "Dps attribute must define properties",
+                                    "Error", DiagnosticSeverity.Warning, true),
+                            Location.Create(attributeSyntax!.SyntaxTree, attributeSyntax.Span)));
+                        return;
+                    }
+
+                    string clientOptionsPropertyName = GetClientOptionsPropertyName();
+
+                    var hasTransportSettingsAttributes = HandleTransportSettingsAttributes();
+
+                    switch (attributeSyntax.Name + "Attribute")
+                    {
+                        case nameof(DpsX509CertificateDeviceAttribute):
+                            additionalCode = CreateDpsX509Certificate(attributeSyntax);
+                            break;
+
+                        case nameof(DpsSymmetricKeyDeviceAttribute):
+                            additionalCode = CreateDpsSymmetricKey(attributeSyntax);
+                            break;
+
+                        case nameof(DpsTpmDeviceAttribute):
+                            additionalCode = CreateDpsTpm(attributeSyntax);
+                            break;
+                    }
+
+
+                    Append("var deviceClient = DeviceClient.Create(result.AssignedHub, auth, ");
+                    Append(hasTransportSettingsAttributes ? "transportSettings" : "theTransportType");
+
+                    AppendLine(clientOptionsPropertyName != null ? $", {clientOptionsPropertyName});" : ");");
+
+                    AppendLine("return deviceClient;");
                 }
-                else
-                {
-                    _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(new
-                            DiagnosticDescriptor("IoTGen007", "IoT Hub Generator Error",
-                                "Dps attribute must define properties",
-                                "Error", DiagnosticSeverity.Warning, true),
-                        Location.Create(attributeSyntax!.SyntaxTree, attributeSyntax.Span)));
-                    return () => { };
-                }
 
-                string clientOptionsPropertyName = GetClientOptionsPropertyName();
-
-                var hasTransportSettingsAttributes = HandleTransportSettingsAttributes();
-
-                switch (attributeSyntax.Name + "Attribute")
-                {
-                    case nameof(DpsX509CertificateDeviceAttribute):
-                        additionalCode = CreateDpsX509Certificate(attributeSyntax);
-                        break;
-
-                    case nameof(DpsSymmetricKeyDeviceAttribute):
-                        additionalCode = CreateDpsSymmetricKey(attributeSyntax);
-                        break;
-
-                    case nameof(DpsTpmDeviceAttribute):
-                        additionalCode = CreateDpsTpm(attributeSyntax);
-                        break;
-                }
-
-
-                Append("var deviceClient = DeviceClient.Create(result.AssignedHub, auth, ");
-                Append(hasTransportSettingsAttributes ? "transportSettings" : "theTransportType");
-
-                AppendLine(clientOptionsPropertyName != null ? $", {clientOptionsPropertyName});" : ");");
-
-                AppendLine("return deviceClient;");
-            }
-
-            AppendLine("}");
-            return additionalCode;
+                AppendLine("}");
+                additionalCode();
+            };
         }
     }
 }

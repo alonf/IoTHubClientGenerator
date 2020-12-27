@@ -10,7 +10,7 @@ using IoTHubClientGeneratorSDK;
 namespace TestC2DeviceMessage
 {
     [IoTHub(GeneratedSendMethodName = ""SendTelemetryAsync"")]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         
     }
@@ -26,15 +26,15 @@ using System;
 namespace TestC2DeviceMessageWithErrorHandling
 {
     [IoTHub(GeneratedSendMethodName = ""SendTelemetryAsync"")]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [IoTHubErrorHandler]
         void IoTHubErrorHandler(string errorMessage, Exception exception)
         {
             if (exception is IotHubException {IsTransient: true})
             {
-                Console.WriteLine($""Error: {errorMessage}"");
-                Console.WriteLine($""An IotHubException was caught, but will try to recover and retry: {exception}"");
+                System.Console.WriteLine($""Error: {errorMessage}"");
+                System.Console.WriteLine($""An IotHubException was caught, but will try to recover and retry: {exception}"");
             }
         }
     }

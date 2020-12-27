@@ -3,15 +3,13 @@
 using IoTHubClientGeneratorSDK;
 using Microsoft.Azure.Devices.Client;
 
-namespace TestDeviceStatus
+namespace TestConnectionString
 {
     [IoTHub()]
     partial class MyIoTHubClient
     {
-         [IoTHubDeviceStatusChangesHandler]
-         private void StatusChangesHandler(ConnectionStatus status, ConnectionStatusChangeReason reason)
-         {
-         }
+        [Device(ConnectionString="HostName=HomeAutomationHub.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=ROQYwme5GAWZxKdI5rIjLsimSMTfltIdLm/Cki3qfBq=")]
+        private DeviceClient MyClient {get;set;}
     }
 }
 
@@ -25,27 +23,19 @@ using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Shared;
 using IoTHubClientGeneratorSDK;
 
-namespace TestDeviceStatus
+namespace TestConnectionString
 {
     public partial class MyIoTHubClient
     {
         public async Task InitIoTHubClientAsync()
         {
             await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
-            DeviceClient = CreateDeviceClient();
-            DeviceClient.SetConnectionStatusChangesHandler(StatusChangesHandler);
+            MyClient = CreateMyClient();
         }
 
-        [Device(ConnectionString = "%ConnectionString%")]
-        private DeviceClient DeviceClient
+        private Microsoft.Azure.Devices.Client.DeviceClient CreateMyClient()
         {
-            get;
-            set;
-        }
-
-        private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
-        {
-            var theConnectionString = System.Environment.GetEnvironmentVariable("ConnectionString");
+            var theConnectionString = "HostName=HomeAutomationHub.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=ROQYwme5GAWZxKdI5rIjLsimSMTfltIdLm/Cki3qfBq=";
             var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString);
             return deviceClient;
         }

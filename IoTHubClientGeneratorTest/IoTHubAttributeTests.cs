@@ -11,7 +11,7 @@ using System;
 namespace TestIoTHubOnly
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         
     }
@@ -26,7 +26,7 @@ using System;
 namespace TestIoTHubGenerateSendTelemetry
 {
     [IoTHub(GeneratedSendMethodName = ""SendTelemetry"")]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         
     }
@@ -41,12 +41,12 @@ using System;
 namespace TestTwoIoTHubsGeneration
 {
     [IoTHub(GeneratedSendMethodName = ""SendTelemetry"")]
-    class MyIoTHubClient1
+    partial class MyIoTHubClient1
     {
         
     }
     [IoTHub()]
-    class MyIoTHubClient2
+    partial class MyIoTHubClient2
     {
         
     }

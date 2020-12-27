@@ -11,7 +11,7 @@ using Microsoft.Azure.Devices.Client;
 namespace TestDeviceStatus
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
          [IoTHubDeviceStatusChangesHandler]
          private void StatusChangesHandler(ConnectionStatus status, ConnectionStatusChangeReason reason)
@@ -29,7 +29,7 @@ using Microsoft.Azure.Devices.Client;
 namespace TestConnectionStatusProperty
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
          [ConnectionStatus] 
          private (ConnectionStatus Status, ConnectionStatusChangeReason Reason) DeviceConnectionStatus { get; set; }
@@ -45,7 +45,7 @@ using Microsoft.Azure.Devices.Client;
 namespace TestConnectionStatusPropertyAndMethod
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
          [ConnectionStatus] 
          private (ConnectionStatus Status, ConnectionStatusChangeReason Reason) DeviceConnectionStatus { get; set; }

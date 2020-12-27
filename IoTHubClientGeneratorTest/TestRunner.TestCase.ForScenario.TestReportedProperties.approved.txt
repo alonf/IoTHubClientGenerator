@@ -6,7 +6,7 @@ using System;
 namespace TestReportedProperties
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [Reported("valueFromTheDevice")] private string _reportedPropertyDemo;
 

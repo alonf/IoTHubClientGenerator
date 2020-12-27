@@ -8,23 +8,22 @@ namespace IoTHubClientGenerator
     {
         private Action CreateDpsX509Certificate(AttributeSyntax attributeSyntax)
         {
-            AppendLine("using X509Certificate2 certificate = LoadProvisioningCertificate(theCertificatePath, theCertificatePassword);");
-            AppendLine(" using var security = new SecurityProviderX509Certificate(certificate);");
+            AppendLine("using System.Security.Cryptography.X509Certificates.X509Certificate2 certificate = LoadProvisioningCertificate(theCertificatePath, theCertificatePassword);");
+            AppendLine("using var security = new Microsoft.Azure.Devices.Shared.SecurityProviderX509Certificate(certificate);");
 
             CreateProvisioningDeviceClient(attributeSyntax);
-            AppendLine("IAuthenticationMethod auth = new DeviceAuthenticationWithX509Certificate(result.DeviceId, certificate);");
+            AppendLine("IAuthenticationMethod auth = new Microsoft.Azure.Devices.Client.DeviceAuthenticationWithX509Certificate(result.DeviceId, certificate);");
 
             return () =>
             {
-                AppendLine("private X509Certificate2 LoadProvisioningCertificate(string certificatePath, string certificatePassword)");
+                AppendLine("private System.Security.Cryptography.X509Certificates.X509Certificate2 LoadProvisioningCertificate(string certificatePath, string certificatePassword)");
                 AppendLine("{");
                 using (Indent(this))
                 {
-                    AppendLine("var certificateCollection = new X509Certificate2Collection();");
-                    AppendLine(
-                        "certificateCollection.Import(certificatePath, certificatePassword, X509KeyStorageFlags.UserKeySet);");
-                    AppendLine("X509Certificate2 certificate = null;");
-                    AppendLine("foreach (X509Certificate2 element in certificateCollection)");
+                    AppendLine("var certificateCollection = new System.Security.Cryptography.X509Certificates.X509Certificate2Collection();");
+                    AppendLine("certificateCollection.Import(certificatePath, certificatePassword, System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.UserKeySet);");
+                    AppendLine("System.Security.Cryptography.X509Certificates.X509Certificate2 certificate = null;");
+                    AppendLine("foreach (var element in certificateCollection)");
                     AppendLine("{");
                     using (Indent(this))
                     {
@@ -52,10 +51,7 @@ namespace IoTHubClientGenerator
                     AppendLine("{");
                     using (Indent(this))
                     {
-                        var certificateNameValue = GetAttributePropertyValue(attributeSyntax,
-                            nameof(DpsX509CertificateDeviceAttribute.CertificatePath));
-                        AppendLine(
-                            $"throw new FileNotFoundException(\"{certificateNameValue} did not contain any certificate with a private key.\");");
+                        AppendLine("throw new System.IO.FileNotFoundException($\"{certificatePath} did not contain any certificate with a private key.\");");
                     }
 
                     AppendLine("}");

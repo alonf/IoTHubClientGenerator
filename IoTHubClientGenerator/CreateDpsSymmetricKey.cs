@@ -17,7 +17,7 @@ namespace IoTHubClientGenerator
                 AppendLine("{");
                 using (Indent(this))
                 {
-                    AppendLine("if (string.IsNullOrWhiteSpace(theEnrollmentKey))");
+                    AppendLine("if (string.IsNullOrWhiteSpace(enrollmentKey))");
                     AppendLine("{");
                     using (Indent(this))
                     {
@@ -25,8 +25,8 @@ namespace IoTHubClientGenerator
                     }
 
                     AppendLine("}");
-                    AppendLine("using var hmac = new HMACSHA256(Convert.FromBase64String(theEenrollmentKey));");
-                    AppendLine("return Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(deviceId)));");
+                    AppendLine("using var hmac = new System.Security.Cryptography.HMACSHA256(System.Convert.FromBase64String(enrollmentKey));");
+                    AppendLine("return Convert.ToBase64String(hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(deviceId)));");
                 }
                 AppendLine("}");
             };

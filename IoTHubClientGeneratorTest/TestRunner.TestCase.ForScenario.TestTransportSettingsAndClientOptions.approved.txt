@@ -1,0 +1,63 @@
+********************************************************************************
+
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+using System;
+using Microsoft.Azure.Devices.Client.Transport.Mqtt;
+
+namespace TestTransportSettingsAndClientOptions
+{
+    [IoTHub()]
+    partial class MyIoTHubClient
+    {
+        [TransportSetting]
+        public ITransportSettings AmqpTransportSettings { get; } = new AmqpTransportSettings(TransportType.Amqp)
+        {
+            AmqpConnectionPoolSettings = new AmqpConnectionPoolSettings {MaxPoolSize = 5},
+            IdleTimeout = TimeSpan.FromMinutes(1)
+        };
+
+        [ClientOptions]
+        public ClientOptions ClientOptions { get; } = new();
+
+        [TransportSetting]
+        public ITransportSettings MqttTransportSetting { get; } = new MqttTransportSettings(TransportType.Mqtt)
+        {
+            DefaultReceiveTimeout = TimeSpan.FromMinutes(2)
+        };
+        [Device(ConnectionString="%ConStr%")]
+        private DeviceClient MyClient {get;set;}
+    }
+}
+
+
+********************************************************************************
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
+using IoTHubClientGeneratorSDK;
+
+namespace TestTransportSettingsAndClientOptions
+{
+    public partial class MyIoTHubClient
+    {
+        public async Task InitIoTHubClientAsync()
+        {
+            await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+            MyClient = CreateMyClient();
+        }
+
+        private Microsoft.Azure.Devices.Client.DeviceClient CreateMyClient()
+        {
+            var theConnectionString = System.Environment.GetEnvironmentVariable("ConStr");
+            ITransportSettings[] transportSettings = new[]{AmqpTransportSettings, MqttTransportSetting};
+            var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString, transportSettings, ClientOptions);
+            return deviceClient;
+        }
+    }
+}
+
+

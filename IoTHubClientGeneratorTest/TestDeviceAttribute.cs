@@ -11,7 +11,7 @@ using Microsoft.Azure.Devices.Client;
 namespace TestSimpleDevice
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [Device]
         private DeviceClient MyClient {get;set;}
@@ -26,7 +26,7 @@ using Microsoft.Azure.Devices.Client;
 namespace TestConnectionString
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [Device(ConnectionString=""HostName=HomeAutomationHub.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=ROQYwme5GAWZxKdI5rIjLsimSMTfltIdLm/Cki3qfBq="")]
         private DeviceClient MyClient {get;set;}
@@ -42,7 +42,7 @@ using Microsoft.Azure.Devices.Client;
 namespace TestConnectionStringEnv
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [Device(ConnectionString=""%ConStr%"")]
         private DeviceClient MyClient {get;set;}
@@ -60,7 +60,7 @@ using Microsoft.Azure.Devices.Client.Transport.Mqtt;
 namespace TestTransportSettings
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [TransportSetting]
         public ITransportSettings AmqpTransportSettings { get; } = new AmqpTransportSettings(TransportType.Amqp)
@@ -90,7 +90,7 @@ using Microsoft.Azure.Devices.Client.Transport.Mqtt;
 namespace TestTransportSettingsAndClientOptions
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [TransportSetting]
         public ITransportSettings AmqpTransportSettings { get; } = new AmqpTransportSettings(TransportType.Amqp)

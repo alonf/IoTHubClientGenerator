@@ -11,7 +11,7 @@ using System;
 namespace TestReportedProperties
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [Reported(""valueFromTheDevice"")] private string _reportedPropertyDemo;
 
@@ -28,7 +28,7 @@ using System;
 namespace TestDesiredProperties
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [Desired] public string DesiredProperty { get; private set; }
         [Desired(""valueFromTheCloud"")] private string DesiredPropertyDemo { get; set; }
@@ -45,7 +45,7 @@ using Microsoft.Azure.Devices.Client.Exceptions;
 namespace TestTwinPropertiesAndErrorHandling
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [Desired] public string DesiredProperty { get; private set; }
         [Desired(""valueFromTheCloud"")] private string DesiredPropertyDemo { get; set; }
@@ -57,8 +57,8 @@ namespace TestTwinPropertiesAndErrorHandling
         {
             if (exception is IotHubException {IsTransient: true})
             {
-                Console.WriteLine($""Error: {errorMessage}"");
-                Console.WriteLine($""An IotHubException was caught, but will try to recover and retry: {exception}"");
+                System.Console.WriteLine($""Error: {errorMessage}"");
+                System.Console.WriteLine($""An IotHubException was caught, but will try to recover and retry: {exception}"");
             }
         }
     }

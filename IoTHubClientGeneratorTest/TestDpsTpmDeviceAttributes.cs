@@ -11,7 +11,7 @@ using Microsoft.Azure.Devices.Client;
 namespace TestDpsTpm
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsTpmDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Http1,
@@ -30,7 +30,7 @@ using System;
 namespace TestDpsTpm
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsTpmDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt)]
@@ -61,7 +61,7 @@ using System;
 namespace TestDpsTpm
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsTpmDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt)]
@@ -94,7 +94,7 @@ using Microsoft.Azure.Devices.Client;
 namespace TestDpsTpm
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsTpmDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Amqp,TransportType=TransportType.Amqp)]

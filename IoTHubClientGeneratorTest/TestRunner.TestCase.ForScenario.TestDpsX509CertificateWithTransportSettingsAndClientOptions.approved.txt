@@ -8,7 +8,7 @@ using System;
 namespace TestDpsX509Certificate
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsX509CertificateDevice(DPSIdScope="%DpsScopeId%", Id="1", EnrollmentGroupId="GroupId", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt,
@@ -42,8 +42,8 @@ using System.Threading;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.Azure.Devices.Provisioning.Client.Transport;
-using Microsoft.Azure.Devices.Provisioning.Security;
 using System.Security.Cryptography;
+using Microsoft.Azure.Devices.Provisioning.Client;
 using System.Security.Cryptography.X509Certificates;
 using IoTHubClientGeneratorSDK;
 
@@ -54,40 +54,41 @@ namespace TestDpsX509Certificate
         public async Task InitIoTHubClientAsync()
         {
             await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
-            MyClient = CreateMyClient();
-            private Microsoft.Azure.Devices.Client.DeviceClient CreateMyClient()
-            {
-                var theDPSIdScope = System.Environment.GetEnvironmentVariable("DpsScopeId");
-                var theId = "1";
-                var theEnrollmentGroupId = "GroupId";
-                var theEnrollmentType = DPSEnrollmentType.Individual;
-                var theDPSTransportType = TransportType.Mqtt;
-                var theCertificatePath = System.Environment.GetEnvironmentVariable("certificateFilePath");
-                var theCertificatePassword = System.Environment.GetEnvironmentVariable("CertPassword");
-                ITransportSettings[] transportSettings = new[]{AmqpTransportSettings, MqttTransportSetting};
-                using X509Certificate2 certificate = LoadProvisioningCertificate(theCertificatePath, theCertificatePassword);
-                using var security = new SecurityProviderX509Certificate(certificate);
-                using var transport = new ProvisioningTransportHandlerMqtt();
-                var theGlobalEndpoint = "global.azure-devices-provisioning.net";
-                ProvisioningDeviceClient provClient = ProvisioningDeviceClient.Create(theGlobalDeviceEndpoint, theDPSIdScope, security, transport);
-                DeviceRegistrationResult result = await provClient.RegisterAsync();
-                if (result.Status != ProvisioningRegistrationStatusType.Assigned)
-                {
-                    throw new Exception($"Registration status did not assign a hub, status: {result.Status}");
-                }
-
-                IAuthenticationMethod auth = new DeviceAuthenticationWithX509Certificate(result.DeviceId, certificate);
-                var deviceClient = DeviceClient.Create(result.AssignedHub, auth, transportSettings, ClientOptions);
-                return deviceClient;
-            }
+            MyClient = await CreateMyClientAsync();
         }
 
-        private X509Certificate2 LoadProvisioningCertificate(string certificatePath, string certificatePassword)
+        private async Task<Microsoft.Azure.Devices.Client.DeviceClient> CreateMyClientAsync()
         {
-            var certificateCollection = new X509Certificate2Collection();
-            certificateCollection.Import(certificatePath, certificatePassword, X509KeyStorageFlags.UserKeySet);
-            X509Certificate2 certificate = null;
-            foreach (X509Certificate2 element in certificateCollection)
+            var theDPSIdScope = System.Environment.GetEnvironmentVariable("DpsScopeId");
+            var theId = "1";
+            var theEnrollmentGroupId = "GroupId";
+            var theEnrollmentType = DPSEnrollmentType.Individual;
+            var theDPSTransportType = TransportType.Mqtt;
+            var theCertificatePath = System.Environment.GetEnvironmentVariable("certificateFilePath");
+            var theCertificatePassword = System.Environment.GetEnvironmentVariable("CertPassword");
+            ITransportSettings[] transportSettings = new[]{AmqpTransportSettings, MqttTransportSetting};
+            using System.Security.Cryptography.X509Certificates.X509Certificate2 certificate = LoadProvisioningCertificate(theCertificatePath, theCertificatePassword);
+            using var security = new Microsoft.Azure.Devices.Shared.SecurityProviderX509Certificate(certificate);
+            using var transport = new ProvisioningTransportHandlerMqtt();
+            var theGlobalDeviceEndpoint = "global.azure-devices-provisioning.net";
+            ProvisioningDeviceClient provClient = ProvisioningDeviceClient.Create(theGlobalDeviceEndpoint, theDPSIdScope, security, transport);
+            DeviceRegistrationResult result = await provClient.RegisterAsync();
+            if (result.Status != ProvisioningRegistrationStatusType.Assigned)
+            {
+                throw new Exception($"Registration status did not assign a hub, status: {result.Status}");
+            }
+
+            IAuthenticationMethod auth = new Microsoft.Azure.Devices.Client.DeviceAuthenticationWithX509Certificate(result.DeviceId, certificate);
+            var deviceClient = DeviceClient.Create(result.AssignedHub, auth, transportSettings, ClientOptions);
+            return deviceClient;
+        }
+
+        private System.Security.Cryptography.X509Certificates.X509Certificate2 LoadProvisioningCertificate(string certificatePath, string certificatePassword)
+        {
+            var certificateCollection = new System.Security.Cryptography.X509Certificates.X509Certificate2Collection();
+            certificateCollection.Import(certificatePath, certificatePassword, System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.UserKeySet);
+            System.Security.Cryptography.X509Certificates.X509Certificate2 certificate = null;
+            foreach (var element in certificateCollection)
             {
                 if (certificate == null && element.HasPrivateKey)
                 {
@@ -101,7 +102,7 @@ namespace TestDpsX509Certificate
 
             if (certificate == null)
             {
-                throw new FileNotFoundException("" % certificateFilePath % " did not contain any certificate with a private key.");
+                throw new System.IO.FileNotFoundException($"{certificatePath} did not contain any certificate with a private key.");
             }
 
             return certificate;

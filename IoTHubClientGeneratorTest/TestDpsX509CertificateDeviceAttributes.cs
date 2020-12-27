@@ -11,7 +11,7 @@ using Microsoft.Azure.Devices.Client;
 namespace TestDpsX509Certificate
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsX509CertificateDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Http1,
@@ -30,7 +30,7 @@ using System;
 namespace TestDpsX509Certificate
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsX509CertificateDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt,
@@ -62,7 +62,7 @@ using System;
 namespace TestDpsX509Certificate
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsX509CertificateDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt,
@@ -96,7 +96,7 @@ using Microsoft.Azure.Devices.Client;
 namespace TestDpsX509Certificate
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsX509CertificateDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Amqp,TransportType=TransportType.Amqp,

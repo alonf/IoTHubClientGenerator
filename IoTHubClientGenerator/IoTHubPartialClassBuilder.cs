@@ -133,8 +133,8 @@ namespace IoTHubClientGenerator
                 IsAttributeExist(nameof(DpsTpmDeviceAttribute)))
             {
                 AppendLine("using Microsoft.Azure.Devices.Provisioning.Client.Transport;");
-                AppendLine("using Microsoft.Azure.Devices.Provisioning.Security;");
                 AppendLine("using System.Security.Cryptography;");
+                AppendLine("using Microsoft.Azure.Devices.Provisioning.Client;");
             }
 
             if (IsAttributeExist(nameof(DpsX509CertificateDeviceAttribute)))

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using ApprovalTests.Namers;
 using ApprovalTests.Reporters;
@@ -9,9 +11,12 @@ using IoTHubClientGenerator;
 using IoTHubClientGeneratorSDK;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Provisioning.Client;
+using Microsoft.Azure.Devices.Provisioning.Client.Transport;
+using Microsoft.Azure.Devices.Provisioning.Security;
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -79,8 +84,6 @@ namespace IoTHubClientGeneratorTest
 
         private string GetGeneratedOutput(string source)
         {
-            
-            
             var syntaxTree = CSharpSyntaxTree.ParseText(source);
 
             var references = new List<MetadataReference>();
@@ -92,17 +95,25 @@ namespace IoTHubClientGeneratorTest
                     references.Add(MetadataReference.CreateFromFile(assembly.Location));
                 }
             }
+
             references.Add(MetadataReference.CreateFromFile(typeof(IoTHubAttribute).Assembly.Location));
             references.Add(MetadataReference.CreateFromFile(typeof(DeviceClient).Assembly.Location));
             references.Add(MetadataReference.CreateFromFile(typeof(ProvisioningDeviceClient).Assembly.Location));
             references.Add(MetadataReference.CreateFromFile(typeof(SecurityProviderX509Certificate).Assembly.Location));
-
+            references.Add(MetadataReference.CreateFromFile(typeof(ProvisioningTransportHandlerAmqp).Assembly.Location));
+            references.Add(MetadataReference.CreateFromFile(typeof(ProvisioningTransportHandlerMqtt).Assembly.Location));
+            references.Add(MetadataReference.CreateFromFile(typeof(ProvisioningTransportHandlerHttp).Assembly.Location));
+            references.Add(MetadataReference.CreateFromFile(typeof(HMACSHA256).Assembly.Location));
+            references.Add(MetadataReference.CreateFromFile(typeof(SecurityProviderTpmHsm).Assembly.Location));
+            references.Add(MetadataReference.CreateFromFile(typeof(X509Certificate2).Assembly.Location));
+            
             var compilation = CSharpCompilation.Create("testAssembly", new[] {syntaxTree}, references,
                 new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-            
+
             var compileDiagnostics = compilation.GetDiagnostics();
-            Assert.False(compileDiagnostics.Any(d => d.Severity == DiagnosticSeverity.Error), "Failed: " + compileDiagnostics.FirstOrDefault()?.GetMessage());
+            Assert.False(compileDiagnostics.Any(d => d.Severity == DiagnosticSeverity.Error),
+                "Failed: " + compileDiagnostics.FirstOrDefault()?.GetMessage());
 
             ISourceGenerator generator = new Generator();
 
@@ -113,18 +124,55 @@ namespace IoTHubClientGeneratorTest
                 "Failed: " + generateDiagnostics.FirstOrDefault()?.GetMessage());
 
             string output = outputCompilation.SyntaxTrees
-                .Aggregate(new StringBuilder(), 
-                    (sb,st)=>
+                .Aggregate(new StringBuilder(),
+                    (sb, st) =>
                     {
                         sb.AppendLine(new string('*', 80));
                         sb.AppendLine(st.ToString());
                         sb.AppendLine();
                         sb.AppendLine();
                         return sb;
-                    }, sb=>sb.ToString());
-            
-            _output.WriteLine(output);
+                    }, sb => sb.ToString());
 
+            _output.WriteLine(output);
+            var allClasses = syntaxTree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>();
+            var theIoTHubDecoratedClass = allClasses.FirstOrDefault(c =>
+                Enumerable.Any<AttributeListSyntax>(c.AttributeLists,
+                    a => a.Attributes.Any(a => a.Name.ToString() + "Attribute" == nameof(IoTHubAttribute))));
+            if (theIoTHubDecoratedClass != null)
+            {
+                var iotClassName = theIoTHubDecoratedClass.Identifier.ToString();
+
+                var @namespace = ((NamespaceDeclarationSyntax) theIoTHubDecoratedClass.Parent)?.Name.ToString() ?? "";
+                var main =
+                    @$"
+using System;
+using System.Threading.Tasks;
+
+namespace {@namespace}
+{{
+    public class Console
+    {{
+        static async Task Main()
+        {{
+            var iotHubClient = new {iotClassName}();
+            await iotHubClient.InitIoTHubClientAsync();
+        }}
+    }}
+}}";
+                var mainSyntaxTree = CSharpSyntaxTree.ParseText(main);
+
+                var syntaxTreeList = new List<SyntaxTree>(outputCompilation.SyntaxTrees) {mainSyntaxTree};
+
+                var consoleCompilation = CSharpCompilation.Create("testExecutable", syntaxTreeList.ToArray(),
+                    references, new CSharpCompilationOptions(OutputKind.ConsoleApplication));
+                var consoleCompileDiagnostics = consoleCompilation.GetDiagnostics();
+                if (consoleCompileDiagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
+                {
+                    output = consoleCompileDiagnostics.Aggregate(new StringBuilder(),
+                        (s, d) => s.AppendLine(d.ToString()), s => s.ToString()) + Environment.NewLine + output;
+                }
+            }
             return output;
         }
     }

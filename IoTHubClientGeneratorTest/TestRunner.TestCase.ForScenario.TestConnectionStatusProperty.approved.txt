@@ -6,7 +6,7 @@ using Microsoft.Azure.Devices.Client;
 namespace TestConnectionStatusProperty
 {
     [IoTHub()]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
          [ConnectionStatus] 
          private (ConnectionStatus Status, ConnectionStatusChangeReason Reason) DeviceConnectionStatus { get; set; }

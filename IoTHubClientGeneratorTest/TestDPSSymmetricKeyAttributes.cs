@@ -11,7 +11,7 @@ using Microsoft.Azure.Devices.Client;
 namespace TestDPSSymmetricKey
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Http1,
@@ -30,7 +30,7 @@ using System;
 namespace TestDPSSymmetricKey
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt,
@@ -62,7 +62,7 @@ using System;
 namespace TestDPSSymmetricKey
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt,
@@ -96,7 +96,7 @@ using Microsoft.Azure.Devices.Client;
 namespace TestDPSSymmetricKey
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Amqp,TransportType=TransportType.Amqp,
@@ -119,7 +119,7 @@ using System;
 namespace TestDPSSymmetricKey
 {
     [IoTHub]
-    class MyIoTHubClient
+    partial class MyIoTHubClient
     {
         [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt,
@@ -131,8 +131,8 @@ namespace TestDPSSymmetricKey
         {
             if (exception is IotHubException {IsTransient: true})
             {
-                Console.WriteLine($""Error: {errorMessage}"");
-                Console.WriteLine($""An IotHubException was caught, but will try to recover and retry: {exception}"");
+                System.Console.WriteLine($""Error: {errorMessage}"");
+                System.Console.WriteLine($""An IotHubException was caught, but will try to recover and retry: {exception}"");
             }
         }
 
