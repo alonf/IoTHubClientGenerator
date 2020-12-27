@@ -17,7 +17,7 @@ jobs:
         dotnet-version: 5.0.101
     - name: Create Nuget Package
       run: dotnet pack -c Release /p:AssemblyVersion=${{ github.event.release.tag_name}} /p:PackageReleaseNotes="See https://github.com/alonf/IoTHubClientGenerator/releases/tag/${{github.event.release.tag_name}}"
-      working-directory: ./IoTHubClientGenerator
+      working-directory: ./
     - name: Archive Nuget Package for IoTHubClientGenerator
       uses: actions/upload-artifact@v1
       with:

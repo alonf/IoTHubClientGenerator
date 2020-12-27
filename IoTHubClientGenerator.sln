@@ -3,13 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTHubClientGenerator", "IoTHubClientGenerator\IoTHubClientGenerator.csproj", "{189846AE-AC31-47CB-8563-6AAA3ADF0C7F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTHubClientGenerator", "IoTHubClientGenerator\IoTHubClientGenerator.csproj", "{189846AE-AC31-47CB-8563-6AAA3ADF0C7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTHubClientGeneratorTest", "IoTHubClientGeneratorTest\IoTHubClientGeneratorTest.csproj", "{8C368BC6-E2E0-4479-A0FF-7C5AB0124667}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTHubClientGeneratorTest", "IoTHubClientGeneratorTest\IoTHubClientGeneratorTest.csproj", "{8C368BC6-E2E0-4479-A0FF-7C5AB0124667}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTHubClientGeneratorDemo", "IoTHubClientGeneratorDemo\IoTHubClientGeneratorDemo.csproj", "{41B38D89-0CD6-439D-8E3E-32F50E640DC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTHubClientGeneratorDemo", "IoTHubClientGeneratorDemo\IoTHubClientGeneratorDemo.csproj", "{41B38D89-0CD6-439D-8E3E-32F50E640DC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTHubClientGeneratorSDK", "IoTHubClientGeneratorSDK\IoTHubClientGeneratorSDK.csproj", "{FE80E392-3C82-4159-BA6E-30A0A1F23C5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTHubClientGeneratorSDK", "IoTHubClientGeneratorSDK\IoTHubClientGeneratorSDK.csproj", "{FE80E392-3C82-4159-BA6E-30A0A1F23C5A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{4A2E8F9B-4FF4-4F86-A974-BC14971E108C}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+		.github\workflows\release.yml = .github\workflows\release.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
