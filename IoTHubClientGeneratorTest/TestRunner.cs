@@ -64,24 +64,6 @@ namespace IoTHubClientGeneratorTest
             return result;
         }
         
-        //make sure the needed types are referenced
-        [IoTHub]
-        // ReSharper disable once UnusedType.Local
-        private class Dummy
-        {
-#pragma warning disable 169
-            private DeviceClient _dc;
-#pragma warning restore 169
-
-            public static void Foo()
-            {
-                // ReSharper disable once CA1806
-                // ReSharper disable once ObjectCreationAsStatement
-                new SecurityProviderX509Certificate(null);
-                ProvisioningDeviceClient.Create(null, null, null, null);
-            }
-        }
-
         private string GetGeneratedOutput(string source)
         {
             var syntaxTree = CSharpSyntaxTree.ParseText(source);
@@ -137,8 +119,7 @@ namespace IoTHubClientGeneratorTest
             _output.WriteLine(output);
             var allClasses = syntaxTree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>();
             var theIoTHubDecoratedClass = allClasses.FirstOrDefault(c =>
-                Enumerable.Any<AttributeListSyntax>(c.AttributeLists,
-                    a => a.Attributes.Any(a => a.Name.ToString() + "Attribute" == nameof(IoTHubAttribute))));
+                c.AttributeLists.Any(a => a.Attributes.Any(att => att.Name + "Attribute" == nameof(IoTHubAttribute))));
             if (theIoTHubDecoratedClass != null)
             {
                 var iotClassName = theIoTHubDecoratedClass.Identifier.ToString();
