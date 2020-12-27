@@ -22,12 +22,12 @@ jobs:
       uses: actions/upload-artifact@v1
       with:
         name: packages
-        path: "bin/Release/IoTHubClientGenerator/IoTHubClientGenerator.${{github.event.release.tag_name}}.nupkg"
+        path: "bin/Release/IoTHubClientGenerator/IoTHubClientGenerator/IoTHubClientGenerator.${{github.event.release.tag_name}}.nupkg"
     - name: Archive Nuget Package for IoTHubClientGeneratorSDK
       uses: actions/upload-artifact@v1
       with:
         name: packages
-        path: "bin/Release/IoTHubClientGenerator/IoTHubClientGeneratorSDK.${{github.event.release.tag_name}}.nupkg"
+        path: "bin/Release/IoTHubClientGenerator/IoTHubClientGenerator/IoTHubClientGeneratorSDK.${{github.event.release.tag_name}}.nupkg"
      
      
 
