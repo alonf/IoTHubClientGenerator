@@ -5,7 +5,7 @@
     <Authors>Alon Fliess</Authors>
     <Company>Alon Fliess</Company>
     <Description>Attributes for the IoT Hub Client Source Generator</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <LangVersion>9</LangVersion>
   </PropertyGroup>
 

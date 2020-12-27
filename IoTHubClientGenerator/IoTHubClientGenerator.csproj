@@ -7,7 +7,7 @@
     <Authors>Alon Fliess</Authors>
     <Description>Azure IoT Hub Client made easy with auto C# code generator</Description>
     <PackageTags>Azure;IoT;C# Source Generator;Device;Client</PackageTags>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <IncludeBuildOutput>false</IncludeBuildOutput> 
     <Version>1.7.0</Version>
     <AssemblyVersion>1.7.0.0</AssemblyVersion>
