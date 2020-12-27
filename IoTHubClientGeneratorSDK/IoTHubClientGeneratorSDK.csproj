@@ -11,8 +11,8 @@
 
   <PropertyGroup>
     <DocumentationFile>bin\Debug\IoTHubClientGeneratorSDK.xml</DocumentationFile>
-    <Version>1.5.0</Version>
-    <AssemblyVersion>1.5.0.0</AssemblyVersion>
+    <Version>$(VersionNumber)</Version>
+    <AssemblyVersion>$(VersionNumber)</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">

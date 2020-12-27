@@ -9,8 +9,8 @@
     <PackageTags>Azure;IoT;C# Source Generator;Device;Client</PackageTags>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <IncludeBuildOutput>false</IncludeBuildOutput> 
-    <Version>1.7.0</Version>
-    <AssemblyVersion>1.7.0.0</AssemblyVersion>
+    <Version>$(VersionNumber)</Version>
+    <AssemblyVersion>$(VersionNumber)</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
