@@ -18,6 +18,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{4A2E
 		.github\workflows\ReleaseIoTHubClientGeneratorSDK.yml = .github\workflows\ReleaseIoTHubClientGeneratorSDK.yml
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Wiki", "Wiki", "{CE6DC3C5-3F68-4298-875E-20B088CD830C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{D4AE46EC-4EE9-4E9A-ABC6-6C73D7413F39}"
+	ProjectSection(SolutionItems) = preProject
+		Wiki\Images\ConfigureYourProject.png = Wiki\Images\ConfigureYourProject.png
+		Wiki\Images\CreateNewProject.png = Wiki\Images\CreateNewProject.png
+		Wiki\Images\DeviceTwinBatteryLevel.png = Wiki\Images\DeviceTwinBatteryLevel.png
+		Wiki\Images\EditEnvironmentVariables.png = Wiki\Images\EditEnvironmentVariables.png
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +53,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D4AE46EC-4EE9-4E9A-ABC6-6C73D7413F39} = {CE6DC3C5-3F68-4298-875E-20B088CD830C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A624F362-FCD8-4046-860E-1A9FE977F836}
