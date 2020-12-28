@@ -54,22 +54,26 @@ namespace TestNonStringReportedProperties
         {
             if (desiredProperties.Contains("DesiredProperty"))
             {
-                DesiredProperty = Int32.Parse(desiredProperties["DesiredProperty"]);
+                string textData = desiredProperties["DesiredProperty"];
+                DesiredProperty = Int32.Parse(textData);
             }
 
             if (desiredProperties.Contains("doubleProperty"))
             {
-                DoubleProperty = Double.Parse(desiredProperties["doubleProperty"]);
+                string textData = desiredProperties["doubleProperty"];
+                DoubleProperty = Double.Parse(textData);
             }
 
             if (desiredProperties.Contains("decimalProperty"))
             {
-                DecimalProperty = Decimal.Parse(desiredProperties["decimalProperty"]);
+                string textData = desiredProperties["decimalProperty"];
+                DecimalProperty = Decimal.Parse(textData);
             }
 
             if (desiredProperties.Contains("uintProperty"))
             {
-                UintProperty = UInt32.Parse(desiredProperties["uintProperty"]);
+                string textData = desiredProperties["uintProperty"];
+                UintProperty = UInt32.Parse(textData);
             }
 
             await Task.CompletedTask;

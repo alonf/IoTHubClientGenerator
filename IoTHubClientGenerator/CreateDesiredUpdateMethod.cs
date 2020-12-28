@@ -52,8 +52,9 @@ namespace IoTHubClientGenerator
                             }
                             else
                             {
+                                AppendLine($"string textData = desiredProperties[\"{desiredPropertyName}\"];");
                                 AppendLine(
-                                    $"{propertyName} = {typeInfo.Type!.Name}.Parse(desiredProperties[\"{desiredPropertyName}\"]);");
+                                    $"{propertyName} = {typeInfo.Type!.Name}.Parse(textData);");
                             }
                         }
 

@@ -28,7 +28,7 @@ namespace IoTHubClientGeneratorDemo
        [Device]
        public DeviceClient DeviceClient { get; set; }
        
-        [Desired] public string DesiredProperty { get; private set; }
+        [Desired] public int DesiredProperty { get; private set; }
 
         [Reported("ReportedProperty","reported")] private string _reportedProperty;
         
