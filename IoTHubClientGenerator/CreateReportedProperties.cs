@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using IoTHubClientGeneratorSDK;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -24,8 +25,7 @@ namespace IoTHubClientGenerator
                 {
                     AppendLine("var reportedProperties = new Microsoft.Azure.Devices.Shared.TwinCollection();");
                     AppendLine("reportedProperties[propertyName] = data.ToString();");
-                    AppendLine(
-                        $"{_deviceClientPropertyName}.UpdateReportedPropertiesAsync(reportedProperties).Wait();");
+                    AppendLine($"System.Threading.Tasks.Task.Run(async () => await {_deviceClientPropertyName}.UpdateReportedPropertiesAsync(reportedProperties));");
                 }
             }
             AppendLine("}", _isErrorHandlerExist);

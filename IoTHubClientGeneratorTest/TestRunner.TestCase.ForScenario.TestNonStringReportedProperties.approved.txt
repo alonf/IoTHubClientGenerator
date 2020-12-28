@@ -58,7 +58,7 @@ namespace TestNonStringReportedProperties
         {
             var reportedProperties = new Microsoft.Azure.Devices.Shared.TwinCollection();
             reportedProperties[propertyName] = data.ToString();
-            DeviceClient.UpdateReportedPropertiesAsync(reportedProperties).Wait();
+            System.Threading.Tasks.Task.Run(async () => await DeviceClient.UpdateReportedPropertiesAsync(reportedProperties));
         }
 
         public int valueFromTheDevice
