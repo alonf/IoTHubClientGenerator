@@ -14,7 +14,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Actions", "Actions", "{4A2E8F9B-4FF4-4F86-A974-BC14971E108C}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
-		.github\workflows\release.yml = .github\workflows\release.yml
+		.github\workflows\ReleaseIoTHubClientGenerator.yml = .github\workflows\ReleaseIoTHubClientGenerator.yml
+		.github\workflows\ReleaseIoTHubClientGeneratorSDK.yml = .github\workflows\ReleaseIoTHubClientGeneratorSDK.yml
 	EndProjectSection
 EndProject
 Global

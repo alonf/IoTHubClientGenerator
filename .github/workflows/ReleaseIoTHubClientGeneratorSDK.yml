@@ -1,0 +1,28 @@
+name: Release IOTHub Client Generator SDK to Nuget
+
+on:
+  release:
+    types: [published]
+  
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.101
+    - name: Create Nuget Package
+      run: dotnet pack -c Release /p:VersionNumber=${{ github.event.release.tag_name}} /p:PackageReleaseNotes="See https://github.com/alonf/IoTHubClientGenerator/releases/tag/${{github.event.release.tag_name}}" IoTHubClientGeneratorSDK/IoTHubClientGeneratorSDK.csproj
+    - name: Archive Nuget Package for IoTHubClientGeneratorSDK
+      uses: actions/upload-artifact@v1
+      with:
+        name: packages
+        path: "IoTHubClientGeneratorSDK/bin/Release/IoTHubClientGeneratorSDK.${{github.event.release.tag_name}}.nupkg"
+     
+     
+
+   
