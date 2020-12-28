@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using IoTHubClientGeneratorSDK;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace IoTHubClientGenerator
@@ -38,7 +39,22 @@ namespace IoTHubClientGenerator
                         AppendLine("{");
                         using (Indent(this))
                         {
-                            AppendLine($"{propertyName} = desiredProperties[\"{desiredPropertyName}\"];");
+
+                            var semanticModel =
+                                _generatorExecutionContext.Compilation.GetSemanticModel(desiredProperty.Key
+                                    .SyntaxTree);
+                            var typeInfo =
+                                semanticModel.GetTypeInfo(((PropertyDeclarationSyntax) desiredProperty.Key).Type);
+
+                            if (typeInfo.Type?.Name == nameof(System.String))
+                            {
+                                AppendLine($"{propertyName} = desiredProperties[\"{desiredPropertyName}\"];");
+                            }
+                            else
+                            {
+                                AppendLine(
+                                    $"{propertyName} = {typeInfo.Type!.Name}.Parse(desiredProperties[\"{desiredPropertyName}\"]);");
+                            }
                         }
 
                         AppendLine("}");

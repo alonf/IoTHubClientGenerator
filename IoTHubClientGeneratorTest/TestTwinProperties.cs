@@ -35,6 +35,50 @@ namespace TestDesiredProperties
     }
 }";
         
+        
+        [TestCase("TestNonStringReportedProperties")] 
+        public static string TestNonStringReportedProperties => 
+            @"
+using IoTHubClientGeneratorSDK;
+using System;
+
+namespace TestNonStringReportedProperties
+{
+    [IoTHub()]
+    partial class MyIoTHubClient
+    {
+        [Reported(""valueFromTheDevice"")] private int _reportedPropertyDemo;
+
+        [Reported(""ReportedPropertyDouble"", ""reportedPropertyDouble"")] private double _reportedPropertyDouble;
+
+        [Reported(""ReportedPropertyObject"", ""reportedPropertyObject"")] private object _reportedPropertyObject;
+
+        [Reported(""ReportedPropertyDecimal"", ""reportedPropertyDecimal"")] private decimal _reportedPropertyDecimal;
+
+        [Reported(""ReportedPropertyUint"", ""reportedPropertyUint"")] private uint _reportedPropertyUint;
+    }
+}";
+        
+        [TestCase("TestNonStringDesiredProperties")] 
+        public static string TestNonStringDesiredProperties => 
+            @"
+using IoTHubClientGeneratorSDK;
+using System;
+
+namespace TestNonStringReportedProperties
+{
+    [IoTHub()]
+    partial class MyIoTHubClient
+    {
+        [Desired] public int DesiredProperty { get; private set; }
+        [Desired(""doubleProperty"")] private double DoubleProperty { get; set; }
+        [Desired(""decimalProperty"")] private decimal DecimalProperty { get; set; }
+        [Desired(""uintProperty"")] private uint UintProperty { get; set; }
+    }
+}";
+        
+        
+        
         [TestCase("TestTwinPropertiesAndErrorHandling")] 
         public static string TestTwinPropertiesAndErrorHandling => 
 @"

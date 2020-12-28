@@ -3,14 +3,20 @@
 using IoTHubClientGeneratorSDK;
 using System;
 
-namespace TestReportedProperties
+namespace TestNonStringReportedProperties
 {
     [IoTHub()]
     partial class MyIoTHubClient
     {
-        [Reported("valueFromTheDevice")] private string _reportedPropertyDemo;
+        [Reported("valueFromTheDevice")] private int _reportedPropertyDemo;
 
-        [Reported("ReportedPropertyAutoNameDemo", "reportedPropertyAutoNameDemo")] private string _reportedPropertyAutoNameDemo;
+        [Reported("ReportedPropertyDouble", "reportedPropertyDouble")] private double _reportedPropertyDouble;
+
+        [Reported("ReportedPropertyObject", "reportedPropertyObject")] private object _reportedPropertyObject;
+
+        [Reported("ReportedPropertyDecimal", "reportedPropertyDecimal")] private decimal _reportedPropertyDecimal;
+
+        [Reported("ReportedPropertyUint", "reportedPropertyUint")] private uint _reportedPropertyUint;
     }
 }
 
@@ -24,7 +30,7 @@ using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Shared;
 using IoTHubClientGeneratorSDK;
 
-namespace TestReportedProperties
+namespace TestNonStringReportedProperties
 {
     public partial class MyIoTHubClient
     {
@@ -55,7 +61,7 @@ namespace TestReportedProperties
             DeviceClient.UpdateReportedPropertiesAsync(reportedProperties).Wait();
         }
 
-        public string valueFromTheDevice
+        public int valueFromTheDevice
         {
             get
             {
@@ -69,17 +75,59 @@ namespace TestReportedProperties
             }
         }
 
-        public string ReportedPropertyAutoNameDemo
+        public double ReportedPropertyDouble
         {
             get
             {
-                return _reportedPropertyAutoNameDemo;
+                return _reportedPropertyDouble;
             }
 
             set
             {
-                _reportedPropertyAutoNameDemo = value;
-                ReportProperty("reportedPropertyAutoNameDemo", value);
+                _reportedPropertyDouble = value;
+                ReportProperty("reportedPropertyDouble", value);
+            }
+        }
+
+        public object ReportedPropertyObject
+        {
+            get
+            {
+                return _reportedPropertyObject;
+            }
+
+            set
+            {
+                _reportedPropertyObject = value;
+                ReportProperty("reportedPropertyObject", value);
+            }
+        }
+
+        public decimal ReportedPropertyDecimal
+        {
+            get
+            {
+                return _reportedPropertyDecimal;
+            }
+
+            set
+            {
+                _reportedPropertyDecimal = value;
+                ReportProperty("reportedPropertyDecimal", value);
+            }
+        }
+
+        public uint ReportedPropertyUint
+        {
+            get
+            {
+                return _reportedPropertyUint;
+            }
+
+            set
+            {
+                _reportedPropertyUint = value;
+                ReportProperty("reportedPropertyUint", value);
             }
         }
     }

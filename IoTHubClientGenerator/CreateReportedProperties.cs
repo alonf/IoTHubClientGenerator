@@ -1,5 +1,7 @@
 ﻿using System.Linq;
 using IoTHubClientGeneratorSDK;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace IoTHubClientGenerator
@@ -12,7 +14,7 @@ namespace IoTHubClientGenerator
             if (programReportedProperties.Length == 0)
                 return;
             
-            AppendLine("private void ReportProperty(string propertyName, string data)");
+            AppendLine("private void ReportProperty<T>(string propertyName, T data)");
             AppendLine("{");
             using (Indent(this, _isErrorHandlerExist))
             {
@@ -21,7 +23,7 @@ namespace IoTHubClientGenerator
                 using (Indent(this))
                 {
                     AppendLine("var reportedProperties = new Microsoft.Azure.Devices.Shared.TwinCollection();");
-                    AppendLine("reportedProperties[propertyName] = data;");
+                    AppendLine("reportedProperties[propertyName] = data.ToString();");
                     AppendLine(
                         $"{_deviceClientPropertyName}.UpdateReportedPropertiesAsync(reportedProperties).Wait();");
                 }
@@ -41,8 +43,12 @@ namespace IoTHubClientGenerator
 
             foreach (var reportedProperty in programReportedProperties)
             {
-                string fieldName = ((FieldDeclarationSyntax) reportedProperty.Key).Declaration.Variables.First()
-                    .Identifier.ToString();
+                var field = ((FieldDeclarationSyntax) reportedProperty.Key).Declaration.Variables.First();
+                string fieldName = field.Identifier.ToString();
+                var semanticModel = _generatorExecutionContext.Compilation.GetSemanticModel(field.SyntaxTree);
+                var clrTypeName = ((IFieldSymbol) semanticModel.GetDeclaredSymbol(field))?.Type.Name;
+                var typeName = Util.GetFriendlyNameOfPrimitive(clrTypeName);
+                
                 var twinPropertyAttribute =
                     reportedProperty.Value.First(v => v.Name.ToString() == nameof(ReportedAttribute).AttName());
                 var localPropertyName = twinPropertyAttribute.ArgumentList?.Arguments[0].Expression.ToString()
@@ -54,7 +60,7 @@ namespace IoTHubClientGenerator
                         .TrimEnd('\"')
                     : localPropertyName;
 
-                AppendLine($"public string {localPropertyName}");
+                AppendLine($"public {typeName} {localPropertyName}");
                 AppendLine("{");
                 using (Indent(this))
                 {

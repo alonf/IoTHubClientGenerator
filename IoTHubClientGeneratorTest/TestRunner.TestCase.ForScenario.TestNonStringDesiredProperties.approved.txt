@@ -3,14 +3,15 @@
 using IoTHubClientGeneratorSDK;
 using System;
 
-namespace TestReportedProperties
+namespace TestNonStringReportedProperties
 {
     [IoTHub()]
     partial class MyIoTHubClient
     {
-        [Reported("valueFromTheDevice")] private string _reportedPropertyDemo;
-
-        [Reported("ReportedPropertyAutoNameDemo", "reportedPropertyAutoNameDemo")] private string _reportedPropertyAutoNameDemo;
+        [Desired] public int DesiredProperty { get; private set; }
+        [Desired("doubleProperty")] private double DoubleProperty { get; set; }
+        [Desired("decimalProperty")] private decimal DecimalProperty { get; set; }
+        [Desired("uintProperty")] private uint UintProperty { get; set; }
     }
 }
 
@@ -24,7 +25,7 @@ using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Shared;
 using IoTHubClientGeneratorSDK;
 
-namespace TestReportedProperties
+namespace TestNonStringReportedProperties
 {
     public partial class MyIoTHubClient
     {
@@ -32,6 +33,7 @@ namespace TestReportedProperties
         {
             await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
             DeviceClient = CreateDeviceClient();
+            await DeviceClient.SetDesiredPropertyUpdateCallbackAsync(HandleDesiredPropertyUpdateAsync, null);
         }
 
         [Device(ConnectionString = "%ConnectionString%")]
@@ -48,39 +50,29 @@ namespace TestReportedProperties
             return deviceClient;
         }
 
-        private void ReportProperty<T>(string propertyName, T data)
+        private async Task HandleDesiredPropertyUpdateAsync(Microsoft.Azure.Devices.Shared.TwinCollection desiredProperties, object context)
         {
-            var reportedProperties = new Microsoft.Azure.Devices.Shared.TwinCollection();
-            reportedProperties[propertyName] = data.ToString();
-            DeviceClient.UpdateReportedPropertiesAsync(reportedProperties).Wait();
-        }
-
-        public string valueFromTheDevice
-        {
-            get
+            if (desiredProperties.Contains("DesiredProperty"))
             {
-                return _reportedPropertyDemo;
+                DesiredProperty = Int32.Parse(desiredProperties["DesiredProperty"]);
             }
 
-            set
+            if (desiredProperties.Contains("doubleProperty"))
             {
-                _reportedPropertyDemo = value;
-                ReportProperty("valueFromTheDevice", value);
-            }
-        }
-
-        public string ReportedPropertyAutoNameDemo
-        {
-            get
-            {
-                return _reportedPropertyAutoNameDemo;
+                DoubleProperty = Double.Parse(desiredProperties["doubleProperty"]);
             }
 
-            set
+            if (desiredProperties.Contains("decimalProperty"))
             {
-                _reportedPropertyAutoNameDemo = value;
-                ReportProperty("reportedPropertyAutoNameDemo", value);
+                DecimalProperty = Decimal.Parse(desiredProperties["decimalProperty"]);
             }
+
+            if (desiredProperties.Contains("uintProperty"))
+            {
+                UintProperty = UInt32.Parse(desiredProperties["uintProperty"]);
+            }
+
+            await Task.CompletedTask;
         }
     }
 }
