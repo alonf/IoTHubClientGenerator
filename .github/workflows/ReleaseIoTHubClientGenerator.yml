@@ -22,3 +22,5 @@ jobs:
       with:
         name: packages
         path: "IoTHubClientGenerator/bin/Release/IoTHubClientGenerator.${{github.event.release.tag_name}}.nupkg"
+    - name: Publish Nuget Package
+      run: dotnet nuget push **/*.nupkg --api-key ${{ secrets.nuget_api_key }} --source https://api.nuget.org/v3/index.json
