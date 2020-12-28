@@ -32,6 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{D4AE46
 		Wiki\Images\ManageNugetPackages.png = Wiki\Images\ManageNugetPackages.png
 		Wiki\Images\Status method and property.png = Wiki\Images\Status method and property.png
 		Wiki\Images\Telemetry.png = Wiki\Images\Telemetry.png
+		Wiki\Images\Handling Errors.png = Wiki\Images\Handling Errors.png
 	EndProjectSection
 EndProject
 Global
