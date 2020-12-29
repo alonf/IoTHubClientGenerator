@@ -37,7 +37,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Images", "Images", "{D4AE46
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Text", "Text", "{032B9BB8-5716-40A3-90AF-CEA73FBA84C0}"
 ProjectSection(SolutionItems) = preProject
-	Doc\Text\IoT Hub Client Code Generator Walkthrough.md = Doc\Text\IoT Hub Client Code Generator Walkthrough.md
+	Doc\Text\Walkthrough.md = Doc\Text\Walkthrough.md
+	Readme.md = Readme.md
 EndProjectSection
 EndProject
 Global
