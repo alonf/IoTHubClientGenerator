@@ -4,12 +4,11 @@ namespace IoTHubClientGeneratorSDK
 {
     /// <summary>
     /// Decorate a field to generate device twin reported attribute
-    /// example:
+    /// </summary>
     /// <example>
     ///[Reported("valueFromTheDevice")] private string _reportedPropertyDemo;
     ///[Reported("ReportedPropertyAutoNameDemo", "reportedPropertyAutoNameDemo")] private string _reportedPropertyAutoNameDemo;
     /// </example>
-    /// </summary>
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
     public class ReportedAttribute : Attribute
     {

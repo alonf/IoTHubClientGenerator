@@ -1,0 +1,20 @@
+## IoTHubClientGeneratorSDK Namespace
+### Classes
+- [AuthenticationMethodAttribute](./IoTHubClientGeneratorSDK-AuthenticationMethodAttribute.md 'IoTHubClientGeneratorSDK.AuthenticationMethodAttribute')
+- [C2DMessageAttribute](./IoTHubClientGeneratorSDK-C2DMessageAttribute.md 'IoTHubClientGeneratorSDK.C2DMessageAttribute')
+- [ClientOptionsAttribute](./IoTHubClientGeneratorSDK-ClientOptionsAttribute.md 'IoTHubClientGeneratorSDK.ClientOptionsAttribute')
+- [ConnectionStatusAttribute](./IoTHubClientGeneratorSDK-ConnectionStatusAttribute.md 'IoTHubClientGeneratorSDK.ConnectionStatusAttribute')
+- [DesiredAttribute](./IoTHubClientGeneratorSDK-DesiredAttribute.md 'IoTHubClientGeneratorSDK.DesiredAttribute')
+- [DeviceAttribute](./IoTHubClientGeneratorSDK-DeviceAttribute.md 'IoTHubClientGeneratorSDK.DeviceAttribute')
+- [DirectMethodAttribute](./IoTHubClientGeneratorSDK-DirectMethodAttribute.md 'IoTHubClientGeneratorSDK.DirectMethodAttribute')
+- [DpsDeviceAttribute](./IoTHubClientGeneratorSDK-DpsDeviceAttribute.md 'IoTHubClientGeneratorSDK.DpsDeviceAttribute')
+- [DpsSymmetricKeyDeviceAttribute](./IoTHubClientGeneratorSDK-DpsSymmetricKeyDeviceAttribute.md 'IoTHubClientGeneratorSDK.DpsSymmetricKeyDeviceAttribute')
+- [DpsTpmDeviceAttribute](./IoTHubClientGeneratorSDK-DpsTpmDeviceAttribute.md 'IoTHubClientGeneratorSDK.DpsTpmDeviceAttribute')
+- [DpsX509CertificateDeviceAttribute](./IoTHubClientGeneratorSDK-DpsX509CertificateDeviceAttribute.md 'IoTHubClientGeneratorSDK.DpsX509CertificateDeviceAttribute')
+- [IoTHubAttribute](./IoTHubClientGeneratorSDK-IoTHubAttribute.md 'IoTHubClientGeneratorSDK.IoTHubAttribute')
+- [IoTHubDeviceStatusChangesHandlerAttribute](./IoTHubClientGeneratorSDK-IoTHubDeviceStatusChangesHandlerAttribute.md 'IoTHubClientGeneratorSDK.IoTHubDeviceStatusChangesHandlerAttribute')
+- [IoTHubErrorHandlerAttribute](./IoTHubClientGeneratorSDK-IoTHubErrorHandlerAttribute.md 'IoTHubClientGeneratorSDK.IoTHubErrorHandlerAttribute')
+- [ReportedAttribute](./IoTHubClientGeneratorSDK-ReportedAttribute.md 'IoTHubClientGeneratorSDK.ReportedAttribute')
+- [TransportSettingAttribute](./IoTHubClientGeneratorSDK-TransportSettingAttribute.md 'IoTHubClientGeneratorSDK.TransportSettingAttribute')
+### Enums
+- [DPSEnrollmentType](./IoTHubClientGeneratorSDK-DPSEnrollmentType.md 'IoTHubClientGeneratorSDK.DPSEnrollmentType')

@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 
 namespace IoTHubClientGeneratorSDK
 {
@@ -22,3 +22,4 @@ namespace IoTHubClientGeneratorSDK
         }
     }
 }
+*/

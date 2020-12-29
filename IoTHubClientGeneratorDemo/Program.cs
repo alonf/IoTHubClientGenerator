@@ -92,7 +92,7 @@ namespace IoTHubClientGeneratorDemo
 
 
         //if exist, provide a second means for device creation in case of a failure
-        [AlternateConnectionString("%alternateConnectionString%")]
+        //[AlternateConnectionString("%alternateConnectionString%")]
         //private string AlternateConnectionString { get; set; }
 
         // ReSharper disable once UnusedAutoPropertyAccessor.Local

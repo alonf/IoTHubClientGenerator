@@ -4,12 +4,11 @@ namespace IoTHubClientGeneratorSDK
 {
     /// <summary>
     /// Decorate a property to be automatically updated from the device twin properties
-    /// Example:
+    /// </summary>
     /// <example>
     /// [Desired("valueFromTheCloud")] private string DesiredPropertyDemo { get; set; }
     /// [Desired] private string DesiredPropertyAutoNameDemo { get; set; }
     /// </example>
-    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class DesiredAttribute : Attribute
     {

@@ -6,12 +6,11 @@ namespace IoTHubClientGeneratorSDK
     /// <summary>
     /// Decorate a property that will be set when the device client is initiated in: await iotHubInstance.InitIoTHubClientAsync();
     /// If not provided, a default Device property is created
-    /// Example:
+    /// </summary>
     /// <example>
     /// [Device(DeviceId = "%deviceId%", ConnectionString = "%connectionString%", TransportType = TransportType.Amqp)]
     /// public DeviceClient Client { get; set; }
     /// </example>
-    /// </summary>
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class DeviceAttribute : Attribute
     {

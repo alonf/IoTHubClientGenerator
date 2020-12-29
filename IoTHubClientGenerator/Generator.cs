@@ -99,8 +99,7 @@ namespace IoTHubClientGenerator
             {
                 bool result = true;
                 var attributesNodes = receiverCandidateAttributes
-                    .Where(a => a.Key.Name.ToString() == attributeName.AttName()).Select(e => e.Key)
-                    .Cast<AttributeSyntax>().ToArray();
+                    .Where(a => a.Key.Name.ToString() == attributeName.AttName()).Select(e => e.Key).ToArray();
 
                 foreach (var attributesNode in attributesNodes)
                 {
@@ -217,7 +216,7 @@ namespace IoTHubClientGenerator
             nameof(IoTHubAttribute).AttName(),
             nameof(C2DMessageAttribute).AttName(),
             nameof(DirectMethodAttribute).AttName(),
-            nameof(AlternateConnectionStringAttribute).AttName(),
+            //nameof(AlternateConnectionStringAttribute).AttName(),
             nameof(ConnectionStatusAttribute).AttName(),
             nameof(DesiredAttribute).AttName(),
             nameof(ReportedAttribute).AttName(),
