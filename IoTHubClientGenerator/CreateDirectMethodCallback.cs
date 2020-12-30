@@ -23,31 +23,19 @@ namespace IoTHubClientGenerator
 
 
                 AppendLine($"await {_deviceClientPropertyName}.SetMethodHandlerAsync(\"{directMethodAttributePropertyMethodName ?? directMethodName}\", async (message, _) =>");
-                AppendLine("{");
-                using (Indent(this))
+                using (Block("}, null);"))
                 {
-                    AppendLine("try", _isErrorHandlerExist);
-                    AppendLine("{", _isErrorHandlerExist);
-                    using (Indent(this, _isErrorHandlerExist))
+                    using (Try(_isErrorHandlerExist))
                     {
                         Append($"return await {directMethodName}(message);");
                     }
-
-                    AppendLine("}", _isErrorHandlerExist);
-                    AppendLine("catch(System.Exception exception)", _isErrorHandlerExist);
-                    AppendLine("{", _isErrorHandlerExist);
-                    using (Indent(this, _isErrorHandlerExist))
+                    using (Catch("System.Exception exception", _isErrorHandlerExist))
                     {
-                        AppendLine(
-                            "string errorMessage =\"Error handling cloud to device message. The message has been rejected\";",
-                            _isErrorHandlerExist);
+                        AppendLine("string errorMessage =\"Error handling cloud to device message. The message has been rejected\";", _isErrorHandlerExist);
                         AppendLine(_callErrorHandlerPattern, _isErrorHandlerExist);
                     }
-
-                    AppendLine("}", _isErrorHandlerExist);
                     AppendLine("return new MethodResponse(new byte[0], 500);", _isErrorHandlerExist);
                 }
-                AppendLine("}, null);");
                 AppendLine();
             }
         }

@@ -13,9 +13,9 @@ namespace TestDpsX509Certificate
     [IoTHub]
     partial class MyIoTHubClient
     {
-        [DpsX509CertificateDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
-            EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Http1,
-            TransportType=TransportType.Amqp, CertificatePath=""%certificateFilePath%"", CertificatePassword=""%CertPassword%"")]
+        [DpsX509CertificateDevice(DPSIdScope = ""%DpsScopeId%"", Id= ""1"", EnrollmentGroupId =""GroupId"", 
+            EnrollmentType = DPSEnrollmentType.Individual, DPSTransportType = TransportType.Http1,
+            TransportType=TransportType.Amqp, CertificatePath = ""%certificateFilePath%"", CertificatePassword = ""%CertPassword%"")]
         private DeviceClient MyClient {get;set;}
     }
 }";

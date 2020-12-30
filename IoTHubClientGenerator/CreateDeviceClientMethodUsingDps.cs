@@ -13,8 +13,7 @@ namespace IoTHubClientGenerator
             {
                 Action additionalCode = () => { };
                 AppendLine($"private async Task<Microsoft.Azure.Devices.Client.DeviceClient> {methodName}()");
-                AppendLine("{");
-                using (Indent(this))
+                using (Block())
                 {
                     if (attributeSyntax?.ArgumentList != null)
                     {
@@ -33,11 +32,7 @@ namespace IoTHubClientGenerator
                     }
                     else
                     {
-                        _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(new
-                                DiagnosticDescriptor("IoTGen007", "IoT Hub Generator Error",
-                                    "Dps attribute must define properties",
-                                    "Error", DiagnosticSeverity.Warning, true),
-                            Location.Create(attributeSyntax!.SyntaxTree, attributeSyntax.Span)));
+                        _diagnosticsManager.Report(DiagnosticId.DpsAttributeMissingProperties, Location.Create(attributeSyntax!.SyntaxTree, attributeSyntax.Span));
                         return;
                     }
 
@@ -68,8 +63,6 @@ namespace IoTHubClientGenerator
 
                     AppendLine("return deviceClient;");
                 }
-
-                AppendLine("}");
                 additionalCode();
             };
         }

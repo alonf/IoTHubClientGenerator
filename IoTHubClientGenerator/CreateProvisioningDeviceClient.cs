@@ -15,7 +15,7 @@ namespace IoTHubClientGenerator
 
            
             if (attributeSyntax.ArgumentList!.Arguments.Any(a =>
-                a.NameEquals?.ToString().TrimEnd('=').Trim() == nameof(DpsTpmDeviceAttribute.GlobalDeviceEndpoint) == false))
+                a.NameEquals?.ToString().TrimEnd('=', ' ', '\t') == nameof(DpsTpmDeviceAttribute.GlobalDeviceEndpoint) == false))
             
             {
                 AppendLine($"var the{nameof(DpsDeviceAttribute.GlobalDeviceEndpoint)} = \"global.azure-devices-provisioning.net\";");
@@ -24,13 +24,10 @@ namespace IoTHubClientGenerator
             AppendLine("ProvisioningDeviceClient provClient = ProvisioningDeviceClient.Create(theGlobalDeviceEndpoint, theDPSIdScope, security, transport);");
             AppendLine("DeviceRegistrationResult result = await provClient.RegisterAsync();");
             AppendLine();
-            AppendLine("if (result.Status != ProvisioningRegistrationStatusType.Assigned)");
-            AppendLine("{");
-            using (Indent(this))
+            using (If("result.Status != ProvisioningRegistrationStatusType.Assigned"))
             {
                 AppendLine("throw new Exception($\"Registration status did not assign a hub, status: {result.Status}\");");
             }
-            AppendLine("}");
             AppendLine();
         }
     }

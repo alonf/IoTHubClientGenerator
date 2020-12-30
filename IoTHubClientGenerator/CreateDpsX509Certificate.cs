@@ -17,48 +17,29 @@ namespace IoTHubClientGenerator
             return () =>
             {
                 AppendLine("private System.Security.Cryptography.X509Certificates.X509Certificate2 LoadProvisioningCertificate(string certificatePath, string certificatePassword)");
-                AppendLine("{");
-                using (Indent(this))
+                using (Block())
                 {
                     AppendLine("var certificateCollection = new System.Security.Cryptography.X509Certificates.X509Certificate2Collection();");
                     AppendLine("certificateCollection.Import(certificatePath, certificatePassword, System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.UserKeySet);");
                     AppendLine("System.Security.Cryptography.X509Certificates.X509Certificate2 certificate = null;");
-                    AppendLine("foreach (var element in certificateCollection)");
-                    AppendLine("{");
-                    using (Indent(this))
+                    using (Foreach("var element in certificateCollection"))
                     {
-                        AppendLine("if (certificate == null && element.HasPrivateKey)");
-                        AppendLine("{");
-                        using (Indent(this))
+                        using (If("certificate == null && element.HasPrivateKey"))
                         {
                             AppendLine("certificate = element;");
                         }
-
-                        AppendLine("}");
-                        AppendLine("else");
-                        AppendLine("{");
-                        using (Indent(this))
+                        using (Else())
                         {
                             AppendLine("element.Dispose();");
                         }
-
-                        AppendLine("}");
                     }
-
-                    AppendLine("}");
                     AppendLine();
-                    AppendLine("if (certificate == null)");
-                    AppendLine("{");
-                    using (Indent(this))
+                    using (If("certificate == null"))
                     {
                         AppendLine("throw new System.IO.FileNotFoundException($\"{certificatePath} did not contain any certificate with a private key.\");");
                     }
-
-                    AppendLine("}");
                     AppendLine("return certificate;");
                 }
-
-                AppendLine("}");
                 AppendLine();
             };
         }
