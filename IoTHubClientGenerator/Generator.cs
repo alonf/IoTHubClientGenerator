@@ -10,9 +10,14 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace IoTHubClientGenerator
 {
+   
+
     [Generator]
     public class Generator : ISourceGenerator
     {
+        private static Lazy<CompilationDiagnosticsManager> _diagnosticsManagerLazy;
+        private static CompilationDiagnosticsManager DiagnosticsManager => _diagnosticsManagerLazy.Value;
+        
         public void Initialize(GeneratorInitializationContext context)
         {
             context.RegisterForSyntaxNotifications(() => new SyntaxReceiver());
@@ -20,13 +25,16 @@ namespace IoTHubClientGenerator
 
         public void Execute(GeneratorExecutionContext context)
         {
+            _diagnosticsManagerLazy =
+                new Lazy<CompilationDiagnosticsManager>(() => new CompilationDiagnosticsManager(context));
+            
             var iotHubAttributeName = nameof(IoTHubAttribute).AttName();
             if (context.SyntaxReceiver is not SyntaxReceiver receiver) return;
             var iotHubSyntaxNodes = receiver.CandidateMembers
                 .Where(m => m.Value.Any(att => att.Name.ToString() == iotHubAttributeName))
                 .Select(t => t.Key).ToArray();
 
-            if (!ValidateIoTHubAttribute(context, iotHubSyntaxNodes)) 
+            if (!ValidateIoTHubAttribute(iotHubSyntaxNodes)) 
                 return;
             
             foreach (var iotHubSyntaxNode in iotHubSyntaxNodes)
@@ -40,27 +48,24 @@ namespace IoTHubClientGenerator
                 var candidateAttributes = receiver.CandidateAttributes
                     .Where(e => e.Value == iotHubSyntaxNode || e.Value.Parent == iotHubSyntaxNode).ToDictionary(e=>e.Key, e=>e.Value);
 
-                if (!Validate(context, candidateAttributes)) 
+                if (!Validate(candidateAttributes)) 
                     return;
                 
-                AddIoTHubGeneratedClass(context, iotHubSymbol, candidateMembers, candidateAttributes);
+                AddIoTHubGeneratedClass(context, DiagnosticsManager, iotHubSymbol, candidateMembers, candidateAttributes);
             }
         }
 
-         private static bool ValidateIoTHubAttribute(GeneratorExecutionContext context, SyntaxNode[] iotHubSyntaxNodes)
+         private static bool ValidateIoTHubAttribute(SyntaxNode[] iotHubSyntaxNodes)
         {
             if (iotHubSyntaxNodes.Length == 0)
             {
-                context.ReportDiagnostic(Diagnostic.Create(new
-                        DiagnosticDescriptor("IoTGen001", "IoT Hub Generator Error",
-                            "At least one class should be decorated with [IoTHub]", "Warning", DiagnosticSeverity.Warning, true),
-                    Location.None));
+                DiagnosticsManager.Report(DiagnosticId.MissingIoTHubAttribute, Location.None);
                 return false;
             }
             return true;
         }
          
-        private static bool Validate(GeneratorExecutionContext context, Dictionary<AttributeSyntax, SyntaxNode> receiverCandidateAttributes)
+        private static bool Validate(Dictionary<AttributeSyntax, SyntaxNode> receiverCandidateAttributes)
         {
             bool ValidateAttributeCount(string attributeName, int min, int max, string codeElement = "property")
             {
@@ -72,10 +77,7 @@ namespace IoTHubClientGenerator
                 
                 if (attributeCount < min)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(new
-                            DiagnosticDescriptor("IoTGen002", "IoT Hub Generator Error",
-                                $"At least {min} {codeElement} should be decorated with [{attributeName.AttName()}]", "Error", DiagnosticSeverity.Error, true),
-                        Location.None));
+                    DiagnosticsManager.Report(DiagnosticId.MinElementsShouldBeDecorated, Location.None, min.ToString(), codeElement, attributeName.AttName());
                     return false;
                 }
                     
@@ -83,11 +85,7 @@ namespace IoTHubClientGenerator
                 {
                     foreach (var syntaxNode in attributesNodes)
                     {
-                        context.ReportDiagnostic(Diagnostic.Create(new
-                                DiagnosticDescriptor("IoTGen003", "IoT Hub Generator Error",
-                                    $"No more then {max} {codeElement} should be decorated with [{attributeName.AttName()}], however, you may have more than one [IoTHub] decorated class", "Error",
-                                    DiagnosticSeverity.Error, true),
-                            Location.Create(syntaxNode.SyntaxTree, syntaxNode.Span)));
+                        DiagnosticsManager.Report(DiagnosticId.MaxElementsShouldBeDecorated, Location.Create(syntaxNode.SyntaxTree, syntaxNode.Span), max.ToString(), codeElement, attributeName.AttName());
                     }
                     return false;
                 }
@@ -105,18 +103,13 @@ namespace IoTHubClientGenerator
                 {
                     var missingProperties = properties.Where(p =>
                             attributesNode.ArgumentList != null &&
-                            attributesNode.ArgumentList.Arguments.All(a => a.NameEquals?.ToString().TrimEnd('=') != p))
+                            attributesNode.ArgumentList.Arguments.All(a => a.NameEquals?.ToString().TrimEnd('=',' ', '\t') != p))
                         .ToArray();
 
                     if (missingProperties.Length != 0)
                     {
                         var missingParamsText = String.Join(" ", missingProperties);
-                        context.ReportDiagnostic(Diagnostic.Create(new
-                                DiagnosticDescriptor("IoTGen008", "IoT Hub Generator Error",
-                                    $@"[{attributeName.AttName()}] must define these missing properties: {missingParamsText}",
-                                    "Error",
-                                    DiagnosticSeverity.Error, true),
-                            Location.Create(attributesNode.SyntaxTree, attributesNode.Span)));
+                        DiagnosticsManager.Report(DiagnosticId.PropertiesMustExist, Location.Create(attributesNode.SyntaxTree, attributesNode.Span), attributeName.AttName(), missingParamsText);
                         result = false;
                     }
                 }
@@ -135,12 +128,7 @@ namespace IoTHubClientGenerator
             {
                 foreach (var syntaxNode in deviceAttributesNodes)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(new
-                            DiagnosticDescriptor("IoTGen009", "IoT Hub Generator Error",
-                                "No more then one [Device] or [Dps*] attributes are allowed per [IoTHub] class, however, you may have more than one [IoTHub] decorated class",
-                                "Error",
-                                DiagnosticSeverity.Error, true),
-                        Location.Create(syntaxNode.SyntaxTree, syntaxNode.Span)));
+                    DiagnosticsManager.Report(DiagnosticId.SingleDeviceOrDPSAttribute, Location.Create(syntaxNode.SyntaxTree, syntaxNode.Span));
                 }
                 isValid = false;
             }
@@ -191,12 +179,13 @@ namespace IoTHubClientGenerator
             return isValid;
         }
 
-        private static void AddIoTHubGeneratedClass(GeneratorExecutionContext context, ISymbol iotHubSymbol,
+        private static void AddIoTHubGeneratedClass(GeneratorExecutionContext context,
+            CompilationDiagnosticsManager compilationDiagnosticsManager, ISymbol iotHubSymbol,
             Dictionary<SyntaxNode, AttributeSyntax[]> receiverCandidateMembers,
             Dictionary<AttributeSyntax, SyntaxNode> receiverCandidateAttributes)
         {
             AddSource($"{iotHubSymbol.Name}Extension.IoTHub.g.cs",
-                IoTHubPartialClassBuilder.Build(context, iotHubSymbol as INamedTypeSymbol, receiverCandidateMembers, receiverCandidateAttributes));
+                IoTHubPartialClassBuilder.Build(context, compilationDiagnosticsManager, iotHubSymbol as INamedTypeSymbol, receiverCandidateMembers, receiverCandidateAttributes));
 
             void AddSource(string sourceFileName, string sourceCode)
             {
@@ -237,10 +226,6 @@ namespace IoTHubClientGenerator
 
         public void OnVisitSyntaxNode(SyntaxNode syntaxNode)
         {
-            // if (!Debugger.IsAttached)
-            // {
-            //     Debugger.Launch();
-            // }
             if (syntaxNode is not MemberDeclarationSyntax memberDeclarationSyntax) return;
             
             var iotAttributes = memberDeclarationSyntax.AttributeLists

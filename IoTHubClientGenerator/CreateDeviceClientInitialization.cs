@@ -153,12 +153,7 @@ namespace IoTHubClientGenerator
 
             if (deviceAttributes.Length == 0) //no device attribute
             {
-                _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(new
-                        DiagnosticDescriptor("IoTGen006", "IoT Hub Generator Warning",
-                            "No DeviceClient property decorated with [Device] attribute exist, A DeviceClient property with default ConnectionString environment variable has been created!",
-                            "Warning", DiagnosticSeverity.Warning, true),
-                    Location.None));
-
+                _diagnosticsManager.Report(DiagnosticId.MissingDeviceAttribute, Location.None);
                 shouldGenerateDeviceClientProperty = true;
                 _deviceClientPropertyName = "DeviceClient";
             }

@@ -19,7 +19,7 @@ namespace IoTHubClientGenerator
                     foreach (var argument in attributeSyntax.ArgumentList.Arguments)
                     {
                         var attAssignment = $"the{argument.NameEquals}";
-                        parameterNameList.Add(argument.NameEquals?.ToString().TrimEnd('=').Trim());
+                        parameterNameList.Add(argument.NameEquals?.ToString().TrimEnd('=', ' ', '\t').Trim());
                         var attExpression = argument.Expression.ToString();
                         if (attExpression.StartsWith("\"%") && attExpression.EndsWith("%\""))
                         {
@@ -100,12 +100,7 @@ namespace IoTHubClientGenerator
                     {
                         location = Location.Create(attributeSyntax.SyntaxTree, attributeSyntax.Span);
                     }
-
-                    _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(new
-                            DiagnosticDescriptor("IoTGen004", "IoT Hub Generator Error",
-                                "Can't generate DeviceClient creation code, check the supplied [Device] parameters",
-                                "Error",
-                                DiagnosticSeverity.Error, true), location));
+                    _diagnosticsManager.Report(DiagnosticId.DeviceParametersError, location);
                     return;
                 }
 
@@ -236,17 +231,14 @@ namespace IoTHubClientGenerator
                     default:
                         Location location = null;
                         if (attributeSyntax != null)
+                        {
                             location = Location.Create(attributeSyntax.SyntaxTree, attributeSyntax.Span);
-
-                        _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(new
-                                DiagnosticDescriptor("IoTGen005", "IoT Hub Generator Error",
-                                    $"Can't generate DeviceClient creation code, no DeviceClient Create method takes the combination of {createDeviceError} parameters. check [Device] parameters and other attributes ([TransportSetting], [AuthenticationMethod], [ClientOptions]) ",
-                                    "Error",
-                                    DiagnosticSeverity.Error, true), location));
+                        }
+                        _diagnosticsManager.Report(DiagnosticId.ParametersMismatch, location, createDeviceError.ToString());
+                        
                         AppendLine(" null;");
                         break;
                 }
-
                 AppendLine("return deviceClient;");
             }
         }

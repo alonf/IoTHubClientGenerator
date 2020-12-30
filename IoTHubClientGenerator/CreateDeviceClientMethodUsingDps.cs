@@ -32,11 +32,7 @@ namespace IoTHubClientGenerator
                     }
                     else
                     {
-                        _generatorExecutionContext.ReportDiagnostic(Diagnostic.Create(new
-                                DiagnosticDescriptor("IoTGen007", "IoT Hub Generator Error",
-                                    "Dps attribute must define properties",
-                                    "Error", DiagnosticSeverity.Warning, true),
-                            Location.Create(attributeSyntax!.SyntaxTree, attributeSyntax.Span)));
+                        _diagnosticsManager.Report(DiagnosticId.DpsAttributeMissingProperties, Location.Create(attributeSyntax!.SyntaxTree, attributeSyntax.Span));
                         return;
                     }
 

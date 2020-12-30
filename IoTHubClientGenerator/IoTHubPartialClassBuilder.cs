@@ -16,17 +16,20 @@ namespace IoTHubClientGenerator
         private string _deviceClientPropertyName;
         
         private readonly GeneratorExecutionContext _generatorExecutionContext;
+        private readonly CompilationDiagnosticsManager _diagnosticsManager;
         private readonly Dictionary<SyntaxNode, AttributeSyntax[]> _receiverCandidateMembers;
         private readonly Dictionary<AttributeSyntax, SyntaxNode> _receiverCandidateAttributes;
         
         private INamedTypeSymbol Class { get; }
 
         public IoTHubPartialClassBuilder(GeneratorExecutionContext generatorExecutionContext,
+            CompilationDiagnosticsManager diagnosticsManager,
             INamedTypeSymbol classSymbol,
             Dictionary<SyntaxNode, AttributeSyntax[]> receiverCandidateMembers,
             Dictionary<AttributeSyntax, SyntaxNode> receiverCandidateAttributes)
         {
             _generatorExecutionContext = generatorExecutionContext;
+            _diagnosticsManager = diagnosticsManager;
             _receiverCandidateMembers = receiverCandidateMembers;
             _receiverCandidateAttributes = receiverCandidateAttributes;
             Class = classSymbol;
@@ -42,11 +45,12 @@ namespace IoTHubClientGenerator
 
         }
 
-        public static string Build(GeneratorExecutionContext generatorExecutionContext, INamedTypeSymbol classSymbol,
+        public static string Build(GeneratorExecutionContext generatorExecutionContext,
+            CompilationDiagnosticsManager compilationDiagnosticsManager, INamedTypeSymbol classSymbol,
             Dictionary<SyntaxNode, AttributeSyntax[]> receiverCandidateMembers,
             Dictionary<AttributeSyntax, SyntaxNode> receiverCandidateAttributes)
         {
-            return new IoTHubPartialClassBuilder(generatorExecutionContext, classSymbol, receiverCandidateMembers,
+            return new IoTHubPartialClassBuilder(generatorExecutionContext, compilationDiagnosticsManager, classSymbol, receiverCandidateMembers,
                 receiverCandidateAttributes).Result;
         }
 
@@ -64,7 +68,7 @@ namespace IoTHubClientGenerator
         
         private string GetAttributePropertyValue(AttributeSyntax attributeSyntax, string propertyName) =>
             attributeSyntax.ArgumentList!.Arguments.Where(a =>
-                    a.NameEquals!.ToString().TrimEnd('=').Trim() == propertyName)
+                    a.NameEquals!.ToString().TrimEnd('=', ' ', '\t') == propertyName)
                 .Select(a => a.Expression.ToString()).FirstOrDefault();
 
         private void BuildPartialClass(string namespaceName, string className)

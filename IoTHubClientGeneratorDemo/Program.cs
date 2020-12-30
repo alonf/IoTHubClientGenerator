@@ -272,7 +272,6 @@ namespace IoTHubClientGeneratorDemo
                             break;
 
                     }
-
                     break;
 
                 default:

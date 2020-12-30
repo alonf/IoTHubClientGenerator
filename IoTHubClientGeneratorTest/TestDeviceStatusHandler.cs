@@ -4,7 +4,7 @@
     {
         [TestCase("TestDeviceStatus")]
         public static string TestDeviceStatus =>
-@"
+            @"
 using IoTHubClientGeneratorSDK;
 using Microsoft.Azure.Devices.Client;
 
@@ -19,10 +19,10 @@ namespace TestDeviceStatus
          }
     }
 }";
-        
+
         [TestCase("TestConnectionStatusProperty")]
         public static string TestConnectionStatusProperty =>
-@"
+            @"
 using IoTHubClientGeneratorSDK;
 using Microsoft.Azure.Devices.Client;
 
@@ -35,10 +35,10 @@ namespace TestConnectionStatusProperty
          private (ConnectionStatus Status, ConnectionStatusChangeReason Reason) DeviceConnectionStatus { get; set; }
     }
 }";
-        
+
         [TestCase("TestConnectionStatusPropertyAndMethod")]
         public static string TestConnectionStatusPropertyAndMethod =>
-@"
+            @"
 using IoTHubClientGeneratorSDK;
 using Microsoft.Azure.Devices.Client;
 

@@ -27,7 +27,7 @@ namespace IoTHubClientGenerator
                 {
                     if (_isConnectionStatusExist)
                     {
-                        using (If($"{_connectionStatusAccessText} != Microsoft.Azure.Devices.Client.ConnectionStatus.Connected)"))
+                        using (If($"{_connectionStatusAccessText} != Microsoft.Azure.Devices.Client.ConnectionStatus.Connected"))
                         {
                             AppendLine("string errorMessage = \"Error sending message to the IoT Hub, the device is not connected\";", _isErrorHandlerExist);
                             AppendLine("var exception = new System.Exception(errorMessage);", _isErrorHandlerExist);
