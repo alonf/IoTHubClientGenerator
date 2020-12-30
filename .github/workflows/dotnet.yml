@@ -21,7 +21,7 @@ jobs:
     - name: Setup .NET 3
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '3.1.x'  
+        dotnet-version: '3.0.100'  
     - name: Restore dependencies
       run: dotnet restore
       working-directory: ./IoTHubClientGenerator
