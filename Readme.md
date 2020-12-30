@@ -61,6 +61,102 @@ namespace EasyIoTHubClient
 
 To get started, follow this [walk-through](Doc/Text/Walkthrough.md)
 
+## Advanced Features
+You may use one of the ```[Device]``` or the ```[DPS*]``` attributes to decorate a ```DeviceClient``` property. With these attributes and their properties, we can manipulate the IoT Hub device client creation parameters.
+Each property value can be set as a text or can be set as an environment variable value by wrapping the value with the `````%````` character, for example:
+```
+[DeviceClient(ConnectionString="%ConStr%)]
+DeviceClient MyClient {get;set;}
+```
+The ```[Device]``` attribute has a long list of properties and a set of other attributes (```[ClientOptions]```, ```[TransportSetting]```, and ```[AuthenticationMethod]```)  that creates the parameter of the IoT device client Create method. The code generator chooses the correct overload version of the device client ```Create()``` function by collecting all these parameters and selecting the suitable function version. If there is a missing parameter or a collision between parameters, the code generator emits an error.
+Example of non-trivial device creation:
+
+```
+    [Device(ConnectionString = "%conString%", DeviceId = "%deviceId%")]
+    public DeviceClient DeviceClient { get; set; }
+
+    [TransportSetting]
+    public ITransportSettings AmqpTransportSettings { get; } = new AmqpTransportSettings(TransportType.Amqp)
+    {
+        AmqpConnectionPoolSettings = new AmqpConnectionPoolSettings {MaxPoolSize = 5}, IdleTimeout = TimeSpan.FromMinutes(1)
+    };
+
+    [TransportSetting]
+    public ITransportSettings MqttTransportSetting { get; } = new MqttTransportSettings(TransportType.Mqtt)
+    {
+        DefaultReceiveTimeout = TimeSpan.FromMinutes(2)
+    };
+
+    [ClientOptions]
+    public ClientOptions ClientOptions { get; } = new();
+```
+The following code is the result of the example:
+```
+private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
+{
+    var theConnectionString = System.Environment.GetEnvironmentVariable("conString");
+    var theDeviceId = System.Environment.GetEnvironmentVariable("deviceId");
+    ITransportSettings[] transportSettings = new[]{AmqpTransportSettings, MqttTransportSetting};
+    var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString, theDeviceId, transportSettings, ClientOptions);
+    return deviceClient;
+}
+```
+Or if you want to set the authentication method:
+```
+    [Device(Hostname = "%hostName%", TransportType = TransportType.Mqtt)]
+    public DeviceClient DeviceClient { get; set; }
+
+    [AuthenticationMethod]
+    public IAuthenticationMethod DeviceAuthenticationWithRegistrySymmetricKey { get; } = new DeviceAuthenticationWithRegistrySymmetricKey("deviceId", "key");
+```
+And the result generated code is:
+```
+private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
+{
+    var theHostname = System.Environment.GetEnvironmentVariable("hostName");
+    var theTransportType = TransportType.Mqtt;
+    var deviceClient = DeviceClient.Create(theHostname, DeviceAuthenticationWithRegistrySymmetricKey, theTransportType);
+    return deviceClient;
+}
+```
+To use the Device Provisioning Service of Azure IoT, decorate the Device Client property with one of ```[DpsSymmetricKeyDevice]```, ```[DpsTpmDevice]```, ```[DpsX509CertificateDevice]```
+
+Example:
+```
+        [DpsSymmetricKeyDevice(DPSIdScope="scope", DPSTransportType=TransportType.Mqtt, TransportType=TransportType.Mqtt,
+            EnrollmentGroupId="%EnrollmentGroupId%", EnrollmentType=DPSEnrollmentType.Group, 
+            Id="%RegistrationId%", PrimarySymmetricKey="%SymKey%")]
+        public DeviceClient DeviceClient { get; set; }
+```
+To compile the code, we need to add the NuGet Packages: ```Microsoft.Azure.Devices.Provisioning.Client``` and ```Microsoft.Azure.Devices.Provisioning.Transport.Mqtt```
+
+The resulting generated code:
+```
+    private async Task<Microsoft.Azure.Devices.Client.DeviceClient> CreateDeviceClientAsync()
+    {
+        var theDPSIdScope = "scope";
+        var theDPSTransportType = TransportType.Mqtt;
+        var theTransportType = TransportType.Mqtt;
+        var theEnrollmentGroupId = System.Environment.GetEnvironmentVariable("EnrollmentGroupId");
+        var theEnrollmentType = DPSEnrollmentType.Group;
+        var theId = System.Environment.GetEnvironmentVariable("RegistrationId");
+        var thePrimarySymmetricKey = System.Environment.GetEnvironmentVariable("SymKey");
+        using var security = new SecurityProviderSymmetricKey(theId, thePrimarySymmetricKey, null);
+        using var transport = new ProvisioningTransportHandlerMqtt();
+        var theGlobalDeviceEndpoint = "global.azure-devices-provisioning.net";
+        ProvisioningDeviceClient provClient = ProvisioningDeviceClient.Create(theGlobalDeviceEndpoint, theDPSIdScope, security, transport);
+        DeviceRegistrationResult result = await provClient.RegisterAsync();
+        if (result.Status != ProvisioningRegistrationStatusType.Assigned)
+        {
+            throw new Exception($"Registration status did not assign a hub, status: {result.Status}");
+        }
+
+        IAuthenticationMethod auth = new DeviceAuthenticationWithRegistrySymmetricKey(result.DeviceId, security.GetPrimaryKey());
+        var deviceClient = DeviceClient.Create(result.AssignedHub, auth, theTransportType);
+        return deviceClient;
+    }
+```
+
 ## IoTHubClientGeneratorSDK Namespace
 ### Classes
 - [AuthenticationMethodAttribute](/Doc/AutoGenerated/IoTHubClientGeneratorSDK-AuthenticationMethodAttribute.md 'IoTHubClientGeneratorSDK.AuthenticationMethodAttribute')
@@ -84,7 +180,8 @@ To get started, follow this [walk-through](Doc/Text/Walkthrough.md)
 
 
 
-## Missing features:
+## Missing features and known issues:
+- Move some of the implementation to rely on the semantic data and not the syntax tree, it will solve several issues such as spaces around =
 - Have a separate error handler for each attribute instead (or as override rule) of one global handler
 - Add the ability for the user to provide the ```MessageSchema``` ```ContentType``` and ```ContentEncoding``` to the send-telemetry method in compile and at runtime
 - Have the ability to postponed update of reported properties, and only after setting a group of them, ask for a batch update of all
