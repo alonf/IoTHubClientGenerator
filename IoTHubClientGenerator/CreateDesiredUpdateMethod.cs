@@ -9,15 +9,10 @@ namespace IoTHubClientGenerator
     {
         private void CreateDesiredUpdateMethod()
         {
-            AppendLine(
-                "private async Task HandleDesiredPropertyUpdateAsync(Microsoft.Azure.Devices.Shared.TwinCollection desiredProperties, object context)");
-            AppendLine("{");
-            using (Indent(this, _isErrorHandlerExist))
+            AppendLine("private async Task HandleDesiredPropertyUpdateAsync(Microsoft.Azure.Devices.Shared.TwinCollection desiredProperties, object context)");
+            using (Block())
             {
-                AppendLine("try", _isErrorHandlerExist);
-                AppendLine("{", _isErrorHandlerExist);
-
-                using (Indent(this))
+                using(Try(_isErrorHandlerExist))
                 {
                     var programDesiredProperties = GetAttributedMembers(nameof(DesiredAttribute)).ToArray();
 
@@ -35,11 +30,8 @@ namespace IoTHubClientGenerator
                             desiredPropertyName = twinPropertyNameProperty.Expression.ToString().TrimStart('\"')
                                 .TrimEnd('\"');
 
-                        AppendLine($"if (desiredProperties.Contains(\"{desiredPropertyName}\"))");
-                        AppendLine("{");
-                        using (Indent(this))
+                        using(If($"desiredProperties.Contains(\"{desiredPropertyName}\")"))
                         {
-
                             var semanticModel =
                                 _generatorExecutionContext.Compilation.GetSemanticModel(desiredProperty.Key
                                     .SyntaxTree);
@@ -57,25 +49,15 @@ namespace IoTHubClientGenerator
                                     $"{propertyName} = {typeInfo.Type!.Name}.Parse(textData);");
                             }
                         }
-
-                        AppendLine("}");
                     }
                 }
-
-                AppendLine("}", _isErrorHandlerExist);
-                AppendLine("catch(System.Exception exception)", _isErrorHandlerExist);
-                AppendLine("{", _isErrorHandlerExist);
-                using (Indent(this, _isErrorHandlerExist))
+                using (Catch("System.Exception exception", _isErrorHandlerExist))
                 {
                     AppendLine("string errorMessage =\"Error updating desired properties\";", _isErrorHandlerExist);
                     AppendLine(_callErrorHandlerPattern, _isErrorHandlerExist);
                 }
-
-                AppendLine("}", _isErrorHandlerExist);
+                AppendLine("await Task.CompletedTask;");
             }
-
-            AppendLine("await Task.CompletedTask;");
-            AppendLine("}");
         }
     }
 }

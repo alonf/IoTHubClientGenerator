@@ -35,30 +35,17 @@ namespace IoTHubClientGenerator
             }
 
             AppendLine("public async Task InitIoTHubClientAsync()");
-            AppendLine("{");
-            using (Indent(this))
+            using (Block())
             {
-                AppendLine("await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call");
+                AppendLine(
+                    "await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call");
 
-                using (Indent(this))
+                using (Try(_isErrorHandlerExist))
                 {
-                    AppendLine("try", _isErrorHandlerExist);
-                    AppendLine("{", _isErrorHandlerExist);
-                    using (Indent(this, _isErrorHandlerExist))
-                    {
-                        //get DpsAttribute
-                        var isDpsAttributeSet = IsAttributeExist(nameof(DpsX509CertificateDeviceAttribute),
-                            nameof(DpsSymmetricKeyDeviceAttribute), nameof(DpsTpmDeviceAttribute));
-                        createCreateDeviceMethod = isDpsAttributeSet ? CreateDeviceUsingDps() : CreateDevice();
-
-                        /*
-                         * Create Device using the Device attribute info
-                         */
-                    }
-
-                    /*
-                     * Set connection status change handler
-                     */
+                    //get DpsAttribute
+                    var isDpsAttributeSet = IsAttributeExist(nameof(DpsX509CertificateDeviceAttribute),
+                        nameof(DpsSymmetricKeyDeviceAttribute), nameof(DpsTpmDeviceAttribute));
+                    createCreateDeviceMethod = isDpsAttributeSet ? CreateDeviceUsingDps() : CreateDevice();
 
                     if (connectionStatusMethodName != null && _isConnectionStatusExist == false)
                     {
@@ -68,15 +55,12 @@ namespace IoTHubClientGenerator
                     if (_isConnectionStatusExist)
                     {
                         AppendLine($"{_deviceClientPropertyName}.SetConnectionStatusChangesHandler((status, reason) =>");
-                        AppendLine("{");
-                        using (Indent(this))
+                        using (Block("});"))
                         {
                             AppendLine($"{connectionStatusPropertyName} = (status, reason);");
                             if (connectionStatusMethodName != null)
                                 AppendLine($"{connectionStatusMethodName}(status, reason);");
                         }
-
-                        AppendLine("});");
                     }
 
                     AppendLine();
@@ -86,7 +70,8 @@ namespace IoTHubClientGenerator
                      */
                     if (GetAttributes(nameof(DesiredAttribute)).Any())
                     {
-                        AppendLine($"await {_deviceClientPropertyName}.SetDesiredPropertyUpdateCallbackAsync(HandleDesiredPropertyUpdateAsync, null);");
+                        AppendLine(
+                            $"await {_deviceClientPropertyName}.SetDesiredPropertyUpdateCallbackAsync(HandleDesiredPropertyUpdateAsync, null);");
                     }
 
                     AppendLine();
@@ -110,13 +95,11 @@ namespace IoTHubClientGenerator
 
                         if (autoComplete != null && autoComplete.ToLower() == "true")
                         {
-                            AppendLine($"await {_deviceClientPropertyName}.SetReceiveMessageHandlerAsync(async (message, _) =>");
-                            AppendLine("{");
-                            using (Indent(this))
+                            AppendLine(
+                                $"await {_deviceClientPropertyName}.SetReceiveMessageHandlerAsync(async (message, _) =>");
+                            using (Block("}, null);"))
                             {
-                                AppendLine("try");
-                                AppendLine("{");
-                                using (Indent(this))
+                                using (Try())
                                 {
                                     if (isc2dMessageHandlerMethodAsync)
                                         Append("await ", true);
@@ -127,21 +110,19 @@ namespace IoTHubClientGenerator
                                     AppendLine("message = null;");
                                 }
 
-                                AppendLine("}");
                                 AppendLine("catch(System.Exception)", !_isErrorHandlerExist);
                                 AppendLine("catch(System.Exception exception)", _isErrorHandlerExist);
-                                AppendLine("{");
-                                using (Indent(this))
+                                using (Block())
                                 {
                                     AppendLine($"await {_deviceClientPropertyName}.RejectAsync(message);");
                                     AppendLine("if (message != null)");
                                     Append("message.Dispose();", true);
-                                    AppendLine("string errorMessage =\"Error handling cloud to device message. The message has been rejected\";", _isErrorHandlerExist);
+                                    AppendLine(
+                                        "string errorMessage =\"Error handling cloud to device message. The message has been rejected\";",
+                                        _isErrorHandlerExist);
                                     AppendLine(_callErrorHandlerPattern, _isErrorHandlerExist);
                                 }
-                                AppendLine("}");
                             }
-                            AppendLine("}, null);");
                         }
                         else
                         {
@@ -150,24 +131,16 @@ namespace IoTHubClientGenerator
                         }
                     }
 
-                    AppendLine();
                     CreateDirectMethodCallback();
-
-                    AppendLine("}", _isErrorHandlerExist);
-                    AppendLine("catch (System.Exception exception)", _isErrorHandlerExist);
-                    AppendLine("{", _isErrorHandlerExist);
-                    using (Indent(this, _isErrorHandlerExist))
-                    {
-                        AppendLine("string errorMessage = \"Error initiating device client\";", _isErrorHandlerExist);
-                        AppendLine(_callErrorHandlerPattern, _isErrorHandlerExist);
-                    }
-
-                    AppendLine("}", _isErrorHandlerExist);
+                }
+                using (Catch("System.Exception exception", _isErrorHandlerExist))
+                {
+                    AppendLine("string errorMessage = \"Error initiating device client\";", _isErrorHandlerExist);
+                    AppendLine(_callErrorHandlerPattern, _isErrorHandlerExist);
                 }
             }
-            AppendLine("}");
-            AppendLine();
 
+            AppendLine();
             createCreateDeviceMethod();
         }
 
@@ -210,7 +183,6 @@ namespace IoTHubClientGenerator
         
         private Action CreateDeviceUsingDps()
         {
-            AttributeSyntax createDeviceClientMethodAttributeSyntax;
             //get the Device attribute
             var dpsAttribute = (from name in new[]
                 {
@@ -225,7 +197,7 @@ namespace IoTHubClientGenerator
             _deviceClientPropertyName =
                     ((PropertyDeclarationSyntax) (dpsAttribute.Value)).Identifier.ToString();
 
-                createDeviceClientMethodAttributeSyntax = dpsAttribute.Key;
+                var createDeviceClientMethodAttributeSyntax = dpsAttribute.Key;
             
 
             var createDeviceClientMethodName = $"Create{_deviceClientPropertyName}Async";

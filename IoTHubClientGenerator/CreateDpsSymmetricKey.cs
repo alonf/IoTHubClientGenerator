@@ -14,21 +14,15 @@ namespace IoTHubClientGenerator
             return () =>
             {
                 AppendLine("private static string ComputeDerivedSymmetricKey(string enrollmentKey, string deviceId)");
-                AppendLine("{");
-                using (Indent(this))
+                using (Block())
                 {
-                    AppendLine("if (string.IsNullOrWhiteSpace(enrollmentKey))");
-                    AppendLine("{");
-                    using (Indent(this))
+                    using (If("string.IsNullOrWhiteSpace(enrollmentKey)"))
                     {
                         AppendLine("return enrollmentKey;");
                     }
-
-                    AppendLine("}");
                     AppendLine("using var hmac = new System.Security.Cryptography.HMACSHA256(System.Convert.FromBase64String(enrollmentKey));");
                     AppendLine("return Convert.ToBase64String(hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(deviceId)));");
                 }
-                AppendLine("}");
             };
         }
     }

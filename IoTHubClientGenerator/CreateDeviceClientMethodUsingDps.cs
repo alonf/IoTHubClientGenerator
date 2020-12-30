@@ -13,8 +13,7 @@ namespace IoTHubClientGenerator
             {
                 Action additionalCode = () => { };
                 AppendLine($"private async Task<Microsoft.Azure.Devices.Client.DeviceClient> {methodName}()");
-                AppendLine("{");
-                using (Indent(this))
+                using (Block())
                 {
                     if (attributeSyntax?.ArgumentList != null)
                     {
@@ -68,8 +67,6 @@ namespace IoTHubClientGenerator
 
                     AppendLine("return deviceClient;");
                 }
-
-                AppendLine("}");
                 additionalCode();
             };
         }

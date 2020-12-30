@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using IoTHubClientGeneratorSDK;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace IoTHubClientGenerator
 {
-    partial class IoTHubPartialClassBuilder
+    partial class IoTHubPartialClassBuilder : TextGenerator
     {
-        private readonly StringBuilder _sb = new();
-        private int _nestingLevel;
         private bool _isErrorHandlerExist;
         private string _callErrorHandlerPattern; //ErrorHandler(errorMessage, exception);
         private bool _isConnectionStatusExist;
@@ -23,52 +20,6 @@ namespace IoTHubClientGenerator
         private readonly Dictionary<AttributeSyntax, SyntaxNode> _receiverCandidateAttributes;
         
         private INamedTypeSymbol Class { get; }
-
-        private static IDisposable Indent(IoTHubPartialClassBuilder @this, bool condition = true) => new IndentClass(@this, condition);
-
-        class IndentClass : IDisposable
-        {
-            private readonly IoTHubPartialClassBuilder _this;
-            private readonly bool _condition;
-
-            public IndentClass(IoTHubPartialClassBuilder @this, bool condition = true)
-            {
-                _this = @this;
-                _condition = condition;
-                if (condition)
-                    ++_this._nestingLevel;
-            }
-
-            public void Dispose()
-            {
-                if (_condition)
-                    --_this._nestingLevel;
-            }
-        }
-
-        private void AppendLine(string line = "", bool condition = true)
-        {
-            if (!condition)
-                return;
-            
-            _sb.Append('\t', _nestingLevel);
-            _sb.AppendLine(line);
-        }
-
-        private void Append(string line = "", bool isIndented = false, bool condition = true)
-        {
-            if (!condition)
-                return;
-
-            if (isIndented)
-                _sb.Append('\t', _nestingLevel);
-            _sb.Append(line);
-        }
-
-        private void TrimEnd(int n = 1)
-        {
-            _sb.Remove(_sb.Length - n, n);
-        }
 
         public IoTHubPartialClassBuilder(GeneratorExecutionContext generatorExecutionContext,
             INamedTypeSymbol classSymbol,
@@ -99,8 +50,6 @@ namespace IoTHubClientGenerator
                 receiverCandidateAttributes).Result;
         }
 
-        private string Result => _sb.ToString();
-
         private IEnumerable<KeyValuePair<AttributeSyntax, SyntaxNode>> GetAttributes(string attributeName) =>
             _receiverCandidateAttributes.Where(att =>
                 att.Key.Name.ToString() == attributeName.AttName());
@@ -115,7 +64,7 @@ namespace IoTHubClientGenerator
         
         private string GetAttributePropertyValue(AttributeSyntax attributeSyntax, string propertyName) =>
             attributeSyntax.ArgumentList!.Arguments.Where(a =>
-                    a.NameEquals.ToString().TrimEnd('=').Trim() == propertyName)
+                    a.NameEquals!.ToString().TrimEnd('=').Trim() == propertyName)
                 .Select(a => a.Expression.ToString()).FirstOrDefault();
 
         private void BuildPartialClass(string namespaceName, string className)
@@ -145,20 +94,16 @@ namespace IoTHubClientGenerator
             AppendLine("using IoTHubClientGeneratorSDK;");
             AppendLine();
             AppendLine($"namespace {namespaceName}");
-            AppendLine("{");
-            using (Indent(this))
+            using (Block())
             {
                 CreateClass(className);
             }
-
-            AppendLine("}");
         }
 
         private void CreateClass(string className)
         {
             AppendLine($"public partial class {className}");
-            AppendLine("{");
-            using (Indent(this))
+            using (Block())
             {
                 CreateDeviceClientInitialization();
                 CreateReportedProperties();
@@ -166,8 +111,6 @@ namespace IoTHubClientGenerator
                 if (IsAttributeExist(nameof(DesiredAttribute)))
                     CreateDesiredUpdateMethod();
             }
-
-            AppendLine("}");
         }
     }
 }

@@ -16,29 +16,22 @@ namespace IoTHubClientGenerator
                 return;
             
             AppendLine("private void ReportProperty<T>(string propertyName, T data)");
-            AppendLine("{");
-            using (Indent(this, _isErrorHandlerExist))
+            using (Block())
             {
-                AppendLine("try", _isErrorHandlerExist);
-                AppendLine("{", _isErrorHandlerExist);
-                using (Indent(this))
+                using (Try(_isErrorHandlerExist))
                 {
                     AppendLine("var reportedProperties = new Microsoft.Azure.Devices.Shared.TwinCollection();");
                     AppendLine("reportedProperties[propertyName] = data.ToString();");
-                    AppendLine($"System.Threading.Tasks.Task.Run(async () => await {_deviceClientPropertyName}.UpdateReportedPropertiesAsync(reportedProperties));");
+                    AppendLine(
+                        $"System.Threading.Tasks.Task.Run(async () => await {_deviceClientPropertyName}.UpdateReportedPropertiesAsync(reportedProperties));");
+                }
+                using (Catch("System.Exception exception", _isErrorHandlerExist))
+                {
+                    AppendLine("string errorMessage =\"Error updating desired properties\";", _isErrorHandlerExist);
+                    AppendLine(_callErrorHandlerPattern, _isErrorHandlerExist);
                 }
             }
-            AppendLine("}", _isErrorHandlerExist);
-            AppendLine("catch(System.Exception exception)", _isErrorHandlerExist);
-            AppendLine("{", _isErrorHandlerExist);
-            using (Indent(this, _isErrorHandlerExist))
-            {
-                AppendLine("string errorMessage =\"Error updating desired properties\";", _isErrorHandlerExist);
-                AppendLine(_callErrorHandlerPattern, _isErrorHandlerExist);
-            }
 
-            AppendLine("}", _isErrorHandlerExist);
-            AppendLine("}");
             AppendLine();
 
             foreach (var reportedProperty in programReportedProperties)
@@ -61,14 +54,11 @@ namespace IoTHubClientGenerator
                     : localPropertyName;
 
                 AppendLine($"public {typeName} {localPropertyName}");
-                AppendLine("{");
-                using (Indent(this))
+                using (Block())
                 {
                     AppendLine($"get {{ return {fieldName}; }}");
                     AppendLine($"set {{ {fieldName} = value; ReportProperty(\"{twinPropertyName}\",value);}}");
                 }
-
-                AppendLine("}");
                 AppendLine();
             }
         }

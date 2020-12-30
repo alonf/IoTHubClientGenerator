@@ -24,13 +24,10 @@ namespace IoTHubClientGenerator
             AppendLine("ProvisioningDeviceClient provClient = ProvisioningDeviceClient.Create(theGlobalDeviceEndpoint, theDPSIdScope, security, transport);");
             AppendLine("DeviceRegistrationResult result = await provClient.RegisterAsync();");
             AppendLine();
-            AppendLine("if (result.Status != ProvisioningRegistrationStatusType.Assigned)");
-            AppendLine("{");
-            using (Indent(this))
+            using (If("result.Status != ProvisioningRegistrationStatusType.Assigned"))
             {
                 AppendLine("throw new Exception($\"Registration status did not assign a hub, status: {result.Status}\");");
             }
-            AppendLine("}");
             AppendLine();
         }
     }

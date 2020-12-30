@@ -11,8 +11,7 @@ namespace IoTHubClientGenerator
         private void CreateDeviceClientMethod(string methodName, AttributeSyntax attributeSyntax)
         {
             AppendLine($"private Microsoft.Azure.Devices.Client.DeviceClient {methodName}()");
-            AppendLine("{");
-            using (Indent(this))
+            using (Block())
             {
                 var parameterNameList = new List<string>();
                 if (attributeSyntax?.ArgumentList != null)
@@ -250,8 +249,6 @@ namespace IoTHubClientGenerator
 
                 AppendLine("return deviceClient;");
             }
-
-            AppendLine("}");
         }
     }
 }
