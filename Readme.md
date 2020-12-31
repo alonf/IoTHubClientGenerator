@@ -1,6 +1,6 @@
 # IoT Hub Client C# code generator.
 
-Installation: use the [NuGet package](https://www.nuget.org/packages/IoTHubClientGenerator/)
+Installation: use the [NuGet package](https://www.nuget.org/packages/IoTHubClientGenerator/)  
 To get started, follow this [walk-through](Doc/Text/Walkthrough.md)
 
 
