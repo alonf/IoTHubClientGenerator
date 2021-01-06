@@ -33,7 +33,7 @@ namespace TestDPSSymmetricKey
     partial class MyIoTHubClient
     {
         [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
-            EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt,
+            EnrollmentType=DPSEnrollmentType.Group, DPSTransportType=TransportType.Mqtt,
             PrimarySymmetricKey=""%PrimaryDPSKey%"")]
         private DeviceClient MyClient {get;set;}
 

@@ -21,13 +21,7 @@ namespace IoTHubClientGenerator
                         {
                             var attAssignment = $"the{argument.NameEquals}";
                             var attExpression = argument.Expression.ToString();
-                            if (attExpression.StartsWith("\"%") && attExpression.EndsWith("%\""))
-                            {
-                                attExpression =
-                                    $"System.Environment.GetEnvironmentVariable(\"{attExpression.TrimStart('%', '"').TrimEnd('%', '"')}\")";
-                            }
-
-                            AppendLine($"var {attAssignment}{attExpression};");
+                            CreateVariableAssignmentLineFromAttributeParameter(attAssignment, attExpression);
                         }
                     }
                     else

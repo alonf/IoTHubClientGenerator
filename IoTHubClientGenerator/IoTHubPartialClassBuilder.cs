@@ -116,5 +116,22 @@ namespace IoTHubClientGenerator
                     CreateDesiredUpdateMethod();
             }
         }
+
+        //if the property value is wrap with %, we take the value from environment variable
+        //if the property value is wrap with [], we take the value from a variable name
+        //otherwise the property value is the value
+        private void CreateVariableAssignmentLineFromAttributeParameter(string attAssignment, string attExpression)
+        {
+            if (attExpression.StartsWith("\"%") && attExpression.EndsWith("%\""))
+            {
+                attExpression =
+                    $"System.Environment.GetEnvironmentVariable(\"{attExpression.TrimStart('%', '"').TrimEnd('%', '"')}\")";
+            }
+            else if (attExpression.StartsWith("\"[") && attExpression.EndsWith("]\""))
+            {
+                attExpression = attExpression.TrimStart('[', '"').TrimEnd(']', '"');
+            }
+            AppendLine($"var {attAssignment}{attExpression};");
+        }
     }
 }

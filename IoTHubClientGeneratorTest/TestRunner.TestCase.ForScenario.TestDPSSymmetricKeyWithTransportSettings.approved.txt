@@ -11,7 +11,7 @@ namespace TestDPSSymmetricKey
     partial class MyIoTHubClient
     {
         [DpsSymmetricKeyDevice(DPSIdScope="%DpsScopeId%", Id="1", EnrollmentGroupId="GroupId", 
-            EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt,
+            EnrollmentType=DPSEnrollmentType.Group, DPSTransportType=TransportType.Mqtt,
             PrimarySymmetricKey="%PrimaryDPSKey%")]
         private DeviceClient MyClient {get;set;}
 
@@ -58,10 +58,11 @@ namespace TestDPSSymmetricKey
             var theDPSIdScope = System.Environment.GetEnvironmentVariable("DpsScopeId");
             var theId = "1";
             var theEnrollmentGroupId = "GroupId";
-            var theEnrollmentType = DPSEnrollmentType.Individual;
+            var theEnrollmentType = DPSEnrollmentType.Group;
             var theDPSTransportType = TransportType.Mqtt;
             var thePrimarySymmetricKey = System.Environment.GetEnvironmentVariable("PrimaryDPSKey");
             ITransportSettings[] transportSettings = new[]{AmqpTransportSettings, MqttTransportSetting};
+            thePrimarySymmetricKey = ComputeDerivedSymmetricKey(thePrimarySymmetricKey, theId);
             using var security = new SecurityProviderSymmetricKey(theId, thePrimarySymmetricKey, null);
             using var transport = new ProvisioningTransportHandlerMqtt();
             var theGlobalDeviceEndpoint = "global.azure-devices-provisioning.net";
@@ -79,9 +80,9 @@ namespace TestDPSSymmetricKey
 
         private static string ComputeDerivedSymmetricKey(string enrollmentKey, string deviceId)
         {
-            if (string.IsNullOrWhiteSpace(enrollmentKey))
+            if (string.IsNullOrWhiteSpace(deviceId))
             {
-                return enrollmentKey;
+                return enrollmentKey; //individual enrollment type
             }
 
             using var hmac = new System.Security.Cryptography.HMACSHA256(System.Convert.FromBase64String(enrollmentKey));

@@ -82,9 +82,9 @@ namespace TestDPSSymmetricKey
 
         private static string ComputeDerivedSymmetricKey(string enrollmentKey, string deviceId)
         {
-            if (string.IsNullOrWhiteSpace(enrollmentKey))
+            if (string.IsNullOrWhiteSpace(deviceId))
             {
-                return enrollmentKey;
+                return enrollmentKey; //individual enrollment type
             }
 
             using var hmac = new System.Security.Cryptography.HMACSHA256(System.Convert.FromBase64String(enrollmentKey));
