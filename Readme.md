@@ -1,6 +1,8 @@
 # IoT Hub Client C# code generator.
 
-Installation: use the [NuGet package](https://www.nuget.org/packages/IoTHubClientGenerator/)
+Installation: use the [NuGet package](https://www.nuget.org/packages/IoTHubClientGenerator/)  
+To get started, follow this [walk-through](Doc/Text/Walkthrough.md)
+
 
 This project takes advantage of the new C# 9.0 ability to have a code generation as part of the C# code compilation process. With this code generator, you can build an IoT Device client program in seconds. For example, the following code creates a device client that can send telemetry, receive commands, update twin reported property, get desired twin properties updates, get the current connection state, and handle direct method calls:
 
@@ -58,8 +60,6 @@ namespace EasyIoTHubClient
     }
 }
 ```
-
-To get started, follow this [walk-through](Doc/Text/Walkthrough.md)
 
 ## Advanced Features
 You may use one of the ```[Device]``` or the ```[DPS*]``` attributes to decorate a ```DeviceClient``` property. With these attributes and their properties, we can manipulate the IoT Hub device client creation parameters.

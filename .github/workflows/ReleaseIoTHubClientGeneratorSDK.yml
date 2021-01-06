@@ -11,10 +11,14 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup .NET
+    - name: Setup .NET 5
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.101
+    - name: Setup .NET 3
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.0.100'    
     - name: Create Nuget Package
       run: dotnet pack -c Release /p:VersionNumber=${{ github.event.release.tag_name}} /p:PackageReleaseNotes="See https://github.com/alonf/IoTHubClientGenerator/releases/tag/${{github.event.release.tag_name}}" IoTHubClientGeneratorSDK/IoTHubClientGeneratorSDK.csproj
     - name: Archive Nuget Package for IoTHubClientGeneratorSDK
