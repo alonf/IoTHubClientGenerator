@@ -144,7 +144,6 @@ namespace IoTHubClientGenerator
                 {
                     case { } attName when attName == nameof(DpsSymmetricKeyDeviceAttribute).AttName():
                         properties.Add(nameof(DpsSymmetricKeyDeviceAttribute.PrimarySymmetricKey));
-                        properties.Add(nameof(DpsDeviceAttribute.EnrollmentGroupId));
                         break;
                     case { } attName when attName == nameof(DpsX509CertificateDeviceAttribute).AttName():
                         properties.Add(nameof(DpsX509CertificateDeviceAttribute.CertificatePath));

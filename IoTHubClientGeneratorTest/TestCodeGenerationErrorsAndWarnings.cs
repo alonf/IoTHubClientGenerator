@@ -69,10 +69,8 @@ namespace TestSingleDeviceOrDPSAttribute
         private DeviceClient DeviceClient {get;set;}
 
         [DpsSymmetricKeyDevice(DPSIdScope=""scope"", DPSTransportType=TransportType.Mqtt, TransportType=TransportType.Mqtt,
-        EnrollmentGroupId=""%EnrollmentGroupId%"", EnrollmentType=DPSEnrollmentType.Group, 
-        Id=""%RegistrationId%"", PrimarySymmetricKey=""%SymKey%"")]
+        EnrollmentType=DPSEnrollmentType.Group, Id=""%RegistrationId%"", PrimarySymmetricKey=""%SymKey%"")]
         private DeviceClient DpsDeviceClient {get;set;}
-         
     }
 }";
     }

@@ -1,4 +1,4 @@
-Xunit.Sdk.FalseException: Failed: [DpsSymmetricKeyDevice] must define these missing properties: DPSTransportType PrimarySymmetricKey EnrollmentGroupId TransportType
+Xunit.Sdk.FalseException: Failed: [DpsSymmetricKeyDevice] must define these missing properties: DPSTransportType PrimarySymmetricKey TransportType
 Expected: False
 Actual:   True
    at Xunit.Assert.False(Nullable`1 condition, String userMessage) in C:\Dev\xunit\xunit\src\xunit.assert\Asserts\BooleanAsserts.cs:line 52
