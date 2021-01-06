@@ -10,7 +10,7 @@ namespace TestDpsTpm
     [IoTHub]
     partial class MyIoTHubClient
     {
-        [DpsTpmDevice(DPSIdScope="%DpsScopeId%", Id="1", EnrollmentGroupId="GroupId", 
+        [DpsTpmDevice(DPSIdScope="%DpsScopeId%", Id="1", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt)]
         private DeviceClient MyClient {get;set;}
 
@@ -59,7 +59,6 @@ namespace TestDpsTpm
         {
             var theDPSIdScope = System.Environment.GetEnvironmentVariable("DpsScopeId");
             var theId = "1";
-            var theEnrollmentGroupId = "GroupId";
             var theEnrollmentType = DPSEnrollmentType.Individual;
             var theDPSTransportType = TransportType.Mqtt;
             ITransportSettings[] transportSettings = new[]{AmqpTransportSettings, MqttTransportSetting};

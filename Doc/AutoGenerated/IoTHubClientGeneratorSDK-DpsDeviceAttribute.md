@@ -14,7 +14,6 @@ Derived
 ### Properties
 - [DPSIdScope](./IoTHubClientGeneratorSDK-DpsDeviceAttribute-DPSIdScope.md 'IoTHubClientGeneratorSDK.DpsDeviceAttribute.DPSIdScope')
 - [DPSTransportType](./IoTHubClientGeneratorSDK-DpsDeviceAttribute-DPSTransportType.md 'IoTHubClientGeneratorSDK.DpsDeviceAttribute.DPSTransportType')
-- [EnrollmentGroupId](./IoTHubClientGeneratorSDK-DpsDeviceAttribute-EnrollmentGroupId.md 'IoTHubClientGeneratorSDK.DpsDeviceAttribute.EnrollmentGroupId')
 - [EnrollmentType](./IoTHubClientGeneratorSDK-DpsDeviceAttribute-EnrollmentType.md 'IoTHubClientGeneratorSDK.DpsDeviceAttribute.EnrollmentType')
 - [GlobalDeviceEndpoint](./IoTHubClientGeneratorSDK-DpsDeviceAttribute-GlobalDeviceEndpoint.md 'IoTHubClientGeneratorSDK.DpsDeviceAttribute.GlobalDeviceEndpoint')
 - [Id](./IoTHubClientGeneratorSDK-DpsDeviceAttribute-Id.md 'IoTHubClientGeneratorSDK.DpsDeviceAttribute.Id')

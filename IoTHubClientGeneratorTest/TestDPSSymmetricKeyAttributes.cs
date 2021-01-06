@@ -13,7 +13,7 @@ namespace TestDPSSymmetricKey
     [IoTHub]
     partial class MyIoTHubClient
     {
-        [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
+        [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Http1,
             TransportType=TransportType.Amqp, PrimarySymmetricKey=""%PrimaryDPSKey%"")]
         private DeviceClient MyClient {get;set;}
@@ -32,7 +32,7 @@ namespace TestDPSSymmetricKey
     [IoTHub]
     partial class MyIoTHubClient
     {
-        [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
+        [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", 
             EnrollmentType=DPSEnrollmentType.Group, DPSTransportType=TransportType.Mqtt,
             PrimarySymmetricKey=""%PrimaryDPSKey%"")]
         private DeviceClient MyClient {get;set;}
@@ -64,7 +64,7 @@ namespace TestDPSSymmetricKey
     [IoTHub]
     partial class MyIoTHubClient
     {
-        [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
+        [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt,
             PrimarySymmetricKey=""%PrimaryDPSKey%"")]
         private DeviceClient MyClient {get;set;}
@@ -98,7 +98,7 @@ namespace TestDPSSymmetricKey
     [IoTHub]
     partial class MyIoTHubClient
     {
-        [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
+        [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Amqp,TransportType=TransportType.Amqp,
             PrimarySymmetricKey=""%PrimaryDPSKey%"")]
         private DeviceClient MyClient {get;set;}
@@ -121,7 +121,7 @@ namespace TestDPSSymmetricKey
     [IoTHub]
     partial class MyIoTHubClient
     {
-        [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
+        [DpsSymmetricKeyDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt,
             PrimarySymmetricKey=""%PrimaryDPSKey%"")]
         private DeviceClient MyClient {get;set;}

@@ -25,11 +25,6 @@ namespace IoTHubClientGeneratorSDK
         public string OptionalDeviceId { get; set; }
         
         /// <summary>
-        /// The enrollment group identifier
-        /// </summary>
-        public string EnrollmentGroupId { get; set; }
-        
-        /// <summary>
         /// The type of enrollment: Individual or Group
         /// </summary>
         public DPSEnrollmentType EnrollmentType { get; set; }
