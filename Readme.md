@@ -65,7 +65,12 @@ namespace EasyIoTHubClient
 You may use one of the ```[Device]``` or the ```[DPS*]``` attributes to decorate a ```DeviceClient``` property. With these attributes and their properties, we can manipulate the IoT Hub device client creation parameters.
 Each property value can be set as a text or can be set as an environment variable value by wrapping the value with the `````%````` character, for example:
 ```
-[DeviceClient(ConnectionString="%ConStr%)]
+[DeviceClient(ConnectionString="%ConStr%")]
+DeviceClient MyClient {get;set;}
+```
+Each property value can be set as a variable name or code expression by wrapping the value with the `````[varName]````` character, for example:
+```
+[DeviceClient(ConnectionString="[ConStr]")]
 DeviceClient MyClient {get;set;}
 ```
 The ```[Device]``` attribute has a long list of properties and a set of other attributes (```[ClientOptions]```, ```[TransportSetting]```, and ```[AuthenticationMethod]```)  that creates the parameter of the IoT device client Create method. The code generator chooses the correct overload version of the device client ```Create()``` function by collecting all these parameters and selecting the suitable function version. If there is a missing parameter or a collision between parameters, the code generator emits an error.
@@ -185,7 +190,6 @@ The resulting generated code:
 - Have a separate error handler for each attribute instead (or as override rule) of one global handler
 - Add the ability for the user to provide the ```MessageSchema``` ```ContentType``` and ```ContentEncoding``` to the send-telemetry method in compile and at runtime
 - Have the ability to postponed update of reported properties, and only after setting a group of them, ask for a batch update of all
-- Add the ability to provide the connection string at runtime, something like: ```[Device(ConnectionString={variableName})]```. On device creation, the value of the variable is used. This can be also relevant to all other places that has the ability to use ```%envName%```
 - Add support for:
   - File Uploads
   - Device Modules
