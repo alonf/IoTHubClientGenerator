@@ -47,6 +47,8 @@ namespace TestTwinPropertiesAndErrorHandling
             {
                 DeviceClient = CreateDeviceClient();
                 await DeviceClient.SetDesiredPropertyUpdateCallbackAsync(HandleDesiredPropertyUpdateAsync, null);
+                var twin = await DeviceClient.GetTwinAsync();
+                await HandleDesiredPropertyUpdateAsync(twin.Properties.Desired, null);
             }
             catch (System.Exception exception)
             {

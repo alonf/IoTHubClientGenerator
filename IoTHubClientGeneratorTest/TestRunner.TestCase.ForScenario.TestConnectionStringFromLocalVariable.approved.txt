@@ -37,7 +37,9 @@ namespace TestConnectionStringFromLocalVariable
 
         private Microsoft.Azure.Devices.Client.DeviceClient CreateMyClient()
         {
+#pragma warning disable CS4014
             var theConnectionString = PrimaryConnectionString;
+#pragma warning restore CS4014
             var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString);
             return deviceClient;
         }

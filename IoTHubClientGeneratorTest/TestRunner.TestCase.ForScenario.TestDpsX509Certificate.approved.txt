@@ -41,6 +41,7 @@ namespace TestDpsX509Certificate
 
         private async Task<Microsoft.Azure.Devices.Client.DeviceClient> CreateMyClientAsync()
         {
+#pragma warning disable CS4014
             var theDPSIdScope = System.Environment.GetEnvironmentVariable("DpsScopeId");
             var theId = "1";
             var theEnrollmentType = DPSEnrollmentType.Individual;
@@ -48,6 +49,7 @@ namespace TestDpsX509Certificate
             var theTransportType = TransportType.Amqp;
             var theCertificatePath = System.Environment.GetEnvironmentVariable("certificateFilePath");
             var theCertificatePassword = System.Environment.GetEnvironmentVariable("CertPassword");
+#pragma warning restore CS4014
             using System.Security.Cryptography.X509Certificates.X509Certificate2 certificate = LoadProvisioningCertificate(theCertificatePath, theCertificatePassword);
             using var security = new Microsoft.Azure.Devices.Shared.SecurityProviderX509Certificate(certificate);
             using var transport = new ProvisioningTransportHandlerHttp();

@@ -34,6 +34,8 @@ namespace TestNonStringReportedProperties
             await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
             DeviceClient = CreateDeviceClient();
             await DeviceClient.SetDesiredPropertyUpdateCallbackAsync(HandleDesiredPropertyUpdateAsync, null);
+            var twin = await DeviceClient.GetTwinAsync();
+            await HandleDesiredPropertyUpdateAsync(twin.Properties.Desired, null);
         }
 
         [Device(ConnectionString = "%ConnectionString%")]

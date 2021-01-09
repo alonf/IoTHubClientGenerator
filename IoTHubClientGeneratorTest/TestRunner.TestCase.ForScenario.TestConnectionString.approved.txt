@@ -35,7 +35,9 @@ namespace TestConnectionString
 
         private Microsoft.Azure.Devices.Client.DeviceClient CreateMyClient()
         {
+#pragma warning disable CS4014
             var theConnectionString = "HostName=HomeAutomationHub.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=ROQYwme5GAWZxKdI5rIjLsimSMTfltIdLm/Cki3qfBq=";
+#pragma warning restore CS4014
             var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString);
             return deviceClient;
         }
