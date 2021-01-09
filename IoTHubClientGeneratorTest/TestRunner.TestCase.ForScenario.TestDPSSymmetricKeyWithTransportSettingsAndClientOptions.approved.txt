@@ -58,11 +58,13 @@ namespace TestDPSSymmetricKey
 
         private async Task<Microsoft.Azure.Devices.Client.DeviceClient> CreateMyClientAsync()
         {
+#pragma warning disable CS4014
             var theDPSIdScope = System.Environment.GetEnvironmentVariable("DpsScopeId");
             var theId = "1";
             var theEnrollmentType = DPSEnrollmentType.Individual;
             var theDPSTransportType = TransportType.Mqtt;
             var thePrimarySymmetricKey = System.Environment.GetEnvironmentVariable("PrimaryDPSKey");
+#pragma warning restore CS4014
             ITransportSettings[] transportSettings = new[]{AmqpTransportSettings, MqttTransportSetting};
             using var security = new SecurityProviderSymmetricKey(theId, thePrimarySymmetricKey, null);
             using var transport = new ProvisioningTransportHandlerMqtt();

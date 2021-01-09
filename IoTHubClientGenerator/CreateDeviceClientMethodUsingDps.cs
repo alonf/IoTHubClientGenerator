@@ -17,12 +17,18 @@ namespace IoTHubClientGenerator
                 {
                     if (attributeSyntax?.ArgumentList != null)
                     {
+                        AppendLine();
+                        AppendLine("#pragma warning disable CS4014");
+                        AppendLine();
                         foreach (var argument in attributeSyntax.ArgumentList.Arguments)
                         {
                             var attAssignment = $"the{argument.NameEquals}";
                             var attExpression = argument.Expression.ToString();
                             CreateVariableAssignmentLineFromAttributeParameter(attAssignment, attExpression);
                         }
+                        AppendLine();
+                        AppendLine("#pragma warning restore CS4014");
+                        AppendLine();
                     }
                     else
                     {

@@ -70,8 +70,9 @@ namespace IoTHubClientGenerator
                      */
                     if (GetAttributes(nameof(DesiredAttribute)).Any())
                     {
-                        AppendLine(
-                            $"await {_deviceClientPropertyName}.SetDesiredPropertyUpdateCallbackAsync(HandleDesiredPropertyUpdateAsync, null);");
+                        AppendLine($"await {_deviceClientPropertyName}.SetDesiredPropertyUpdateCallbackAsync(HandleDesiredPropertyUpdateAsync, null);");
+                        AppendLine($"var twin = await {_deviceClientPropertyName}.GetTwinAsync();");
+                        AppendLine($"await HandleDesiredPropertyUpdateAsync(twin.Properties.Desired, null);");
                     }
 
                     AppendLine();
