@@ -15,7 +15,7 @@ namespace IoTHubClientGenerator
 
            
             if (attributeSyntax.ArgumentList!.Arguments.Any(a =>
-                a.NameEquals?.ToString().TrimEnd('=', ' ', '\t') == nameof(DpsTpmDeviceAttribute.GlobalDeviceEndpoint) == false))
+                a.NameEquals?.ToString().TrimEnd('=', ' ', '\t') == nameof(DpsDeviceAttribute.GlobalDeviceEndpoint)) == false)
             
             {
                 AppendLine($"var the{nameof(DpsDeviceAttribute.GlobalDeviceEndpoint)} = \"global.azure-devices-provisioning.net\";");

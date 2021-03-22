@@ -10,7 +10,7 @@ namespace TestDPSSymmetricKey
     [IoTHub]
     partial class MyIoTHubClient
     {
-        [DpsSymmetricKeyDevice(DPSIdScope="%DpsScopeId%", Id="1", 
+        [DpsSymmetricKeyDevice(DPSIdScope="%DpsScopeId%", Id="1", GlobalDeviceEndpoint="my-IoTHub-dps.azure-devices-provisioning.net",
             EnrollmentType=DPSEnrollmentType.Group, DPSTransportType=TransportType.Mqtt,
             PrimarySymmetricKey="%PrimaryDPSKey%")]
         private DeviceClient MyClient {get;set;}
@@ -58,6 +58,7 @@ namespace TestDPSSymmetricKey
 #pragma warning disable CS4014
             var theDPSIdScope = System.Environment.GetEnvironmentVariable("DpsScopeId");
             var theId = "1";
+            var theGlobalDeviceEndpoint = "my-IoTHub-dps.azure-devices-provisioning.net";
             var theEnrollmentType = DPSEnrollmentType.Group;
             var theDPSTransportType = TransportType.Mqtt;
             var thePrimarySymmetricKey = System.Environment.GetEnvironmentVariable("PrimaryDPSKey");
@@ -66,7 +67,6 @@ namespace TestDPSSymmetricKey
             thePrimarySymmetricKey = ComputeDerivedSymmetricKey(thePrimarySymmetricKey, theId);
             using var security = new SecurityProviderSymmetricKey(theId, thePrimarySymmetricKey, null);
             using var transport = new ProvisioningTransportHandlerMqtt();
-            var theGlobalDeviceEndpoint = "global.azure-devices-provisioning.net";
             ProvisioningDeviceClient provClient = ProvisioningDeviceClient.Create(theGlobalDeviceEndpoint, theDPSIdScope, security, transport);
             DeviceRegistrationResult result = await provClient.RegisterAsync();
             if (result.Status != ProvisioningRegistrationStatusType.Assigned)
