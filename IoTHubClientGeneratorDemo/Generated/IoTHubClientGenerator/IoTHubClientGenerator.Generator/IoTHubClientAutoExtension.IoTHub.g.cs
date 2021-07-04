@@ -1,34 +1,4 @@
-********************************************************************************
-
-using IoTHubClientGeneratorSDK;
-using System;
-using Microsoft.Azure.Devices.Client.Exceptions;
-
-namespace TestTwinPropertiesAndErrorHandling
-{
-    [IoTHub()]
-    partial class MyIoTHubClient
-    {
-        [Desired] public string DesiredProperty { get; private set; }
-        [Desired("valueFromTheCloud")] private string DesiredPropertyDemo { get; set; }
-        [Reported("valueFromTheDevice")] private string _reportedPropertyDemo;
-        [Reported("ReportedPropertyAutoNameDemo", "reportedPropertyAutoNameDemo")] private string _reportedPropertyAutoNameDemo;
-
-        [IoTHubErrorHandler]
-        void IoTHubErrorHandler(string errorMessage, Exception exception)
-        {
-            if (exception is IotHubException {IsTransient: true})
-            {
-                System.Console.WriteLine($"Error: {errorMessage}");
-                System.Console.WriteLine($"An IotHubException was caught, but will try to recover and retry: {exception}");
-            }
-        }
-    }
-}
-
-
-********************************************************************************
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Threading;
@@ -36,9 +6,9 @@ using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Shared;
 using IoTHubClientGeneratorSDK;
 
-namespace TestTwinPropertiesAndErrorHandling
+namespace IoTHubClientGeneratorDemo
 {
-    public partial class MyIoTHubClient
+    public partial class IoTHubClientAuto
     {
         public async Task InitIoTHubClientAsync()
         {
@@ -49,6 +19,24 @@ namespace TestTwinPropertiesAndErrorHandling
                 await DeviceClient.SetDesiredPropertyUpdateCallbackAsync(HandleDesiredPropertyUpdateAsync, null);
                 var twin = await DeviceClient.GetTwinAsync();
                 await HandleDesiredPropertyUpdateAsync(twin.Properties.Desired, null);
+                await DeviceClient.SetReceiveMessageHandlerAsync(async (message, _) =>
+                {
+                    try
+                    {
+                        OnC2dMessageReceived(message);
+                        await DeviceClient.CompleteAsync(message);
+                        message.Dispose();
+                        message = null;
+                    }
+                    catch (System.Exception exception)
+                    {
+                        await DeviceClient.RejectAsync(message);
+                        if (message != null)
+                            message.Dispose();
+                        string errorMessage = "Error handling cloud to device message. The message has been rejected";
+                        IoTHubErrorHandler(errorMessage, exception);
+                    }
+                }, null);
             }
             catch (System.Exception exception)
             {
@@ -56,9 +44,6 @@ namespace TestTwinPropertiesAndErrorHandling
                 IoTHubErrorHandler(errorMessage, exception);
             }
         }
-
-        [Device(ConnectionString = "%ConnectionString%")]
-        private DeviceClient DeviceClient { get; set; }
 
         private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
         {
@@ -82,31 +67,17 @@ namespace TestTwinPropertiesAndErrorHandling
             }
         }
 
-        public string valueFromTheDevice
+        public string ReportedProperty
         {
             get
             {
-                return _reportedPropertyDemo;
+                return _reportedProperty;
             }
 
             set
             {
-                _reportedPropertyDemo = value;
-                ReportProperty("valueFromTheDevice", value);
-            }
-        }
-
-        public string ReportedPropertyAutoNameDemo
-        {
-            get
-            {
-                return _reportedPropertyAutoNameDemo;
-            }
-
-            set
-            {
-                _reportedPropertyAutoNameDemo = value;
-                ReportProperty("reportedPropertyAutoNameDemo", value);
+                _reportedProperty = value;
+                ReportProperty("reported", value);
             }
         }
 
@@ -116,12 +87,8 @@ namespace TestTwinPropertiesAndErrorHandling
             {
                 if (desiredProperties.Contains("DesiredProperty"))
                 {
-                    DesiredProperty = desiredProperties["DesiredProperty"];
-                }
-
-                if (desiredProperties.Contains("valueFromTheCloud"))
-                {
-                    DesiredPropertyDemo = desiredProperties["valueFromTheCloud"];
+                    string textData = desiredProperties["DesiredProperty"];
+                    DesiredProperty = Int32.Parse(textData);
                 }
             }
             catch (System.Exception exception)
@@ -134,5 +101,3 @@ namespace TestTwinPropertiesAndErrorHandling
         }
     }
 }
-
-
