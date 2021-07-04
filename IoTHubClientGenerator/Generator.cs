@@ -10,8 +10,6 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace IoTHubClientGenerator
 {
-   
-
     [Generator]
     public class Generator : ISourceGenerator
     {

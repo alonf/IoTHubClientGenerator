@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "IoTHubClientGenerator": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\IoTHubClientGeneratorDemo\\IoTHubClientGeneratorDemo.csproj"
+    }
+  }
+}
