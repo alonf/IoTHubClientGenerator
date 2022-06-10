@@ -33,6 +33,24 @@ namespace TestConnectionString
     }
 }";
         
+        [TestCase("TestConnectionStringFromLocalVariable")] 
+        public static string TestConnectionStringFromLocalVariable => 
+            @"
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
+namespace TestConnectionStringFromLocalVariable
+{
+    [IoTHub()]
+    partial class MyIoTHubClient
+    {
+        private static string PrimaryConnectionString = ""HostName=HomeAutomationHub.azure-devices.net;SharedAccessKeyName=device;SharedAccessKey=ROQYwme5GAWZxKdI5rIjLsimSMTfltIdLm/Cki3qfBq="";
+
+        [Device(ConnectionString=""[PrimaryConnectionString]"")]
+        private DeviceClient MyClient {get;set;}
+    }
+}";
+        
         [TestCase("TestConnectionStringEnv")] 
         public static string TestConnectionStringEnv => 
 @"

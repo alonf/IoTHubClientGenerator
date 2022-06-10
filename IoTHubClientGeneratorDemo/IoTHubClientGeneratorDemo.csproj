@@ -4,9 +4,17 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
 
-  
+  <ItemGroup>
+    <!-- Don't include the output from a previous source generator execution -->
+    <!-- into future runs; the */** trick here ensures that there’s at least -->
+    <!-- one subdirectory, which is our key that it's coming from a source  -->
+    <!-- generator as opposed to something that is coming from some other tool -->
+    <Compile Remove="$(CompilerGeneratedFilesOutputPath)/*/**/*.cs" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Devices.Client" Version="1.33.1" />
     <PackageReference Include="Microsoft.Azure.Devices.Provisioning.Client" Version="1.16.2" />

@@ -41,11 +41,7 @@ namespace TestNonStringReportedProperties
         }
 
         [Device(ConnectionString = "%ConnectionString%")]
-        private DeviceClient DeviceClient
-        {
-            get;
-            set;
-        }
+        private DeviceClient DeviceClient { get; set; }
 
         private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
         {

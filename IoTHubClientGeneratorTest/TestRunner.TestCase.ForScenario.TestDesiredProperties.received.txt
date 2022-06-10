@@ -1,0 +1,74 @@
+﻿IoTHubClientGenerator\IoTHubClientGenerator.Generator\MyIoTHubClientExtension.IoTHub.g.cs(29,20): error CS0103: The name 'deviceClient' does not exist in the current context
+(3,1): hidden CS8019: Unnecessary using directive.
+IoTHubClientGenerator\IoTHubClientGenerator.Generator\MyIoTHubClientExtension.IoTHub.g.cs(2,1): hidden CS8019: Unnecessary using directive.
+IoTHubClientGenerator\IoTHubClientGenerator.Generator\MyIoTHubClientExtension.IoTHub.g.cs(1,1): hidden CS8019: Unnecessary using directive.
+IoTHubClientGenerator\IoTHubClientGenerator.Generator\MyIoTHubClientExtension.IoTHub.g.cs(4,1): hidden CS8019: Unnecessary using directive.
+(2,1): hidden CS8019: Unnecessary using directive.
+IoTHubClientGenerator\IoTHubClientGenerator.Generator\MyIoTHubClientExtension.IoTHub.g.cs(6,1): hidden CS8019: Unnecessary using directive.
+
+********************************************************************************
+
+using IoTHubClientGeneratorSDK;
+using System;
+
+namespace TestDesiredProperties
+{
+    [IoTHub()]
+    partial class MyIoTHubClient
+    {
+        [Desired] public string DesiredProperty { get; private set; }
+        [Desired("valueFromTheCloud")] private string DesiredPropertyDemo { get; set; }
+    }
+}
+
+
+********************************************************************************
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
+using IoTHubClientGeneratorSDK;
+
+namespace TestDesiredProperties
+{
+    public partial class MyIoTHubClient
+    {
+        public async Task InitIoTHubClientAsync()
+        {
+            await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+            DeviceClient = CreateDeviceClient();
+            await DeviceClient.SetDesiredPropertyUpdateCallbackAsync(HandleDesiredPropertyUpdateAsync, null);
+            var twin = await DeviceClient.GetTwinAsync();
+            await HandleDesiredPropertyUpdateAsync(twin.Properties.Desired, null);
+        }
+
+        [Device(ConnectionString = "%ConnectionString%")]
+        private DeviceClient DeviceClient { get; set; }
+
+        private Microsoft.Azure.Devices.Client.DeviceClient CreateDeviceClient()
+        {
+            var theConnectionString = System.Environment.GetEnvironmentVariable("ConnectionString");
+            var deviceClient1 = DeviceClient.CreateFromConnectionString(theConnectionString);
+            return deviceClient;
+        }
+
+        private async Task HandleDesiredPropertyUpdateAsync(Microsoft.Azure.Devices.Shared.TwinCollection desiredProperties, object context)
+        {
+            if (desiredProperties.Contains("DesiredProperty"))
+            {
+                DesiredProperty = desiredProperties["DesiredProperty"];
+            }
+
+            if (desiredProperties.Contains("valueFromTheCloud"))
+            {
+                DesiredPropertyDemo = desiredProperties["valueFromTheCloud"];
+            }
+
+            await Task.CompletedTask;
+        }
+    }
+}
+
+

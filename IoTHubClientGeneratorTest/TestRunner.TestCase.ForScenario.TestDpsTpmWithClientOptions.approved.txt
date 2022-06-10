@@ -8,7 +8,7 @@ namespace TestDpsTpm
     [IoTHub]
     partial class MyIoTHubClient
     {
-        [DpsTpmDevice(DPSIdScope="%DpsScopeId%", Id="1", EnrollmentGroupId="GroupId", 
+        [DpsTpmDevice(DPSIdScope="%DpsScopeId%", Id="1", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Amqp,TransportType=TransportType.Amqp)]
         private DeviceClient MyClient {get;set;}
 
@@ -42,12 +42,13 @@ namespace TestDpsTpm
 
         private async Task<Microsoft.Azure.Devices.Client.DeviceClient> CreateMyClientAsync()
         {
+#pragma warning disable CS4014
             var theDPSIdScope = System.Environment.GetEnvironmentVariable("DpsScopeId");
             var theId = "1";
-            var theEnrollmentGroupId = "GroupId";
             var theEnrollmentType = DPSEnrollmentType.Individual;
             var theDPSTransportType = TransportType.Amqp;
             var theTransportType = TransportType.Amqp;
+#pragma warning restore CS4014
             using var security = new Microsoft.Azure.Devices.Provisioning.Security.SecurityProviderTpmHsm(theId);
             using var transport = new ProvisioningTransportHandlerAmqp();
             var theGlobalDeviceEndpoint = "global.azure-devices-provisioning.net";

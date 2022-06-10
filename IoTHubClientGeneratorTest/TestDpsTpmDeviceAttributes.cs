@@ -13,7 +13,7 @@ namespace TestDpsTpm
     [IoTHub]
     partial class MyIoTHubClient
     {
-        [DpsTpmDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
+        [DpsTpmDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Http1,
             TransportType=TransportType.Amqp)]
         private DeviceClient MyClient {get;set;}
@@ -32,7 +32,7 @@ namespace TestDpsTpm
     [IoTHub]
     partial class MyIoTHubClient
     {
-        [DpsTpmDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
+        [DpsTpmDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt)]
         private DeviceClient MyClient {get;set;}
 
@@ -63,7 +63,7 @@ namespace TestDpsTpm
     [IoTHub]
     partial class MyIoTHubClient
     {
-        [DpsTpmDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
+        [DpsTpmDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Mqtt)]
         private DeviceClient MyClient {get;set;}
 
@@ -96,7 +96,7 @@ namespace TestDpsTpm
     [IoTHub]
     partial class MyIoTHubClient
     {
-        [DpsTpmDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", EnrollmentGroupId=""GroupId"", 
+        [DpsTpmDevice(DPSIdScope=""%DpsScopeId%"", Id=""1"", 
             EnrollmentType=DPSEnrollmentType.Individual, DPSTransportType=TransportType.Amqp,TransportType=TransportType.Amqp)]
         private DeviceClient MyClient {get;set;}
 

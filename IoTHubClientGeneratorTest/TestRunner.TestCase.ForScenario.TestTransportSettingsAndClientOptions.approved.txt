@@ -52,7 +52,9 @@ namespace TestTransportSettingsAndClientOptions
 
         private Microsoft.Azure.Devices.Client.DeviceClient CreateMyClient()
         {
+#pragma warning disable CS4014
             var theConnectionString = System.Environment.GetEnvironmentVariable("ConStr");
+#pragma warning restore CS4014
             ITransportSettings[] transportSettings = new[]{AmqpTransportSettings, MqttTransportSetting};
             var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString, transportSettings, ClientOptions);
             return deviceClient;

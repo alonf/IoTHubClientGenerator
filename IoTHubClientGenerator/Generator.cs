@@ -10,8 +10,6 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace IoTHubClientGenerator
 {
-   
-
     [Generator]
     public class Generator : ISourceGenerator
     {
@@ -137,9 +135,6 @@ namespace IoTHubClientGenerator
                 var properties = new List<string>
                 {
                     nameof(DpsDeviceAttribute.DPSIdScope),
-                    nameof(DpsDeviceAttribute.Id),
-                    nameof(DpsDeviceAttribute.EnrollmentGroupId),
-                    nameof(DpsDeviceAttribute.EnrollmentType),
                     nameof(DpsDeviceAttribute.DPSTransportType),
                 };
                 var attributeName = deviceAttributesNodes.First().Name.ToString();
