@@ -339,3 +339,6 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /IoTHubClientGeneratorTest/Tests.TestCase.ForScenario.*.received.txt
+
+#Approval Results
+*.received.txt
