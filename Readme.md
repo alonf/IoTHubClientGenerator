@@ -65,12 +65,12 @@ namespace EasyIoTHubClient
 You may use one of the ```[Device]``` or the ```[DPS*]``` attributes to decorate a ```DeviceClient``` property. With these attributes and their properties, we can manipulate the IoT Hub device client creation parameters.
 Each property value can be set as a text or can be set as an environment variable value by wrapping the value with the `````%````` character, for example:
 ```
-[DeviceClient(ConnectionString="%ConStr%")]
+[Device(ConnectionString="%ConStr%")]
 DeviceClient MyClient {get;set;}
 ```
 Each property value can be set as a variable name or code expression by wrapping the value with the `````[varName]````` character, for example:
 ```
-[DeviceClient(ConnectionString="[ConStr]")]
+[Device(ConnectionString="[ConStr]")]
 DeviceClient MyClient {get;set;}
 ```
 The ```[Device]``` attribute has a long list of properties and a set of other attributes (```[ClientOptions]```, ```[TransportSetting]```, and ```[AuthenticationMethod]```)  that creates the parameter of the IoT device client Create method. The code generator chooses the correct overload version of the device client ```Create()``` function by collecting all these parameters and selecting the suitable function version. If there is a missing parameter or a collision between parameters, the code generator emits an error.
