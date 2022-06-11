@@ -33,7 +33,7 @@ namespace IoTHubClientGenerator
             _receiverCandidateMembers = receiverCandidateMembers;
             _receiverCandidateAttributes = receiverCandidateAttributes;
             Class = classSymbol;
-            var @namespace = Class.ContainingNamespace.ToDisplayString();
+            var @namespace = Class.ContainingNamespace.IsGlobalNamespace ? null : Class.ContainingNamespace.ToDisplayString();
             try
             {
                 BuildPartialClass(@namespace, Class.Name);
@@ -97,7 +97,7 @@ namespace IoTHubClientGenerator
 
             AppendLine("using IoTHubClientGeneratorSDK;");
             AppendLine();
-            if (namespaceName != "<global namespace>") //handle no namespace
+            if (namespaceName != null) //handle no namespace
             {
                 AppendLine($"namespace {namespaceName}");
                 using (Block())

@@ -2,7 +2,7 @@
 {
     public class TestNoNamespace
     {
-        [TestCase("TestNoNamespaceDevice")] 
+        [TestCase("TestNoNamespaceDevice")]
         public static string NoNamespace => 
 @"
 using IoTHubClientGeneratorSDK;
