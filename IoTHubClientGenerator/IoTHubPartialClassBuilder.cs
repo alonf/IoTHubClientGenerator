@@ -97,8 +97,15 @@ namespace IoTHubClientGenerator
 
             AppendLine("using IoTHubClientGeneratorSDK;");
             AppendLine();
-            AppendLine($"namespace {namespaceName}");
-            using (Block())
+            if (namespaceName != "<global namespace>") //handle no namespace
+            {
+                AppendLine($"namespace {namespaceName}");
+                using (Block())
+                {
+                    CreateClass(className);
+                }
+            }
+            else
             {
                 CreateClass(className);
             }

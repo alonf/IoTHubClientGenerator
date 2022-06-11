@@ -1,0 +1,39 @@
+﻿********************************************************************************
+
+using IoTHubClientGeneratorSDK;
+using Microsoft.Azure.Devices.Client;
+
+[IoTHub()]
+partial class MyIoTHubClient
+{
+    [Device]
+    private DeviceClient MyClient {get;set;}
+}
+
+
+********************************************************************************
+using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
+using Microsoft.Azure.Devices.Client;
+using Microsoft.Azure.Devices.Shared;
+using IoTHubClientGeneratorSDK;
+
+public partial class MyIoTHubClient
+{
+    public async Task InitIoTHubClientAsync()
+    {
+        await System.Threading.Tasks.Task.CompletedTask; //suppress async warning in case we don't generate any async call
+        MyClient = CreateMyClient();
+    }
+
+    private Microsoft.Azure.Devices.Client.DeviceClient CreateMyClient()
+    {
+        var theConnectionString = System.Environment.GetEnvironmentVariable("ConnectionString");
+        var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString);
+        return deviceClient;
+    }
+}
+
+

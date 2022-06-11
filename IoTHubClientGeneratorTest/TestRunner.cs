@@ -124,14 +124,18 @@ namespace IoTHubClientGeneratorTest
             {
                 var iotClassName = theIoTHubDecoratedClass.Identifier.ToString();
 
-                var @namespace = ((NamespaceDeclarationSyntax) theIoTHubDecoratedClass.Parent)?.Name.ToString() ?? "";
+                var @namespace = (theIoTHubDecoratedClass.Parent as NamespaceDeclarationSyntax)?.Name.ToString() ?? "";
+
                 var main =
                     @$"
 using System;
 using System.Threading.Tasks;
+";
 
-namespace {@namespace}
-{{
+                if (!string.IsNullOrEmpty(@namespace))
+                    main += $"namespace {@namespace}" + Environment.NewLine + "{" + Environment.NewLine;
+                main +=
+                    $@"
     public class Console
     {{
         static async Task Main()
@@ -139,11 +143,15 @@ namespace {@namespace}
             var iotHubClient = new {iotClassName}();
             await iotHubClient.InitIoTHubClientAsync();
         }}
-    }}
-}}";
+    }}";
+                if (!string.IsNullOrEmpty(@namespace))
+                {
+                    main += Environment.NewLine + "}";
+                }
+
                 var mainSyntaxTree = CSharpSyntaxTree.ParseText(main);
 
-                var syntaxTreeList = new List<SyntaxTree>(outputCompilation.SyntaxTrees) {mainSyntaxTree};
+                var syntaxTreeList = new List<SyntaxTree>(outputCompilation.SyntaxTrees) { mainSyntaxTree };
 
                 var consoleCompilation = CSharpCompilation.Create("testExecutable", syntaxTreeList.ToArray(),
                     references, new CSharpCompilationOptions(OutputKind.ConsoleApplication));
