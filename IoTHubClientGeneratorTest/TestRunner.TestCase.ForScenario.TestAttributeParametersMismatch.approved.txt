@@ -1,7 +1,7 @@
 Xunit.Sdk.FalseException: Failed: Can't generate DeviceClient creation code, check the supplied [Device] parameters
 Expected: False
 Actual:   True
-   at Xunit.Assert.False(Nullable`1 condition, String userMessage) in C:\Dev\xunit\xunit\src\xunit.assert\Asserts\BooleanAsserts.cs:line 52
-   at Xunit.Assert.False(Boolean condition, String userMessage) in C:\Dev\xunit\xunit\src\xunit.assert\Asserts\BooleanAsserts.cs:line 40
+   at Xunit.Assert.False(Nullable`1 condition, String userMessage) in /_/src/xunit.assert/Asserts/BooleanAsserts.cs:line 73
+   at Xunit.Assert.False(Boolean condition, String userMessage) in /_/src/xunit.assert/Asserts/BooleanAsserts.cs:line 57
    at IoTHubClientGeneratorTest.TestRunner.GetGeneratedOutput(String source) in C:\Dev\IoTHubClientGenerator\IoTHubClientGeneratorTest\TestRunner.cs:line 105
    at IoTHubClientGeneratorTest.TestRunner.TestCase(String testName, String source) in C:\Dev\IoTHubClientGenerator\IoTHubClientGeneratorTest\TestRunner.cs:line 42

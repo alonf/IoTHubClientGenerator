@@ -1,20 +1,24 @@
 ## IoTHubClientGeneratorSDK Namespace
-### Classes
-- [AuthenticationMethodAttribute](./IoTHubClientGeneratorSDK-AuthenticationMethodAttribute.md 'IoTHubClientGeneratorSDK.AuthenticationMethodAttribute')
-- [C2DMessageAttribute](./IoTHubClientGeneratorSDK-C2DMessageAttribute.md 'IoTHubClientGeneratorSDK.C2DMessageAttribute')
-- [ClientOptionsAttribute](./IoTHubClientGeneratorSDK-ClientOptionsAttribute.md 'IoTHubClientGeneratorSDK.ClientOptionsAttribute')
-- [ConnectionStatusAttribute](./IoTHubClientGeneratorSDK-ConnectionStatusAttribute.md 'IoTHubClientGeneratorSDK.ConnectionStatusAttribute')
-- [DesiredAttribute](./IoTHubClientGeneratorSDK-DesiredAttribute.md 'IoTHubClientGeneratorSDK.DesiredAttribute')
-- [DeviceAttribute](./IoTHubClientGeneratorSDK-DeviceAttribute.md 'IoTHubClientGeneratorSDK.DeviceAttribute')
-- [DirectMethodAttribute](./IoTHubClientGeneratorSDK-DirectMethodAttribute.md 'IoTHubClientGeneratorSDK.DirectMethodAttribute')
-- [DpsDeviceAttribute](./IoTHubClientGeneratorSDK-DpsDeviceAttribute.md 'IoTHubClientGeneratorSDK.DpsDeviceAttribute')
-- [DpsSymmetricKeyDeviceAttribute](./IoTHubClientGeneratorSDK-DpsSymmetricKeyDeviceAttribute.md 'IoTHubClientGeneratorSDK.DpsSymmetricKeyDeviceAttribute')
-- [DpsTpmDeviceAttribute](./IoTHubClientGeneratorSDK-DpsTpmDeviceAttribute.md 'IoTHubClientGeneratorSDK.DpsTpmDeviceAttribute')
-- [DpsX509CertificateDeviceAttribute](./IoTHubClientGeneratorSDK-DpsX509CertificateDeviceAttribute.md 'IoTHubClientGeneratorSDK.DpsX509CertificateDeviceAttribute')
-- [IoTHubAttribute](./IoTHubClientGeneratorSDK-IoTHubAttribute.md 'IoTHubClientGeneratorSDK.IoTHubAttribute')
-- [IoTHubDeviceStatusChangesHandlerAttribute](./IoTHubClientGeneratorSDK-IoTHubDeviceStatusChangesHandlerAttribute.md 'IoTHubClientGeneratorSDK.IoTHubDeviceStatusChangesHandlerAttribute')
-- [IoTHubErrorHandlerAttribute](./IoTHubClientGeneratorSDK-IoTHubErrorHandlerAttribute.md 'IoTHubClientGeneratorSDK.IoTHubErrorHandlerAttribute')
-- [ReportedAttribute](./IoTHubClientGeneratorSDK-ReportedAttribute.md 'IoTHubClientGeneratorSDK.ReportedAttribute')
-- [TransportSettingAttribute](./IoTHubClientGeneratorSDK-TransportSettingAttribute.md 'IoTHubClientGeneratorSDK.TransportSettingAttribute')
-### Enums
-- [DPSEnrollmentType](./IoTHubClientGeneratorSDK-DPSEnrollmentType.md 'IoTHubClientGeneratorSDK.DPSEnrollmentType')
+
+| Classes | |
+| :--- | :--- |
+| [AuthenticationMethodAttribute](IoTHubClientGeneratorSDK.AuthenticationMethodAttribute.md 'IoTHubClientGeneratorSDK.AuthenticationMethodAttribute') | Provide an authentication method that is required when creating the device client<br/>The property should return an [Microsoft.Azure.Devices.Client.IAuthenticationMethod](https://docs.microsoft.com/en-us/dotnet/api/Microsoft.Azure.Devices.Client.IAuthenticationMethod 'Microsoft.Azure.Devices.Client.IAuthenticationMethod') instance |
+| [C2DMessageAttribute](IoTHubClientGeneratorSDK.C2DMessageAttribute.md 'IoTHubClientGeneratorSDK.C2DMessageAttribute') | Decorate a method with a prototype: private async Task OnC2dMessageReceivedAsync(Message receivedMessage) |
+| [ClientOptionsAttribute](IoTHubClientGeneratorSDK.ClientOptionsAttribute.md 'IoTHubClientGeneratorSDK.ClientOptionsAttribute') | Provide a client option instance that is used when creating the device client<br/>The property should return an [Microsoft.Azure.Devices.Client.ClientOptions](https://docs.microsoft.com/en-us/dotnet/api/Microsoft.Azure.Devices.Client.ClientOptions 'Microsoft.Azure.Devices.Client.ClientOptions') instance |
+| [ConnectionStatusAttribute](IoTHubClientGeneratorSDK.ConnectionStatusAttribute.md 'IoTHubClientGeneratorSDK.ConnectionStatusAttribute') | Decorate a property that reflect the current device client connection status and the reason<br/>for having the current status. |
+| [DesiredAttribute](IoTHubClientGeneratorSDK.DesiredAttribute.md 'IoTHubClientGeneratorSDK.DesiredAttribute') | Decorate a property to be automatically updated from the device twin properties |
+| [DeviceAttribute](IoTHubClientGeneratorSDK.DeviceAttribute.md 'IoTHubClientGeneratorSDK.DeviceAttribute') | Decorate a property that will be set when the device client is initiated in: await iotHubInstance.InitIoTHubClientAsync();<br/>If not provided, a default Device property is created |
+| [DirectMethodAttribute](IoTHubClientGeneratorSDK.DirectMethodAttribute.md 'IoTHubClientGeneratorSDK.DirectMethodAttribute') | register a method with a prototype such as: private async Task<MethodResponse> WriteToConsoleAsync(MethodRequest methodRequest) |
+| [DpsDeviceAttribute](IoTHubClientGeneratorSDK.DpsDeviceAttribute.md 'IoTHubClientGeneratorSDK.DpsDeviceAttribute') | Base class for DPS based device creation<br/>It will be set when the device client is initiated in: await iotHubInstance.InitIoTHubClientAsync(); |
+| [DpsSymmetricKeyDeviceAttribute](IoTHubClientGeneratorSDK.DpsSymmetricKeyDeviceAttribute.md 'IoTHubClientGeneratorSDK.DpsSymmetricKeyDeviceAttribute') | Decorate a device client property with DPS settings.<br/>It will be set when the device client is initiated in: await iotHubInstance.InitIoTHubClientAsync(); |
+| [DpsTpmDeviceAttribute](IoTHubClientGeneratorSDK.DpsTpmDeviceAttribute.md 'IoTHubClientGeneratorSDK.DpsTpmDeviceAttribute') | Decorate a device client property with DPS settings.<br/>It will be set when the device client is initiated in: await iotHubInstance.InitIoTHubClientAsync(); |
+| [DpsX509CertificateDeviceAttribute](IoTHubClientGeneratorSDK.DpsX509CertificateDeviceAttribute.md 'IoTHubClientGeneratorSDK.DpsX509CertificateDeviceAttribute') | Decorate a device client property with DPS settings.<br/>It will be set when the device client is initiated in: await iotHubInstance.InitIoTHubClientAsync(); |
+| [IoTHubAttribute](IoTHubClientGeneratorSDK.IoTHubAttribute.md 'IoTHubClientGeneratorSDK.IoTHubAttribute') | Decorate a class to serves as an IoTHub management class<br/>At least one class must be decorated as IoTHub to activate the source code generation.<br/>There can be more then one IoTHub class in case we need to be connected with more than one Device Client |
+| [IoTHubDeviceStatusChangesHandlerAttribute](IoTHubClientGeneratorSDK.IoTHubDeviceStatusChangesHandlerAttribute.md 'IoTHubClientGeneratorSDK.IoTHubDeviceStatusChangesHandlerAttribute') | decorate a function with a prototype such as: private async Task StatusChangesHandler(ConnectionStatus status, ConnectionStatusChangeReason reason)<br/>It will be called whenever there is a change in the connectivity state of the device client |
+| [IoTHubErrorHandlerAttribute](IoTHubClientGeneratorSDK.IoTHubErrorHandlerAttribute.md 'IoTHubClientGeneratorSDK.IoTHubErrorHandlerAttribute') | Put on a method with the prototype: void HandleError(string message, System.Exception exception) |
+| [ReportedAttribute](IoTHubClientGeneratorSDK.ReportedAttribute.md 'IoTHubClientGeneratorSDK.ReportedAttribute') | Decorate a field to generate device twin reported attribute |
+| [TransportSettingAttribute](IoTHubClientGeneratorSDK.TransportSettingAttribute.md 'IoTHubClientGeneratorSDK.TransportSettingAttribute') | Add a [Microsoft.Azure.Devices.Client.ITransportSettings](https://docs.microsoft.com/en-us/dotnet/api/Microsoft.Azure.Devices.Client.ITransportSettings 'Microsoft.Azure.Devices.Client.ITransportSettings') instance to the Device Client creation<br/>You can have more than one property decorated with this attribute |
+
+| Enums | |
+| :--- | :--- |
+| [DPSEnrollmentType](IoTHubClientGeneratorSDK.DPSEnrollmentType.md 'IoTHubClientGeneratorSDK.DPSEnrollmentType') | Individual or group DPS enrollment |
