@@ -48,7 +48,19 @@ namespace IoTHubClientGeneratorTest
             
             using (ApprovalResults.ForScenario(testName))
             {
-                ApprovalTests.Approvals.Verify(output);
+                try
+                {
+                    ApprovalTests.Approvals.Verify(output);
+                }
+                catch (Exception e)
+                {
+                    _output.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    _output.WriteLine("Approval failed: " + e.Message);
+                    _output.WriteLine("Generated output:");
+                    _output.WriteLine(output);
+                    _output.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+                    throw;
+                }
             }
         }
 
