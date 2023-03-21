@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using ApprovalTests;
+using ApprovalTests.Core;
 using ApprovalTests.Namers;
 using ApprovalTests.Reporters;
 using IoTHubClientGenerator;
@@ -50,7 +53,10 @@ namespace IoTHubClientGeneratorTest
             {
                 try
                 {
-                    ApprovalTests.Approvals.Verify(output);
+                    Approvals.RegisterDefaultNamerCreation(() => new ApprovalNamer(testName));
+                    //remove from the output lines that start with "   at " which are stack traces and not deterministic
+                    output = string.Join(Environment.NewLine, output.Split(Environment.NewLine).Where(l => !l.StartsWith("   at ")));
+                    Approvals.Verify(output);
                 }
                 catch (Exception e)
                 {
@@ -58,6 +64,10 @@ namespace IoTHubClientGeneratorTest
                     _output.WriteLine("Approval failed: " + e.Message);
                     _output.WriteLine("Generated output:");
                     _output.WriteLine(output);
+                    _output.WriteLine("");
+                    _output.WriteLine("Compared file:");
+                    var approvedFilePath = Path.Combine(Approvals.GetDefaultNamer().SourcePath, Approvals.GetDefaultNamer().Name + ".approved.txt");
+                    _output.WriteLine(System.IO.File.ReadAllText(approvedFilePath));
                     _output.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     throw;
                 }
@@ -175,6 +185,17 @@ using System.Threading.Tasks;
                 }
             }
             return output;
+        }
+
+        private class ApprovalNamer : IApprovalNamer
+        {
+            public ApprovalNamer(string testName)
+            {
+                Name = testName;
+            }
+            public string SourcePath => "../../../ApprovalFiles";
+
+            public string Name { get; }
         }
     }
 }

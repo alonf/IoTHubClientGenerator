@@ -1,0 +1,3 @@
+Xunit.Sdk.FalseException: Failed: [DpsSymmetricKeyDevice] must define these missing properties: DPSTransportType PrimarySymmetricKey TransportType
+Expected: False
+Actual:   True

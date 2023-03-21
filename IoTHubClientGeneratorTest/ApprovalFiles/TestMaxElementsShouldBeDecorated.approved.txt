@@ -1,0 +1,3 @@
+Xunit.Sdk.FalseException: Failed: No more then 1 property should be decorated with [ConnectionStatus], however, you may have more than one [IoTHub] decorated class
+Expected: False
+Actual:   True
