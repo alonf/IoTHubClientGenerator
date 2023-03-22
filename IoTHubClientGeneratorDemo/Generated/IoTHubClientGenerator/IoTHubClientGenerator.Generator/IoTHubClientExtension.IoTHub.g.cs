@@ -66,7 +66,11 @@ namespace IoTHubClientGeneratorDemo
 #pragma warning disable CS4014
             var theConnectionString = System.Environment.GetEnvironmentVariable("conString");
 #pragma warning restore CS4014
-            ITransportSettings[] transportSettings = new[]{AmqpTransportSettings, MqttTransportSetting};
+            ITransportSettings[] transportSettings = new[]
+            {
+                AmqpTransportSettings,
+                MqttTransportSetting
+            };
             var deviceClient = DeviceClient.CreateFromConnectionString(theConnectionString, transportSettings, ClientOptions);
             return deviceClient;
         }
@@ -127,7 +131,11 @@ namespace IoTHubClientGeneratorDemo
                 }
 
                 var iotMessage = new Microsoft.Azure.Devices.Client.Message(System.Text.Encoding.UTF8.GetBytes(jsonPayload))
-                {MessageId = messageId, ContentEncoding = System.Text.Encoding.UTF8.ToString(), ContentType = "application/json"};
+                {
+                    MessageId = messageId,
+                    ContentEncoding = System.Text.Encoding.UTF8.ToString(),
+                    ContentType = "application/json"
+                };
                 await DeviceClient.SendEventAsync(iotMessage, cancellationToken);
                 iotMessage.Dispose();
             }

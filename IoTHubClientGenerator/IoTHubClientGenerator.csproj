@@ -11,8 +11,6 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-    <Version>$(VersionNumber)</Version>
-    <AssemblyVersion>$(VersionNumber)</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,13 +20,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.4.0" PrivateAssets="all" />
-    <PackageReference Include="System.Security.Cryptography.X509Certificates" Version="4.3.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\IoTHubClientGeneratorSDK\IoTHubClientGeneratorSDK.csproj">
-      <!--<ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <IncludeAssets>IoTHubClientGeneratorSDK.dll</IncludeAssets>-->
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <IncludeAssets>IoTHubClientGeneratorSDK.dll</IncludeAssets>
     </ProjectReference>
   </ItemGroup>
 
