@@ -1,0 +1,3 @@
+Xunit.Sdk.FalseException: Failed: Can't generate DeviceClient creation code, check the supplied [Device] parameters
+Expected: False
+Actual:   True
