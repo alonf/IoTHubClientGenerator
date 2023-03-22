@@ -6,7 +6,9 @@
     <Company>Alon Fliess</Company>
     <Description>Attributes for the IoT Hub Client Source Generator</Description>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    <LangVersion>9</LangVersion>
+    <LangVersion>Latest</LangVersion>
+    <Version>$(VersionNumber)</Version>
+    <AssemblyVersion>$(VersionNumber)</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup>
