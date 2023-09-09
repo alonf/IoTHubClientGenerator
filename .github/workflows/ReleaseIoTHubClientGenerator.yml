@@ -1,6 +1,7 @@
 name: Release IOTHub Client Generator to Nuget
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
   
